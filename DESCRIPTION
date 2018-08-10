@@ -1,0 +1,21 @@
+Package: ribd
+Type: Package
+Title: Computation of pedigree-based relatedness coefficients
+Version: 0.1.0
+Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
+                  role = c("aut", "cre"))
+Description: Recursive algorithms for computing various relatedness coefficients, 
+    including identity coefficients. The standard algorithms are extended to 
+    allow inbred founders. Both autosomal and X-linked coeffiecients are computed.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: pedtools,
+    slam,
+    kinship2,
+    glue
+Suggests: identity,
+    XIBD,
+    testthat
+RoxygenNote: 6.1.0
+Roxygen: list(markdown = TRUE)
