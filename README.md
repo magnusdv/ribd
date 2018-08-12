@@ -1,8 +1,11 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-ribd
-====
+ribd <img src="man/figures/logo.png" align="right" height=140/>
+===============================================================
 
-The goal of `ribd` is to compute pedigree-based relatedness coefficients. It extends the `pedtools` package which is used for pedigree construction and manipulation.
+Overview
+--------
+
+The goal of `ribd` is to compute various coefficients of relatedness between pedigree members. It extends the `pedtools` package which is used for pedigree construction and manipulation.
 
 The main functions in ribd are prefixed with `ibd_`:
 
