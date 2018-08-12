@@ -21,7 +21,8 @@ test_that("kinship coefficients with inbred founders are correct", {
   y2 = swapSex(y2, "mo")
   x_big = mergePed(x_big, y2)
 
-  ans1 = ibd_kinship(x_big)[x$LABELS, x$LABELS]
+  labs = labels(x)
+  ans1 = ibd_kinship(x_big)[labs, labs]
 
   # With founder inbreeding:
   founder_inbreeding(x) = c(fa=1/4, mo=1/8)

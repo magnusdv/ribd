@@ -72,7 +72,7 @@ kinship2_inbreeding = function(x) {
   kin.matrix = kinship2_kinship(x)
 
   inb = numeric(pedsize(x))
-  names(inb) = x$LABELS
+  names(inb) = labels(x)
 
   nonf_int = nonfounders(x, internal = TRUE)
   inb[nonf_int] = kin.matrix[cbind(x$FID, x$MID)] # founders -> kin[0,0] -> excluded
@@ -84,14 +84,15 @@ kinship2_inbreeding = function(x) {
 #' @export
 kinship2_kinship = function(x, ids = NULL) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
-
+  labs = labels(x)
+  
   if (!is.null(ids)) {
     if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
-    if(!all(ids %in% x$LABELS)) stop2("Unknown ID label: ", setdiff(ids, x$LABELS))
+    if(!all(ids %in% labs)) stop2("Unknown ID label: ", setdiff(ids, labs))
   }
 
   kin.matrix = kinship2::kinship(id = x$ID, dadid = x$FID, momid = x$MID)
-  dimnames(kin.matrix) = list(x$LABELS, x$LABELS)
+  dimnames(kin.matrix) = list(labs, labs)
 
   if (is.null(ids))
     return(kin.matrix)

@@ -32,7 +32,7 @@ ibd_kinship = function(x) {
   MID = x$MID
   FOU = founders(x, internal=TRUE)
   NONFOU = nonfounders(x, internal=TRUE)
-
+  
   # Vector of inb coeffs for all founders (including those with 0)
   FOU_INB = founder_inbreeding(x, ids=founders(x))
 
@@ -59,6 +59,7 @@ ibd_kinship = function(x) {
     kins[cbind(indx, indx)] = (1 + kins[cbind(Findx, Mindx)])/2
   }
 
-  dimnames(kins) = list(x$LABELS, x$LABELS)
+  labs = labels(x)
+  dimnames(kins) = list(labs, labs)
   kins
 }

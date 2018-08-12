@@ -59,7 +59,7 @@ works by writing the necessary files to disk and calling \code{IdCoefs} via
 library(pedtools)
 
 # Offspring of first cousins
-x = cousinsPed(1, child=TRUE)
+x = cousinsPed(1, child = TRUE)
 inb = kinship2_inbreeding(x)
 stopifnot(inb[9] == 1/16)
 
@@ -72,13 +72,13 @@ inb = kinship2_inbreeding(y)
 child = leaves(y)
 
 # Note the difference.
-inb[1]   #wrong
-inb['1'] #correct
+inb[1]   # wrong
+inb['1'] # correct
 
 # The inbreeding coeff of the child equals the kinship coeff of parents
 par = parents(y, child)
 kin = kinship2_kinship(y, par)
-stopifnot(inb[child]==kin)
+stopifnot(inb[child] == kin)
 
 }
 \references{
