@@ -165,7 +165,7 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
     8,0,2,0,4,0,2,1,0,
     16,0,4,0,4,0,2,1,0,
     4,4,2,2,2,2,1,1,1,
-    16,0,4,0,4,0,4,1,0), byrow=T, ncol=9)
+    16,0,4,0,4,0,4,1,0), byrow=TRUE, ncol=9)
 
   st = Sys.time()
 
@@ -184,6 +184,13 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
           16*phi22(id1,id2,id1,id2))
 
   j = solve(M9, RHS)
+  if(SEX[id1] == 1 && SEX[id2] == 1)
+    j[3:9] = NA
+  if(SEX[id1] == 1 && SEX[id2] == 2)
+    j[5:9] = NA
+  if(SEX[id1] == 2 && SEX[id2] == 1)
+    j[c(3:4,7:9)] = NA
+
 
   if(verbose) {
     secs = sprintf("%.1f", Sys.time()-st)
@@ -216,10 +223,10 @@ compare_with_XIBD = function(x, ids, j) {
     return()
   }
 
-  jj_na0 = jj
-  jj_na0[is.na(jj)] = 0
-  if(isTRUE(all.equal(j, jj_na0)))
+  if(identical(j, jj))
     message("OK!")
+  else if(isTRUE(all.equal(j,jj)))
+    message("all.equal() OK, but not identical()")
   else {
     message("*** MISMATCH! ***")
     cat("IDS:", ids, "\n")
@@ -234,18 +241,29 @@ xibd = function(x, ids) {
     return()
   }
 
+  sex1 = getSex(x, ids[1])
+  sex2 = getSex(x, ids[2])
   ids_int = internalID(x, ids)
 
   pedm = as.matrix(x)[, 1:4]
   colnames(pedm) = c("iid","pid", "mid","sex")
 
-  jx = numeric(9)
   capture.output(
-    for(i in 1:9) {
-      delta = XIBD:::delta(pedm, i, ids_int[1], ids_int[2])
-      jx[i] = if (!is.null(delta)) delta else NA
-    }
+    deltas <- lapply(1:9, function(i) XIBD:::delta(pedm, i, ids_int[1], ids_int[2]))
   )
+
+  # If any of ids are male, the `deltas` list contains NULL entries
+  jx = rep(NA_real_, 9)
+
+  if(sex1 == 1 && sex2 == 1)
+    jx[1:2] = unlist(deltas)
+  else if (sex1 == 1 && sex2 == 2)
+    jx[1:4] = unlist(deltas)
+  else if (sex1 == 2 && sex2 == 1)
+    jx[c(1,2,5,6)] = unlist(deltas)
+  else
+    jx[] = unlist(deltas)
+
   jx
 }
 
