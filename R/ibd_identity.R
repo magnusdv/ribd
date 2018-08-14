@@ -66,14 +66,14 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
   if(use_sparse) {
     if(verbose) cat("Using sparse lookup tables\n")
     sparsarr0 = slam::simple_sparse_zero_array
-    KIN3 = sparsarr0(dim = rep(mx_id, 3), mode = "integer")
-    KIN4 = sparsarr0(dim = rep(mx_id, 4), mode = "integer")
-    KIN22 = sparsarr0(dim = rep(mx_id, 4), mode = "integer")
+    KIN3 = sparsarr0(dim = rep(mx_id, 3), mode = "double")
+    KIN4 = sparsarr0(dim = rep(mx_id, 4), mode = "double")
+    KIN22 = sparsarr0(dim = rep(mx_id, 4), mode = "double")
   }
   else {
-    KIN3 = array(NA, dim = rep(mx_id, 3))
-    KIN4 = array(NA, dim = rep(mx_id, 4))
-    KIN22 = array(NA, dim = rep(mx_id, 4))
+    KIN3 = array(NA_real_, dim = rep(mx_id, 3))
+    KIN4 = array(NA_real_, dim = rep(mx_id, 4))
+    KIN22 = array(NA_real_, dim = rep(mx_id, 4))
   }
 
   # Founder inbreeding
