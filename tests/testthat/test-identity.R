@@ -45,3 +45,10 @@ test_that("PO with inbred parent gives correct answer with and without the full 
   founder_inbreeding(x2, 1) = 1/4
   expect_equal(ident(x2, c(1,3)), ans)
 })
+
+test_that("founders with higher IDX than ids doesn't give error", {
+  x = addChildren(nuclearPed(1), 3)
+
+  founder_inbreeding(x) = c('4'=1)
+  expect_equal(ident(x, ids = 1:2), c(0,0,0,0,0,0,0,0,1))
+})

@@ -83,6 +83,7 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
   FOU_INB[FOU] = founder_inbreeding(x, ids=founders(x))
 
   for(i in FOU) {
+    if(i > mx_id) break # otherwise out of range!
     fi = FOU_INB[i]
     KIN3[i, i, i] = (1 + 3*fi)/4
     KIN4[i, i, i, i] = (1 + 7*fi)/8
