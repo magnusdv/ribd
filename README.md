@@ -47,7 +47,7 @@ x = fullSibMating(2)
 plot(x)
 ```
 
-<img src="README-sibs-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-sibs-1.png" style="display: block; margin: auto;" />
 
 The identity coefficients are computed with `ibd_identity()`
 
@@ -68,7 +68,7 @@ z = mergePed(x, y)
 plot(z)
 ```
 
-<img src="README-sibs-extended-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-sibs-extended-1.png" style="display: block; margin: auto;" />
 
 Now that we have the complete pedigree we can answer the question by running `ibd_identity()` on `z`.
 
