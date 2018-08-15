@@ -45,8 +45,8 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
 
   ids_int = internalID(x, ids)
 
-  FID = x$FID
-  MID = x$MID
+  FIDX = x$FIDX
+  MIDX = x$MIDX
   SEX = x$SEX
 
   phi2 = function(a, b) {
@@ -58,11 +58,11 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
 
     if(SEX[a] == 1) {
       if(a == b) 1
-      else phi2(MID[a], b)
+      else phi2(MIDX[a], b)
     }
     else {
-      if(a==b) (1 + phi2(FID[a], MID[a]))/2
-      else (phi2(FID[a], b) + phi2(MID[a], b))/2
+      if(a==b) (1 + phi2(FIDX[a], MIDX[a]))/2
+      else (phi2(FIDX[a], b) + phi2(MIDX[a], b))/2
     }
   }
 
@@ -77,16 +77,16 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
 
     if(SEX[a] == 1) {
       if(a == b && a == c) 1
-      else if(a == b) phi2(MID[a], c)
-      else phi3(MID[a], b, c)
+      else if(a == b) phi2(MIDX[a], c)
+      else phi3(MIDX[a], b, c)
     }
     else {
       if(a == b && a == c)
-        (1 + 3*phi2(FID[a], MID[a]))/4
+        (1 + 3*phi2(FIDX[a], MIDX[a]))/4
       else if(a == b)
-        (phi2(a, c) + phi3(FID[a], MID[a], c))/2
+        (phi2(a, c) + phi3(FIDX[a], MIDX[a], c))/2
       else
-        (phi3(FID[a], b, c) + phi3(MID[a], b, c))/2
+        (phi3(FIDX[a], b, c) + phi3(MIDX[a], b, c))/2
     }
   }
 
@@ -104,19 +104,19 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
       else if(a == b && a == c)
         phi2(a, d)
       else if(a == b)
-        phi3(MID[a], c, d)
+        phi3(MIDX[a], c, d)
       else
-        phi4(MID[a], b, c, d)
+        phi4(MIDX[a], b, c, d)
     }
     else {
       if(a == b && a == c && a == d)
-        (1 + 7*phi2(FID[a], MID[a]))/8
+        (1 + 7*phi2(FIDX[a], MIDX[a]))/8
       else if(a == b && a == c)
-        (phi2(a, d) + 3*phi3(FID[a], MID[a], d))/4
+        (phi2(a, d) + 3*phi3(FIDX[a], MIDX[a], d))/4
       else if(a == b)
-        (phi3(a, c, d) + phi4(FID[a], MID[a], c, d))/2
+        (phi3(a, c, d) + phi4(FIDX[a], MIDX[a], c, d))/2
       else
-        (phi4(FID[a], b, c, d) + phi4(MID[a], b, c, d))/2
+        (phi4(FIDX[a], b, c, d) + phi4(MIDX[a], b, c, d))/2
     }
   }
 
@@ -134,25 +134,25 @@ ibd_identity_x = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=Inf)
       if(a == b && a == c && a == d)
         1
       else if(a == b && a == c)
-        phi2(MID[a], d)
+        phi2(MIDX[a], d)
       else if(a == b)
         phi2(c, d)
       else if(a == c)
-        phi3(MID[a], b, d)
+        phi3(MIDX[a], b, d)
       else
-        phi22(MID[a], b, c, d)
+        phi22(MIDX[a], b, c, d)
     }
     else {
       if(a == b && a == c && a == d)
-        (1 + 3*phi2(FID[a], MID[a]))/4
+        (1 + 3*phi2(FIDX[a], MIDX[a]))/4
       else if(a == b && a == c)
-        (phi2(a, d) + phi3(FID[a], MID[a], d))/2
+        (phi2(a, d) + phi3(FIDX[a], MIDX[a], d))/2
       else if(a == b)
-        (phi2(c, d) + phi22(FID[a], MID[a], c, d))/2
+        (phi2(c, d) + phi22(FIDX[a], MIDX[a], c, d))/2
       else if(a == c)
-        (2*phi3(a, b, d) + phi22(FID[a], b, MID[a], d) + phi22(MID[a], b, FID[a], d))/4
+        (2*phi3(a, b, d) + phi22(FIDX[a], b, MIDX[a], d) + phi22(MIDX[a], b, FIDX[a], d))/4
       else
-        (phi22(FID[a], b, c, d) + phi22(MID[a], b, c, d))/2
+        (phi22(FIDX[a], b, c, d) + phi22(MIDX[a], b, c, d))/2
     }
   }
 

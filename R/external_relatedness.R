@@ -75,7 +75,7 @@ kinship2_inbreeding = function(x) {
   names(inb) = labels(x)
 
   nonf_int = nonfounders(x, internal = TRUE)
-  inb[nonf_int] = kin.matrix[cbind(x$FID, x$MID)] # founders -> kin[0,0] -> excluded
+  inb[nonf_int] = kin.matrix[cbind(x$FIDX, x$MIDX)] # founders -> kin[0,0] -> excluded
 
   inb
 }
@@ -85,13 +85,13 @@ kinship2_inbreeding = function(x) {
 kinship2_kinship = function(x, ids = NULL) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   labs = labels(x)
-  
+
   if (!is.null(ids)) {
     if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
     if(!all(ids %in% labs)) stop2("Unknown ID label: ", setdiff(ids, labs))
   }
 
-  kin.matrix = kinship2::kinship(id = x$ID, dadid = x$FID, momid = x$MID)
+  kin.matrix = kinship2::kinship(1:pedsize(x), dadid = x$FIDX, momid = x$MIDX)
   dimnames(kin.matrix) = list(labs, labs)
 
   if (is.null(ids))
@@ -108,7 +108,7 @@ jacquard = function(x, ids) {
   if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
 
   ids_int = internalID(x, ids)
-  ped = cbind(x$ID, x$FID, x$MID)
+  ped = cbind(1:pedsize(x), x$FIDX, x$MIDX)
   j = identity::identity.coefs(ids_int, ped)[2, 3:11]
 
   # Swap symmetric coefficients if needed

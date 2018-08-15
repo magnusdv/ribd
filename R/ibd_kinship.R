@@ -27,9 +27,8 @@
 #' @export
 ibd_kinship = function(x) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
-  ID = x$ID
-  FID = x$FID
-  MID = x$MID
+  FIDX = x$FIDX
+  MIDX = x$MIDX
   FOU = founders(x, internal=TRUE)
   NONFOU = nonfounders(x, internal=TRUE)
   
@@ -47,13 +46,13 @@ ibd_kinship = function(x) {
   # Gives same output as kinsip2::kindepth(), but simpler & faster.
   dp = rep(0, pedsize(x))
   for(i in NONFOU)
-    dp[i] = 1 + max(dp[c(FID[i], MID[i])])
+    dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
 
   # Iteratively fill the kinship matrix, one generation at a time
   for (gen in 1:max(dp)) {
     indx = which(dp == gen)
-    Mindx = MID[indx]
-    Findx = FID[indx]
+    Mindx = MIDX[indx]
+    Findx = FIDX[indx]
     kins[indx, ] = (kins[Findx, ] + kins[Mindx, ])/2
     kins[, indx] = (kins[, Findx] + kins[, Mindx])/2
     kins[cbind(indx, indx)] = (1 + kins[cbind(Findx, Mindx)])/2

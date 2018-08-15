@@ -46,8 +46,8 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
 
   ids_int = internalID(x, ids)
 
-  FID = x$FID
-  MID = x$MID
+  FIDX = x$FIDX
+  MIDX = x$MIDX
   FOU = founders(x, internal = T)
 
   # For quick look-up:
@@ -55,7 +55,7 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
   is_founder[FOU] = TRUE
 
   # Logical matrix showing who has a common ancestor within the pedigree.
-  anc = hasCA(x)
+  anc = has_common_ancestor(x)
 
   # Compute kinship matrix directly
   KIN2 = ibd_kinship(x)
@@ -111,12 +111,12 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
     phi3_recurse = function(a, b, c) {
       i3r <<- i3r + 1
       if(a == b && a == c)
-        return((1 + 3*phi2(FID[a], MID[a]))/4)
+        return((1 + 3*phi2(FIDX[a], MIDX[a]))/4)
 
       if(a == b)
-        return((phi2(a, c) + phi3(FID[a], MID[a], c))/2)
+        return((phi2(a, c) + phi3(FIDX[a], MIDX[a], c))/2)
 
-      return((phi3(FID[a], b, c) + phi3(MID[a], b, c))/2)
+      return((phi3(FIDX[a], b, c) + phi3(MIDX[a], b, c))/2)
     }
 
     # Lookup in array; compute if necessary.
@@ -143,15 +143,15 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
     # Assumes a,b,c,d sorted
     phi4_recurse = function(a, b, c, d) {
       if(a == b && a == c && a == d)
-        return((1 + 7*phi2(FID[a], MID[a]))/8)
+        return((1 + 7*phi2(FIDX[a], MIDX[a]))/8)
 
       if(a == b && a == c)
-        return((phi2(a, d) + 3*phi3(FID[a], MID[a], d))/4)
+        return((phi2(a, d) + 3*phi3(FIDX[a], MIDX[a], d))/4)
 
       if(a == b)
-        return((phi3(a, c, d) + phi4(FID[a], MID[a], c, d))/2)
+        return((phi3(a, c, d) + phi4(FIDX[a], MIDX[a], c, d))/2)
 
-      return((phi4(FID[a], b, c, d) + phi4(MID[a], b, c, d))/2)
+      return((phi4(FIDX[a], b, c, d) + phi4(MIDX[a], b, c, d))/2)
     }
 
     # Lookup in array; compute if necessary.
@@ -177,23 +177,23 @@ ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
     phi22_recurse = function(a, b, c, d) {
       i22r <<- i22r+1
       if(a == b && a == c && a == d)
-        return((1 + 3*phi2(FID[a], MID[a]))/4)
+        return((1 + 3*phi2(FIDX[a], MIDX[a]))/4)
 
       if(a == b && a == c)
-        return((phi2(a, d) + phi3(FID[a], MID[a], d))/2)
+        return((phi2(a, d) + phi3(FIDX[a], MIDX[a], d))/2)
 
       if(a == b) { #NB modification to allow inbred founders!
         if(is_founder[a])
           return(0.5*phi2(c, d)*(1 + FOU_INB[a]))
 
-        return((phi2(c, d) + phi22(FID[a], MID[a], c, d))/2)
+        return((phi2(c, d) + phi22(FIDX[a], MIDX[a], c, d))/2)
       }
 
       if(a == c)
-        return((2*phi3(a, b, d) + phi22(FID[a], b, MID[a], d) +
-                  phi22(MID[a], b, FID[a], d))/4)
+        return((2*phi3(a, b, d) + phi22(FIDX[a], b, MIDX[a], d) +
+                  phi22(MIDX[a], b, FIDX[a], d))/4)
 
-      return((phi22(FID[a], b, c, d) + phi22(MID[a], b, c, d))/2)
+      return((phi22(FIDX[a], b, c, d) + phi22(MIDX[a], b, c, d))/2)
     }
 
     # Lookup in array; compute if necessary.
