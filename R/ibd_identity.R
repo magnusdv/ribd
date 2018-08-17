@@ -39,7 +39,7 @@
 #' ibd_identity(x, ids = 5:6)
 #'
 #'
-ibd_identity = function(x, ids, verbose=TRUE, checkAnswer=verbose, sparse=50) {
+ibd_identity = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=50) {
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)

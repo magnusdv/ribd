@@ -4,7 +4,7 @@
 \alias{ibd_identity_x}
 \title{Identity coefficients on X}
 \usage{
-ibd_identity_x(x, ids, verbose = TRUE, checkAnswer = verbose,
+ibd_identity_x(x, ids, verbose = FALSE, checkAnswer = verbose,
   sparse = Inf)
 }
 \arguments{
