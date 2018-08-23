@@ -41,7 +41,7 @@
 #' library(pedtools)
 #'
 #' # Offspring of first cousins
-#' x = cousinsPed(1, child = TRUE)
+#' x = cousinPed(1, child = TRUE)
 #' inb = kinship2_inbreeding(x)
 #' stopifnot(inb[9] == 1/16)
 #'

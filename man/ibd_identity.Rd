@@ -39,7 +39,7 @@ The implementation is a modified version of Karigl's recursive algorithm
 \examples{
 library(pedtools)
 
-x = fullSibMating(2)
+x = fullSibMating(1)
 j1 = ibd_identity(x, ids = 5:6)
 
 stopifnot(all.equal(j1, c(2, 1,4, 1, 4, 1, 7, 10, 2)/32))

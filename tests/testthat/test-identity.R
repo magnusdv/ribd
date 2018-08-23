@@ -7,7 +7,7 @@ test_that("inbreeding coefficients of zero have no effect", {
   ans1 = c(2, 1, 4, 1, 4, 1, 7, 10, 2)/32
   ans2 = c(3, 2, 6, 1, 6, 1, 7, 6, 0)/32
 
-  x = fullSibMating(2)
+  x = fullSibMating(1)
 
   founder_inbreeding(x) = c('1'=0, '2'=0)
   expect_equal(ident(x, ids = 5:6), ans1)
@@ -23,7 +23,7 @@ test_that("sparse arrays give same answer", {
   ans1 = c(2, 1, 4, 1, 4, 1, 7, 10, 2)/32
   ans2 = c(1, 1, 2, 0, 2, 0, 2, 0, 0)/8
 
-  x = fullSibMating(2)
+  x = fullSibMating(1)
   expect_equal(ident(x, 5:6, sparse=1), ans1)
 
   founder_inbreeding(x, 1:2) = 1

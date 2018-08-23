@@ -63,7 +63,8 @@ ibd_identity(x, ids = 5:6, verbose = F)
 ## Inbred founders
 How would the above result would change if individual 1 was in fact not a founder, but himself inbred. The "normal" approach to such a question would be to expand the pedigree `x` to include the complete family history. To illustrate, let us suppose he is the child of half siblings. We construct this by merging `x` with a suitably labeled half-sib pedigree: 
 ```{r sibs-extended, fig.height=5, fig.width=3, fig.align="center"}
-y = halfCousinsPed(0, child = T)
+y = relabel(halfSibPed(sex1=1, sex2=2), 101:105)
+y = addChildren(y, 4, 5, nch=1, id=1)
 y = relabel(y, c(101:105, 1)) # prepare merge by relabeling
 z = mergePed(x, y)
 plot(z)

@@ -37,7 +37,7 @@ autosomal case, modified to account for X-linked inheritance.
 \examples{
 library(pedtools)
 
-x = fullSibMating(2)
+x = fullSibMating(1)
 x_sisters = swapSex(x, 5)
 x_brothers = swapSex(x, 6)
 

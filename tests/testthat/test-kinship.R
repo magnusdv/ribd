@@ -13,11 +13,11 @@ test_that("kinship coefficients with inbred founders are correct", {
   x = reorderPed(x, 3:1) # make it harder
 
   # make father a child of full sibs
-  y1 = relabel(cousinsPed(0, child=T), c(101:104, "fa"))
+  y1 = relabel(cousinPed(0, child=T), c(101:104, "fa"))
   x_big = mergePed(x, y1)
 
   # make mother a child of half sibs
-  y2 = relabel(halfCousinsPed(0, child=T), c(201:205, "mo"))
+  y2 = relabel(halfCousinPed(0, child=T), c(201:205, "mo"))
   y2 = swapSex(y2, "mo")
   x_big = mergePed(x_big, y2)
 
