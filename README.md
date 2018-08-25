@@ -10,7 +10,10 @@ The goal of `ribd` is to compute various coefficients of relatedness between ped
 The main functions in ribd are prefixed with `ibd_`:
 
 -   `ibd_kinship()` : Computes the autosomal kinship matrix
--   `ibd_kinship_x()` : Computes the X chromosomal kinship matrix (TODO!)
+-   `ibd_kinship_x()` : Computes the X chromosomal kinship matrix (available soon)
+
+-   `ibd_kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
+-   `ibd_kappa_x()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members (available soon)
 
 -   `ibd_identity()` : Computes the autosomal condensed identity coefficients of two pedigree members
 -   `ibd_identity_x()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
@@ -43,16 +46,16 @@ To illustrate the use of `ribd` we compute the condensed identity coefficients a
 We create the pedigree with `pedtools` as follows:
 
 ``` r
-x = fullSibMating(2)
+x = fullSibMating(1)
 plot(x)
 ```
 
 <img src="man/figures/README-sibs-1.png" style="display: block; margin: auto;" />
 
-The identity coefficients are computed with `ibd_identity()`
+The identity coefficients of the children are computed with `ibd_identity()`
 
 ``` r
-ibd_identity(x, ids = 5:6, verbose = F)
+ibd_identity(x, ids = 5:6)
 #> [1] 0.06250 0.03125 0.12500 0.03125 0.12500 0.03125 0.21875 0.31250 0.06250
 ```
 
@@ -62,9 +65,13 @@ Inbred founders
 How would the above result would change if individual 1 was in fact not a founder, but himself inbred. The "normal" approach to such a question would be to expand the pedigree `x` to include the complete family history. To illustrate, let us suppose he is the child of half siblings. We construct this by merging `x` with a suitably labeled half-sib pedigree:
 
 ``` r
-y = halfCousinsPed(0, child = T)
+y = halfSibPed(sex1 = 1, sex2 = 2)
+y = addChildren(y, father = 4, mother = 5, nch = 1)
 y = relabel(y, c(101:105, 1)) # prepare merge by relabeling
-z = mergePed(x, y)
+z = mergePed(y, x)
+```
+
+``` r
 plot(z)
 ```
 
@@ -73,12 +80,12 @@ plot(z)
 Now that we have the complete pedigree we can answer the question by running `ibd_identity()` on `z`.
 
 ``` r
-ibd_identity(z, ids = 5:6, verbose = F)
+ibd_identity(z, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
 
-Allthough the above strategy worked nicely in this case, it quickly gets awkward or impossible to model founder inbreeding by creating the complete pedigree. For example, inbreeding coefficients close to zero require enormous pedigrees! And even worse: What if individual 1 was 100% inbred? This cannot be modelled in this way, as it calls for an infinite pedigree.
+Although the above strategy worked nicely in this case, it quickly gets awkward or impossible to model founder inbreeding by creating the complete pedigree. For example, inbreeding coefficients close to zero require enormous pedigrees! And even worse: What if individual 1 was 100% inbred? This cannot be modelled in this way, as it calls for an infinite pedigree.
 
 A much easier approach is to use the `founder_inbreeding()` feature offered by `pedtools`: We simply specify the inbreeding level of individual 1 (in the original `x`) to be that of a child of half siblings, i.e. 1/8.
 
@@ -89,7 +96,7 @@ founder_inbreeding(x, ids = 1) = 1/8
 When we now run `ibd_identity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
 
 ``` r
-ibd_identity(x, ids = 5:6, verbose = F)
+ibd_identity(x, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
