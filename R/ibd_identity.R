@@ -7,9 +7,9 @@
 #' The implementation is a modified version of Karigl's recursive algorithm
 #' (1981).
 #'
-#' @param x A pedigree, in the form of a [`pedtools::ped`] object.
-#' @param ids A numeric of length 2 containing ID labels of two pedigree
-#'   members.
+#' @param x A pedigree in the form of a [`pedtools::ped`] object
+#' @param ids A character (or coercible to character) of length 2, containing ID
+#'   labels of two pedigree members
 #' @param verbose A Logical
 #' @param checkAnswer If TRUE, and the `identity` package is installed, the
 #'   result is checked against the output of [identity::identity.coefs()].

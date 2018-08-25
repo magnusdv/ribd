@@ -8,10 +8,10 @@ ibd_identity(x, ids, verbose = FALSE, checkAnswer = verbose,
   sparse = 50)
 }
 \arguments{
-\item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
 
-\item{ids}{A numeric of length 2 containing ID labels of two pedigree
-members.}
+\item{ids}{A character (or coercible to character) of length 2, containing ID
+labels of two pedigree members}
 
 \item{verbose}{A Logical}
 
