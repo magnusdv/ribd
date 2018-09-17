@@ -10,8 +10,9 @@ Description: Recursive algorithms for computing various relatedness coefficients
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: pedtools,
-    slam,
+Depends: R (>= 3.5.0),
+    pedtools
+Imports: slam,
     kinship2,
     glue
 Suggests: identity,
