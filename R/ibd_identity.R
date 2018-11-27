@@ -23,19 +23,19 @@
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
 #'   identity coefficients_ Annals of Human Genetics, vol. 45.
 #'
-#' @seealso [pedtools::ped()], [pedtools::founder_inbreeding()]
+#' @seealso [ibd_kappa()], [pedtools::ped()], [pedtools::founder_inbreeding()]
 #' @export
 #'
 #' @examples
-#' library(pedtools)
-#'
+#' # One generation of full sib mating.
+#' # (This is the simplest example with all 9 coefficients nonzero.)
 #' x = fullSibMating(1)
 #' j1 = ibd_identity(x, ids = 5:6)
 #'
 #' stopifnot(all.equal(j1, c(2, 1,4, 1, 4, 1, 7, 10, 2)/32))
 #'
-#' # Recalculate the coefficients when individual 1 is 100% inbred
-#' founder_inbreeding(x, 1) = 1
+#' # Recalculate the coefficients when the founders are 100% inbred
+#' founder_inbreeding(x, 1:2) = 1
 #' ibd_identity(x, ids = 5:6)
 #'
 #'

@@ -25,13 +25,15 @@ $A$ and $B$ at the same locus, are identical by descent relative to the
 pedigree.
 }
 \examples{
-library(pedtools)
-
+# Kinship coefficients in a nuclear family with two children
 x = nuclearPed(2)
 ibd_kinship(x)
 
-# Recaluclate if the father is 100\% inbred:
+# Recaluclate if the father is 100\% inbred
 founder_inbreeding(x, 1) = 1
 ibd_kinship(x)
 
+}
+\seealso{
+\code{\link[=ibd_kinship]{ibd_kinship()}}
 }

@@ -20,12 +20,11 @@
 #' @param ... Arguments passed on to `ibd_identity`
 #'
 #' @return The probability vector \eqn{(\kappa_0, \kappa_1, \kappa_2)}{(\kappa0,
-#'   \kappa1, \kappa2)}. If any of the two individuals are inbred,
-#'   `c(NA, NA, NA)` is returned.
+#'   \kappa1, \kappa2)}. If any of the two individuals are inbred, `c(NA, NA,
+#'   NA)` is returned.
 #'
+#' @seealso [ibd_identity()]
 #' @examples
-#' library(pedtools)
-#'
 #' # Siblings
 #' x = nuclearPed(2)
 #' k = ibd_kappa(x, 3:4)
@@ -37,8 +36,7 @@
 #' stopifnot(identical(k, c(17/32, 14/32, 1/32)))
 #'
 #' # Paternal half brothers with 100% inbred father
-#' # (Note that the half brothers are not inbred)
-#' # Genetically identical to a (outbred) father-son relationship
+#' # Genetically indistinguishable from an (outbred) father-son relationship
 #' x = halfSibPed()
 #' founder_inbreeding(x, 1) = 1
 #' k = ibd_kappa(x, 4:5)
