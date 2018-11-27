@@ -2,6 +2,7 @@
 
 export(ibd_identity)
 export(ibd_identity_x)
+export(ibd_inbreeding)
 export(ibd_kappa)
 export(ibd_kinship)
 export(jacquard)
