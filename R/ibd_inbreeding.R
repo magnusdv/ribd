@@ -28,11 +28,15 @@
 ibd_inbreeding = function(x) {
   kin.matrix = ibd_kinship(x)
 
+  # Initialize result vector
   inb = numeric(pedsize(x))
   names(inb) = labels(x)
 
-  nonf_int = nonfounders(x, internal = TRUE)
-  inb[nonf_int] = kin.matrix[cbind(x$FIDX, x$MIDX)] # founders -> kin[0,0] -> excluded
+  # Fill in founder inbreeding
+  inb[founders(x)] = founder_inbreeding(x)
+
+  # Non-founders
+  inb[nonfounders(x)] = kin.matrix[cbind(x$FIDX, x$MIDX)] # founders -> kin[0,0] -> excluded
 
   inb
 }
