@@ -45,8 +45,8 @@
 #' @export
 ibd_kappa = function(x, ids, ...) {
   j = ibd_identity(x, ids, ...)
-  id1_inbred = any(j[1:4] > 0)
-  id2_inbred = any(j[c(1,2,5,6)] > 0)
+  id1_inbred = any(j[1:4] > .Machine$double.eps)
+  id2_inbred = any(j[c(1,2,5,6)] > .Machine$double.eps)
   if(id1_inbred || id2_inbred) {
     message("Inbred individuals: ", toString(ids[c(id1_inbred, id2_inbred)]),
             "\nThe kappa coefficients are undefined for inbred individuals.")
