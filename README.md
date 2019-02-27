@@ -37,7 +37,6 @@ Getting started
 ---------------
 
 ``` r
-library(pedtools)
 library(ribd)
 ```
 
