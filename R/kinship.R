@@ -28,6 +28,14 @@
 #' @export
 kinship = function(x) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
+
+  # Ensure standard order of pedigree members
+  standardOrder = has_parents_before_children(x)
+  if(!standardOrder) {
+    origOrder = labels(x)
+    x = parents_before_children(x)
+  }
+
   FIDX = x$FIDX
   MIDX = x$MIDX
   FOU = founders(x, internal=TRUE)
@@ -44,7 +52,7 @@ kinship = function(x) {
   kins = diag(self_kinships)
 
   # Vector of (maximal) generation number of each ID: dp[i] = 1 + max(dp[parents])
-  # Gives same output as kinsip2::kindepth(), but simpler & faster.
+  # Simpler & faster than kindepth(). Requires "parents_before_children".
   dp = rep(0, pedsize(x))
   for(i in NONFOU)
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
@@ -61,5 +69,10 @@ kinship = function(x) {
 
   labs = labels(x)
   dimnames(kins) = list(labs, labs)
+
+  # Back to original order if needed
+  if(!standardOrder)
+    kins = kins[origOrder, origOrder, drop = F]
+
   kins
 }
