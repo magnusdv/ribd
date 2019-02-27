@@ -9,14 +9,14 @@ The goal of `ribd` is to compute various coefficients of relatedness between ped
 
 The main functions in ribd are prefixed with `ibd_`:
 
--   `ibd_kinship()` : Computes the autosomal kinship matrix
--   `ibd_kinship_x()` : Computes the X chromosomal kinship matrix (available soon)
+-   `kinship()` : Computes the autosomal kinship matrix
+-   `kinshipX()` : Computes the X chromosomal kinship matrix
 
--   `ibd_kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
--   `ibd_kappa_x()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members (available soon)
+-   `kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
+-   `kappaX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members
 
--   `ibd_identity()` : Computes the autosomal condensed identity coefficients of two pedigree members
--   `ibd_identity_x()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
+-   `condensedIdentity()` : Computes the autosomal condensed identity coefficients of two pedigree members
+-   `condensedIdentityX()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
 
 A novel feature of `ribd` is the ability to handle pedigrees with inbred founders. More about this below!
 
@@ -39,6 +39,11 @@ Getting started
 ``` r
 library(pedtools)
 library(ribd)
+#> 
+#> Attaching package: 'ribd'
+#> The following object is masked from 'package:base':
+#> 
+#>     kappa
 ```
 
 To illustrate the use of `ribd` we compute the condensed identity coefficients after one generation of full sib mating. This is a suitable example because the answer is well known, and it is one of the simplest in which all 9 coefficients are non-zero.
@@ -52,10 +57,10 @@ plot(x)
 
 <img src="man/figures/README-sibs-1.png" style="display: block; margin: auto;" />
 
-The identity coefficients of the children are computed with `ibd_identity()`
+The identity coefficients of the children are computed with `condensedIdentity()`
 
 ``` r
-ibd_identity(x, ids = 5:6)
+condensedIdentity(x, ids = 5:6)
 #> [1] 0.06250 0.03125 0.12500 0.03125 0.12500 0.03125 0.21875 0.31250 0.06250
 ```
 
@@ -77,26 +82,26 @@ plot(z)
 
 <img src="man/figures/README-sibs-extended-1.png" style="display: block; margin: auto;" />
 
-Now that we have the complete pedigree we can answer the question by running `ibd_identity()` on `z`.
+Now that we have the complete pedigree we can answer the question by running `condensedIdentity()` on `z`.
 
 ``` r
-ibd_identity(z, ids = 5:6)
+condensedIdentity(z, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
 
 Although the above strategy worked nicely in this case, it quickly gets awkward or impossible to model founder inbreeding by creating the complete pedigree. For example, inbreeding coefficients close to zero require enormous pedigrees! And even worse: What if individual 1 was 100% inbred? This cannot be modelled in this way, as it calls for an infinite pedigree.
 
-A much easier approach is to use the `founder_inbreeding()` feature offered by `pedtools`: We simply specify the inbreeding level of individual 1 (in the original `x`) to be that of a child of half siblings, i.e. 1/8.
+A much easier approach is to use the `founderInbreeding()` feature offered by `pedtools`: We simply specify the inbreeding level of individual 1 (in the original `x`) to be that of a child of half siblings, i.e. 1/8.
 
 ``` r
-founder_inbreeding(x, ids = 1) = 1/8
+founderInbreeding(x, ids = 1) = 1/8
 ```
 
-When we now run `ibd_identity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
+When we now run `condensedIdentity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
 
 ``` r
-ibd_identity(x, ids = 5:6)
+condensedIdentity(x, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```

@@ -24,10 +24,10 @@ The goal of `ribd` is to compute various coefficients of relatedness between ped
 The main functions in ribd are prefixed with `ibd_`:
 
 * `kinship()` : Computes the autosomal kinship matrix
-* `kinshipX()` : Computes the X chromosomal kinship matrix (available soon)
+* `kinshipX()` : Computes the X chromosomal kinship matrix
    
 * `kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
-* `kappaX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members (available soon)
+* `kappaX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members
    
 * `condensedIdentity()` : Computes the autosomal condensed identity coefficients of two pedigree members
 * `condensedIdentityX()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
