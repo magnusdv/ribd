@@ -1,7 +1,5 @@
 context("Kinship")
 
-library(pedtools)
-
 test_that("ibd_kappa gives message and returns NA,NA,NA if inbreeding", {
   x = fullSibMating(1)
   expect_message(ibd_kappa(x, 5:6), "Inbred individuals: 5, 6")
@@ -21,7 +19,7 @@ test_that("ibd_kappa allows for rounding errors in the detection of inbreeding",
   kappa_exact = c(f00*0.25, f00*0.5+f10*0.5+f01*0.5, f00*0.25+f10*0.5+f01*0.5+f11)
 
   # Computed
-  founder_inbreeding(x, 1:2) = c(f1, f2)
+  founderInbreeding(x, 1:2) = c(f1, f2)
   kappa_ribd = ibd_kappa(x, ids = 3:4)
 
   # Results are not identical (due to rounding), but should be *equal*

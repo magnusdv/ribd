@@ -1,7 +1,5 @@
 context("Kinship")
 
-#library(pedtools)
-
 test_that("kinship coefficients are the same with ribd and kinship2", {
   x = randomPed(4, founders=2)
   expect_identical(ibd_kinship(x), kinship2_kinship(x))
@@ -25,7 +23,7 @@ test_that("kinship coefficients with inbred founders are correct", {
   ans1 = ibd_kinship(x_big)[labs, labs]
 
   # With founder inbreeding:
-  founder_inbreeding(x) = c(fa=1/4, mo=1/8)
+  founderInbreeding(x) = c(fa=1/4, mo=1/8)
   ans2 = ibd_kinship(x)
 
   expect_identical(ans1, ans2)
@@ -39,7 +37,7 @@ test_that("inbred founders are detected in `ibd_inbreeding()`", {
 
   # With founder inbreeding
   y = x
-  founder_inbreeding(y, 2) = 1
+  founderInbreeding(y, 2) = 1
   expect_identical(ibd_inbreeding(y), structure(c(0,1,0), names=1:3))
 })
 
@@ -48,6 +46,6 @@ test_that("inbreeding coefficients are correctly computed", {
   expect_identical(ibd_inbreeding(x), structure(c(0,0,0,0,1/4), names=1:5))
 
   # With founder inbreeding
-  founder_inbreeding(y, 1) = 1
+  founderInbreeding(y, 1) = 1
   expect_identical(ibd_inbreeding(y), structure(c(1,0,0,0,3/8), names=1:5))
 })

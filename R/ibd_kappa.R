@@ -38,7 +38,7 @@
 #' # Paternal half brothers with 100% inbred father
 #' # Genetically indistinguishable from an (outbred) father-son relationship
 #' x = halfSibPed()
-#' founder_inbreeding(x, 1) = 1
+#' founderInbreeding(x, 1) = 1
 #' k = ibd_kappa(x, 4:5)
 #' stopifnot(identical(k, c(0, 1, 0)))
 #'

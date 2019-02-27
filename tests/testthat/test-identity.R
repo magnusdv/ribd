@@ -9,13 +9,13 @@ test_that("inbreeding coefficients of zero have no effect", {
 
   x = fullSibMating(1)
 
-  founder_inbreeding(x) = c('1'=0, '2'=0)
+  founderInbreeding(x) = c('1'=0, '2'=0)
   expect_equal(ident(x, ids = 5:6), ans1)
 
-  founder_inbreeding(x) = c('1'=1, '2'=0)
+  founderInbreeding(x) = c('1'=1, '2'=0)
   expect_equal(ident(x, ids = 5:6), ans2)
 
-  founder_inbreeding(x) = c('1'=0, '2'=1)
+  founderInbreeding(x) = c('1'=0, '2'=1)
   expect_equal(ident(x, ids = 5:6), ans2)
 })
 
@@ -26,7 +26,7 @@ test_that("sparse arrays give same answer", {
   x = fullSibMating(1)
   expect_equal(ident(x, 5:6, sparse=1), ans1)
 
-  founder_inbreeding(x, 1:2) = 1
+  founderInbreeding(x, 1:2) = 1
   expect_equal(ident(x, 5:6, sparse=1), ans2)
 })
 
@@ -42,13 +42,13 @@ test_that("PO with inbred parent gives correct answer with and without the full 
 
   # Specifying the father's inbreeding coeff directly
   x2 = nuclearPed(1)
-  founder_inbreeding(x2, 1) = 1/4
+  founderInbreeding(x2, 1) = 1/4
   expect_equal(ident(x2, c(1,3)), ans)
 })
 
 test_that("founders with higher IDX than ids doesn't give error", {
   x = addChildren(nuclearPed(1), 3)
 
-  founder_inbreeding(x) = c('4'=1)
+  founderInbreeding(x) = c('4'=1)
   expect_equal(ident(x, ids = 1:2), c(0,0,0,0,0,0,0,0,1))
 })

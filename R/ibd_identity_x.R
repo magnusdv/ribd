@@ -36,7 +36,7 @@
 ibd_identity_x = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=Inf) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
-  if(any(founder_inbreeding(x) > 0)) stop2("Inbred founders are not yet implemented for this function")
+  if(any(founderInbreeding(x) > 0)) stop2("Inbred founders are not yet implemented for this function")
   if(sparse < Inf) stop2("Sparse arrays are not yet implemented for this function.")
 
   # Enforce parents to precede their children
@@ -212,7 +212,7 @@ ibd_identity_x = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=Inf
 compare_with_XIBD = function(x, ids, j) {
   cat("Comparison with `XIBD` package: ")
 
-  if(any(founder_inbreeding(x) > 0)) {
+  if(any(founderInbreeding(x) > 0)) {
     message("skipped. (Pedigree has inbred founders.)")
     return()
   }

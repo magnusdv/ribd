@@ -1,7 +1,7 @@
 #' Kinship coefficients
 #'
 #' Compute the matrix of kinship coefficients of all members of a pedigree. The
-#' founders may be inbred; see [pedtools::founder_inbreeding()] for how to set
+#' founders may be inbred; see [pedtools::founderInbreeding()] for how to set
 #' this up.
 #'
 #' For two (possibly identical) members $A, B$ of a pedigree, their _kinship
@@ -21,7 +21,7 @@
 #' ibd_kinship(x)
 #'
 #' # Recaluclate if the father is 100% inbred
-#' founder_inbreeding(x, 1) = 1
+#' founderInbreeding(x, 1) = 1
 #' ibd_kinship(x)
 #'
 #' @export
@@ -33,7 +33,7 @@ ibd_kinship = function(x) {
   NONFOU = nonfounders(x, internal=TRUE)
 
   # Vector of inb coeffs for all founders (including those with 0)
-  FOU_INB = founder_inbreeding(x, ids=founders(x))
+  FOU_INB = founderInbreeding(x, ids=founders(x))
 
   # Initializing the kinship matrix.
   # Diagonal entries of founders are 0.5*(1+f)

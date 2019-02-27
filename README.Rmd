@@ -90,9 +90,9 @@ ibd_identity(z, ids = 5:6)
 
 Although the above strategy worked nicely in this case, it quickly gets awkward or impossible to model founder inbreeding by creating the complete pedigree. For example, inbreeding coefficients close to zero require enormous pedigrees! And even worse: What if  individual 1 was 100% inbred? This cannot be modelled in this way, as it calls for an infinite pedigree.
 
-A much easier approach is to use the `founder_inbreeding()` feature offered by `pedtools`: We simply specify the inbreeding level of individual 1 (in the original `x`) to be that of a child of half siblings, i.e. $1/8$.
+A much easier approach is to use the `founderInbreeding()` feature offered by `pedtools`: We simply specify the inbreeding level of individual 1 (in the original `x`) to be that of a child of half siblings, i.e. $1/8$.
 ```{r}
-founder_inbreeding(x, ids = 1) = 1/8
+founderInbreeding(x, ids = 1) = 1/8
 ```
 When we now run `ibd_identity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
 ```{r}
