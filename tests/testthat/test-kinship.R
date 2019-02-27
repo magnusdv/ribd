@@ -2,7 +2,7 @@ context("Kinship")
 
 test_that("kinship coefficients are the same with ribd and kinship2", {
   x = randomPed(4, founders=2)
-  expect_identical(ibd_kinship(x), kinship2_kinship(x))
+  expect_identical(kinship(x), kinship2_kinship(x))
 })
 
 
@@ -20,32 +20,32 @@ test_that("kinship coefficients with inbred founders are correct", {
   x_big = mergePed(x_big, y2)
 
   labs = labels(x)
-  ans1 = ibd_kinship(x_big)[labs, labs]
+  ans1 = kinship(x_big)[labs, labs]
 
   # With founder inbreeding:
   founderInbreeding(x) = c(fa=1/4, mo=1/8)
-  ans2 = ibd_kinship(x)
+  ans2 = kinship(x)
 
   expect_identical(ans1, ans2)
 })
 
 
-test_that("inbred founders are detected in `ibd_inbreeding()`", {
+test_that("inbred founders are detected in `inbreeding()`", {
   # No founder inbreeding
   x = nuclearPed(1)
-  expect_identical(ibd_inbreeding(x), structure(c(0,0,0), names=1:3))
+  expect_identical(inbreeding(x), structure(c(0,0,0), names=1:3))
 
   # With founder inbreeding
   y = x
   founderInbreeding(y, 2) = 1
-  expect_identical(ibd_inbreeding(y), structure(c(0,1,0), names=1:3))
+  expect_identical(inbreeding(y), structure(c(0,1,0), names=1:3))
 })
 
 test_that("inbreeding coefficients are correctly computed", {
   x = y = cousinPed(0, child = T)
-  expect_identical(ibd_inbreeding(x), structure(c(0,0,0,0,1/4), names=1:5))
+  expect_identical(inbreeding(x), structure(c(0,0,0,0,1/4), names=1:5))
 
   # With founder inbreeding
   founderInbreeding(y, 1) = 1
-  expect_identical(ibd_inbreeding(y), structure(c(1,0,0,0,3/8), names=1:5))
+  expect_identical(inbreeding(y), structure(c(1,0,0,0,3/8), names=1:5))
 })

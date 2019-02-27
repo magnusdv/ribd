@@ -1,7 +1,7 @@
 #' Identity coefficients
 #'
 #' Computes the 9 condensed identity coefficients of a pairwise relationship.
-#' Founders of the pedigree may be inbred; use [pedtools::founder_inbreeding()]
+#' Founders of the pedigree may be inbred; use [pedtools::founderInbreeding()]
 #' to set this up.
 #'
 #' The implementation is a modified version of Karigl's recursive algorithm
@@ -23,185 +23,32 @@
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
 #'   identity coefficients_ Annals of Human Genetics, vol. 45.
 #'
-#' @seealso [ibd_kappa()], [pedtools::ped()], [pedtools::founder_inbreeding()]
-#' @export
+#' @seealso [kappa()], [pedtools::ped()], [pedtools::founderInbreeding()]
 #'
 #' @examples
 #' # One generation of full sib mating.
 #' # (This is the simplest example with all 9 coefficients nonzero.)
 #' x = fullSibMating(1)
-#' j1 = ibd_identity(x, ids = 5:6)
+#' j1 = condensedIdentity(x, ids = 5:6)
 #'
 #' stopifnot(all.equal(j1, c(2, 1,4, 1, 4, 1, 7, 10, 2)/32))
 #'
 #' # Recalculate the coefficients when the founders are 100% inbred
-#' founder_inbreeding(x, 1:2) = 1
-#' ibd_identity(x, ids = 5:6)
+#' founderInbreeding(x, 1:2) = 1
+#' condensedIdentity(x, ids = 5:6)
 #'
-#'
-ibd_identity = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=50) {
+#' @importFrom utils combn
+#' @export
+condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose) {
+
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
 
   ids_int = internalID(x, ids)
 
-  FIDX = x$FIDX
-  MIDX = x$MIDX
-  FOU = founders(x, internal = T)
-
-  # For quick look-up:
-  is_founder = rep(FALSE, pedsize(x))
-  is_founder[FOU] = TRUE
-
-  # Logical matrix showing who has a common ancestor within the pedigree.
-  anc = has_common_ancestor(x)
-
-  # Compute kinship matrix directly
-  KIN2 = ibd_kinship(x)
-
-  mx_id = max(ids_int)
-  use_sparse = mx_id > sparse
-
-  if(use_sparse) {
-    if(verbose) cat("Using sparse lookup tables\n")
-    sparsarr0 = slam::simple_sparse_zero_array
-    KIN3 = sparsarr0(dim = rep(mx_id, 3), mode = "double")
-    KIN4 = sparsarr0(dim = rep(mx_id, 4), mode = "double")
-    KIN22 = sparsarr0(dim = rep(mx_id, 4), mode = "double")
-  }
-  else {
-    KIN3 = array(NA_real_, dim = rep(mx_id, 3))
-    KIN4 = array(NA_real_, dim = rep(mx_id, 4))
-    KIN22 = array(NA_real_, dim = rep(mx_id, 4))
-  }
-
-  # Founder inbreeding
-  # A vector of length pedsize(x), with inb.coeffs at all founder idx,
-  # and NA entries everywhere else. Enables quick look-up e.g. FOU_INB[a].
-  FOU_INB = rep(NA_real_, pedsize(x))
-  FOU_INB[FOU] = founder_inbreeding(x, ids=founders(x))
-
-  for(i in FOU) {
-    if(i > mx_id) break # otherwise out of range!
-    fi = FOU_INB[i]
-    KIN3[i, i, i] = (1 + 3*fi)/4
-    KIN4[i, i, i, i] = (1 + 7*fi)/8
-    KIN22[i, i, i, i] = (1 + 3*fi)/4
-  }
-
-  phi2 = function(a, b) {
-    i2 <<- i2+1
-    if(a*b == 0) return(0)
-    KIN2[[a, b]]
-  }
-
-  phi3 = function(a, b, c) {
-    i3 <<- i3+1
-    if(a*b*c == 0) return(0)
-    if(!all(anc[a,b],anc[b,c],anc[a,c])) return(0)
-
-    # Sort: a>=b>=c
-    if(a < b) {tmp=a; a=b; b=tmp}
-    if(b < c) {tmp=b; b=c; c=tmp}
-    if(a < b) {tmp=a; a=b; b=tmp}
-
-    # Recursion function (called only if necessary)
-    # Assumes a,b,c sorted
-    phi3_recurse = function(a, b, c) {
-      i3r <<- i3r + 1
-      if(a == b && a == c)
-        return((1 + 3*phi2(FIDX[a], MIDX[a]))/4)
-
-      if(a == b)
-        return((phi2(a, c) + phi3(FIDX[a], MIDX[a], c))/2)
-
-      return((phi3(FIDX[a], b, c) + phi3(MIDX[a], b, c))/2)
-    }
-
-    # Lookup in array; compute if necessary.
-    if(is.na(KIN3[[a,b,c]]))
-      KIN3[[a,b,c]] <<- phi3_recurse(a, b, c)
-
-    KIN3[[a,b,c]]
-  }
-
-  phi4 = function(a, b, c, d) {
-    i4 <<- i4+1
-    if(a*b*c*d == 0) return(0)
-    if(!all(anc[a,b],anc[b,c],anc[c,d],anc[b,d],anc[a,c],anc[a,d])) return(0)
-
-    # Sort: a >= b >= c >= d
-    if(a < b) {tmp=a; a=b; b=tmp}
-    if(a < c) {tmp=a; a=c; c=tmp}
-    if(a < d) {tmp=a; a=d; d=tmp}
-    if(b < c) {tmp=b; b=c; c=tmp}
-    if(b < d) {tmp=b; b=d; d=tmp}
-    if(c < d) {tmp=c; c=d; d=tmp}
-
-    # Recursion function (called only if necessary)
-    # Assumes a,b,c,d sorted
-    phi4_recurse = function(a, b, c, d) {
-      if(a == b && a == c && a == d)
-        return((1 + 7*phi2(FIDX[a], MIDX[a]))/8)
-
-      if(a == b && a == c)
-        return((phi2(a, d) + 3*phi3(FIDX[a], MIDX[a], d))/4)
-
-      if(a == b)
-        return((phi3(a, c, d) + phi4(FIDX[a], MIDX[a], c, d))/2)
-
-      return((phi4(FIDX[a], b, c, d) + phi4(MIDX[a], b, c, d))/2)
-    }
-
-    # Lookup in array; compute if necessary.
-    if(is.na(KIN4[[a,b,c,d]]))
-      KIN4[[a,b,c,d]] <<- phi4_recurse(a, b, c, d)
-
-    KIN4[[a,b,c,d]]
-  }
-
-  phi22 = function(a, b, c, d) {
-    i22 <<- i22+1
-    if(a*b*c*d == 0) return(0)
-    if(!(anc[a,b] && anc[c,d])) return(0)
-
-    # Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
-    s = c(min(a,b), max(a,b), min(c,d), max(c,d)) # d,c,b,a
-    if(s[4] < s[2] || (s[4] == s[2] && s[3] < s[1]))
-      s[] = s[c(3,4,1,2)]
-    a = s[4]; b = s[3]; c = s[2]; d = s[1]
-
-    # Recursion function (called only if necessary)
-    # Assumes a,b,c sorted
-    phi22_recurse = function(a, b, c, d) {
-      i22r <<- i22r+1
-      if(a == b && a == c && a == d)
-        return((1 + 3*phi2(FIDX[a], MIDX[a]))/4)
-
-      if(a == b && a == c)
-        return((phi2(a, d) + phi3(FIDX[a], MIDX[a], d))/2)
-
-      if(a == b) { #NB modification to allow inbred founders!
-        if(is_founder[a])
-          return(0.5*phi2(c, d)*(1 + FOU_INB[a]))
-
-        return((phi2(c, d) + phi22(FIDX[a], MIDX[a], c, d))/2)
-      }
-
-      if(a == c)
-        return((2*phi3(a, b, d) + phi22(FIDX[a], b, MIDX[a], d) +
-                  phi22(MIDX[a], b, FIDX[a], d))/4)
-
-      return((phi22(FIDX[a], b, c, d) + phi22(MIDX[a], b, c, d))/2)
-    }
-
-    # Lookup in array; compute if necessary.
-    if(is.na(KIN22[[a,b,c,d]]))
-      KIN22[[a,b,c,d]] <<- phi22_recurse(a, b, c, d)
-
-    KIN22[[a,b,c,d]]
-  }
+  # Setup memoisation
+  mem = initialiseMemo(x, ids_int, sparse = sparse, verbose = verbose)
 
   M9 = matrix(c(
     1,1,1,1,1,1,1,1,1,
@@ -212,55 +59,75 @@ ibd_identity = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=50) {
     8,0,2,0,4,0,2,1,0,
     16,0,4,0,4,0,2,1,0,
     4,4,2,2,2,2,1,1,1,
-    16,0,4,0,4,0,4,1,0), byrow=T, ncol=9)
+    16,0,4,0,4,0,4,1,0), byrow = T, ncol = 9)
 
-  st = Sys.time()
+  # If input is a pair of indivs, return the 9 coeffs as a numeric vector
+  if(length(ids) == 2) {
+    id1 = ids_int[1]; id2 = ids_int[2]
+    RHS = c(
+      1,
+      2 * phi2(id1, id1, mem = mem),
+      2 * phi2(id2, id2, mem = mem),
+      4 * phi2(id1, id2, mem = mem),
+      8 * phi3(id1, id1, id2, mem = mem),
+      8 * phi3(id1, id2, id2, mem = mem),
+      16 * phi4(id1, id1, id2, id2, mem = mem),
+      4 * phi22(id1, id1, id2, id2, mem = mem),
+      16 * phi22(id1, id2, id1, id2, mem = mem))
 
-  # Initialize counters
-  i2 <- i3 <- i3r <- i4 <- i22 <-i22r <- 0
+    j = solve(M9, RHS)
 
-  id1 = ids_int[1]; id2 = ids_int[2]
-  RHS = c(
-    1,
-    2*phi2(id1,id1),
-    2*phi2(id2,id2),
-    4*phi2(id1,id2),
-    8*phi3(id1,id1,id2),
-    8*phi3(id1,id2,id2),
-    16*phi4(id1,id1,id2,id2),
-    4*phi22(id1,id1,id2,id2),
-    16*phi22(id1,id2,id1,id2))
+    if(verbose)
+      printCounts(mem)
 
-  #print(RHS)
-  j = solve(M9, RHS)
+    if(checkAnswer)
+      compare_with_identity(x, ids, j)
 
-  if(verbose) {
-    secs = sprintf("%.1f", Sys.time()-st)
-    msg = glue::glue("
-    Function calls:
-      phi2  = {i2}
-      phi3  = {i3} (recurse: {i3r})
-      phi4  = {i4}
-      phi22 = {i22} (recurse: {i22r})
-    Time used: {secs} seconds")
-    print(msg)
+    return(j)
   }
 
-  if(checkAnswer) compare_with_identity(x, ids, j)
+  # More than 2 individuals: Do all unordered pairs; return data.frame.
+  pairs = combn(ids_int, 2, simplify=F)
 
-  j
+  RHS = vapply(pairs, function(p) {
+    id1 = p[1]; id2 = p[2]
+    c(1,
+      2 * phi2(id1, id1, mem = mem),
+      2 * phi2(id2, id2, mem = mem),
+      4 * phi2(id1, id2, mem = mem),
+      8 * phi3(id1, id1, id2, mem = mem),
+      8 * phi3(id1, id2, id2, mem = mem),
+      16 * phi4(id1, id1, id2, id2, mem = mem),
+      4 * phi22(id1, id1, id2, id2, mem = mem),
+      16 * phi22(id1, id2, id1, id2, mem = mem))
+    }, FUN.VALUE = numeric(9))
+
+  # Compute identity coefficients
+  # Output is matrix with 9 rows
+  j = solve(M9, RHS)
+
+  # Build result data frame
+  labs = labels(x)
+  idcols = do.call(rbind, pairs)
+  res = data.frame(id1 = labs[idcols[, 1]], id2 = labs[idcols[, 2]], t.default(j), stringsAsFactors = F)
+  names(res)[3:11] = paste0("D", 1:9)
+
+  if(verbose)
+    printCounts(mem)
+
+  res
 }
 
 compare_with_identity = function(x, ids, j) {
   cat("Comparison with `identity` package: ")
 
-  if(any(founder_inbreeding(x) > 0)) {
-    message("skipped. (Pedigree has inbred founders.)")
+  if(any(founderInbreeding(x) > 0)) {
+    message("NA (pedigree has inbred founders)")
     return()
   }
 
   if(!requireNamespace("identity", quietly = TRUE)) {
-    message("skipped. Package `identity` is not installed.")
+    message("NA (package `identity` is not installed)")
     return()
   }
 
