@@ -14,13 +14,14 @@
 #' @return A symmetric matrix containing all pairwise kinship coefficients in
 #'   `x`.
 #'
-#' @seealso [kinship()]
+#' @seealso [inbreeding()], [kappa()]
+#'
 #' @examples
 #' # Kinship coefficients in a nuclear family with two children
 #' x = nuclearPed(2)
 #' kinship(x)
 #'
-#' # Recaluclate if the father is 100% inbred
+#' # Recalculate if the father is 100% inbred
 #' founderInbreeding(x, 1) = 1
 #' kinship(x)
 #'

@@ -29,11 +29,11 @@ pedigree.
 x = nuclearPed(2)
 kinship(x)
 
-# Recaluclate if the father is 100\% inbred
+# Recalculate if the father is 100\% inbred
 founderInbreeding(x, 1) = 1
 kinship(x)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}
+\code{\link[=inbreeding]{inbreeding()}}, \code{\link[=kappa]{kappa()}}
 }
