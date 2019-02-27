@@ -2,6 +2,9 @@
 
 export(condensedIdentity)
 export(condensedIdentityX)
+export(generalisedKinship22)
+export(generalisedKinship3)
+export(generalisedKinship4)
 export(inbreeding)
 export(jacquard)
 export(jacquard2)

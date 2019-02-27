@@ -1,4 +1,49 @@
-gKinship3 = function(x, ids, sparse = NA, verbose = TRUE) {
+#' Generalised kinship coefficients
+#'
+#' Compute generalised kinship coefficients (as defined by Karigl, 1981)
+#' involving up to 4 pedigree members. The founders may be inbred; see
+#' [pedtools::founderInbreeding()] for how to set this up.
+#'
+#' The function `generalisedKinship3()` computes the generalised kinship
+#' coefficient of three (not neccessarily distinct) members $A$, $B$ and  $C$,
+#' defined as the probability that if a random allele is chosen from each of
+#' them, they are all identical by descent.
+#'
+#' The function `generalisedKinship4()` computes the generalised kinship
+#' coefficient of four individuals, defined similarly to the above.
+#'
+#' The function `generalisedKinship22()` computes the generalised kinship
+#' coefficient of two pairs of members, defined as the probability that in both
+#' pairs simultenously, random alleles chosen from the two individuals are IBD.
+#'
+#' @param x A pedigree, in the form of a [`pedtools::ped`] object.
+#' @param ids A vector of ID labels, of length 3 for `generalisedKinship3()` and
+#'   4 for `generalisedKinship4()` and `generalisedKinship22()`.
+#' @param sparse A positive integer, indicating the pedigree size limit for using
+#'   sparse arrays. If NA, a default limit of 50 is used.
+#' @param verbose A logical.
+#'
+#' @return A symmetric matrix containing all pairwise kinship coefficients in
+#'   `x`.
+#'
+#' @seealso [kinship()]
+#' @examples
+#' # Generalised kinship between three siblings
+#' x = nuclearPed(3)
+#' phi3 = generalisedKinship3(x, ids = 3:5)
+#'
+#' # Recalculate if the father is 100% inbred
+#' founderInbreeding(x, 1) = 1
+#' phi3_inbred = generalisedKinship3(x, ids = 3:5)
+#'
+#' stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
+#'
+#' @name generalisedKinship
+NULL
+
+#' @rdname generalisedKinship
+#' @export
+generalisedKinship3 = function(x, ids, sparse = NA, verbose = FALSE) {
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -18,8 +63,9 @@ gKinship3 = function(x, ids, sparse = NA, verbose = TRUE) {
   res
 }
 
-
-gKinship4 = function(x, ids, sparse = NA, verbose = TRUE) {
+#' @rdname generalisedKinship
+#' @export
+generalisedKinship4 = function(x, ids, sparse = NA, verbose = FALSE) {
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -37,7 +83,10 @@ gKinship4 = function(x, ids, sparse = NA, verbose = TRUE) {
   res
 }
 
-gKinship22 = function(ped, ids, sparse = NA, verbose = TRUE) {
+
+#' @rdname generalisedKinship
+#' @export
+generalisedKinship22 = function(x, ids, sparse = NA, verbose = FALSE) {
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
