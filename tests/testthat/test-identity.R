@@ -1,7 +1,7 @@
 context("Identity")
 
 library(pedtools)
-ident = function(x, ids, ...) ibd_identity(x, ids, verbose=F, ...)
+ident = function(x, ids, ...) condensedIdentity(x, ids, verbose=F, ...)
 
 test_that("inbreeding coefficients of zero have no effect", {
   ans1 = c(2, 1, 4, 1, 4, 1, 7, 10, 2)/32

@@ -29,11 +29,11 @@
 #' x_sisters = swapSex(x, 5)
 #' x_brothers = swapSex(x, 6)
 #'
-#' ibd_identity_x(x, ids = 5:6)
-#' ibd_identity_x(x_sisters, ids = 5:6)
-#' ibd_identity_x(x_brothers, ids = 5:6)
+#' condensedIdentityX(x, ids = 5:6)
+#' condensedIdentityX(x_sisters, ids = 5:6)
+#' condensedIdentityX(x_brothers, ids = 5:6)
 #'
-ibd_identity_x = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=Inf) {
+condensedIdentityX = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=Inf) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
   if(any(founderInbreeding(x) > 0)) stop2("Inbred founders are not yet implemented for this function")

@@ -14,18 +14,18 @@
 #' @return A symmetric matrix containing all pairwise kinship coefficients in
 #'   `x`.
 #'
-#' @seealso [ibd_kinship()]
+#' @seealso [kinship()]
 #' @examples
 #' # Kinship coefficients in a nuclear family with two children
 #' x = nuclearPed(2)
-#' ibd_kinship(x)
+#' kinship(x)
 #'
 #' # Recaluclate if the father is 100% inbred
 #' founderInbreeding(x, 1) = 1
-#' ibd_kinship(x)
+#' kinship(x)
 #'
 #' @export
-ibd_kinship = function(x) {
+kinship = function(x) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   FIDX = x$FIDX
   MIDX = x$MIDX

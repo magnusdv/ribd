@@ -23,14 +23,14 @@ The goal of `ribd` is to compute various coefficients of relatedness between ped
 
 The main functions in ribd are prefixed with `ibd_`:
 
-* `ibd_kinship()` : Computes the autosomal kinship matrix
-* `ibd_kinship_x()` : Computes the X chromosomal kinship matrix (available soon)
+* `kinship()` : Computes the autosomal kinship matrix
+* `kinshipX()` : Computes the X chromosomal kinship matrix (available soon)
    
-* `ibd_kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
-* `ibd_kappa_x()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members (available soon)
+* `kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
+* `kappaX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members (available soon)
    
-* `ibd_identity()` : Computes the autosomal condensed identity coefficients of two pedigree members
-* `ibd_identity_x()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
+* `condensedIdentity()` : Computes the autosomal condensed identity coefficients of two pedigree members
+* `condensedIdentityX()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
 
 A novel feature of `ribd` is the ability to handle pedigrees with inbred founders. More about this below!
 
@@ -63,9 +63,9 @@ x = fullSibMating(1)
 plot(x, margin = c(1,1,1,1))
 ```
 
-The identity coefficients of the children are computed with `ibd_identity()`
+The identity coefficients of the children are computed with `condensedIdentity()`
 ```{r}
-ibd_identity(x, ids = 5:6)
+condensedIdentity(x, ids = 5:6)
 ```
 
 ## Inbred founders
@@ -83,9 +83,9 @@ plot(z)
 plot(z, margin = c(1,1,1,1))
 ```
 
-Now that we have the complete pedigree we can answer the question by running `ibd_identity()` on `z`.
+Now that we have the complete pedigree we can answer the question by running `condensedIdentity()` on `z`.
 ```{r}
-ibd_identity(z, ids = 5:6)
+condensedIdentity(z, ids = 5:6)
 ```
 
 Although the above strategy worked nicely in this case, it quickly gets awkward or impossible to model founder inbreeding by creating the complete pedigree. For example, inbreeding coefficients close to zero require enormous pedigrees! And even worse: What if  individual 1 was 100% inbred? This cannot be modelled in this way, as it calls for an infinite pedigree.
@@ -94,8 +94,8 @@ A much easier approach is to use the `founderInbreeding()` feature offered by `p
 ```{r}
 founderInbreeding(x, ids = 1) = 1/8
 ```
-When we now run `ibd_identity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
+When we now run `condensedIdentity()` on `x`, this inbreeding is taken into account, giving the same answer as above.
 ```{r}
-ibd_identity(x, ids = 5:6)
+condensedIdentity(x, ids = 5:6)
 ```
 NB: At the moment inbred founders are not allowed in the X-chromosomal methods.

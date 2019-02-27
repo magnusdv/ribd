@@ -1,7 +1,7 @@
 #' Inbreeding coefficients
 #'
 #' Compute the inbreeding coefficients of all members of a pedigree. This is a
-#' wrapper of [ibd_kinship()] which does the main work. The founders may be
+#' wrapper of [kinship()] which does the main work. The founders may be
 #' inbred; see [pedtools::founderInbreeding()] for how to set this up.
 #'
 #' The inbreeding coefficient of a pedigree member is defined as the probability
@@ -14,19 +14,19 @@
 #'
 #' @return A vector of length `pedsize(x)`.
 #'
-#' @seealso [ibd_kinship()]
+#' @seealso [kinship()]
 #' @examples
 #' # Child of half siblings: f = 1/8
 #' x = halfCousinPed(0, child = TRUE)
-#' ibd_inbreeding(x)
+#' inbreeding(x)
 #'
 #' # If the father is 100% inbred, the inbreeding coeff of the child doubles
 #' founderInbreeding(x, 1) = 1
-#' ibd_inbreeding(x)
+#' inbreeding(x)
 #'
 #' @export
-ibd_inbreeding = function(x) {
-  kin.matrix = ibd_kinship(x)
+inbreeding = function(x) {
+  kin.matrix = kinship(x)
 
   # Initialize result vector
   inb = numeric(pedsize(x))
