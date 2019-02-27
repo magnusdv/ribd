@@ -12,6 +12,9 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-"
 )
+
+library(pedtools)
+suppressPackageStartupMessages(library(ribd)) # kappa masks base::kappa
 ```
 
 # ribd <img src="man/figures/logo.png" align="right" height=140/>
@@ -45,7 +48,7 @@ devtools::install_github("magnusdv/ribd")
 ```
 
 ## Getting started
-```{r example}
+```{r example, eval = FALSE}
 library(pedtools)
 library(ribd)
 ```

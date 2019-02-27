@@ -39,11 +39,6 @@ Getting started
 ``` r
 library(pedtools)
 library(ribd)
-#> 
-#> Attaching package: 'ribd'
-#> The following object is masked from 'package:base':
-#> 
-#>     kappa
 ```
 
 To illustrate the use of `ribd` we compute the condensed identity coefficients after one generation of full sib mating. This is a suitable example because the answer is well known, and it is one of the simplest in which all 9 coefficients are non-zero.
