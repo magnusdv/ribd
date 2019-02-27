@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The goal of `ribd` is to compute various coefficients of relatedness between pedigree members. It extends the `pedtools` package which is used for pedigree construction and manipulation.
+The goal of `ribd` is to compute various coefficients of relatedness between pedigree members. It extends the `pedtools` package which provides many useful utilities for pedigree construction and manipulation.
 
-The main functions in ribd are prefixed with `ibd_`:
+The main functions in ribd are:
 
 * `kinship()` : Computes the autosomal kinship matrix
 * `kinshipX()` : Computes the X chromosomal kinship matrix
