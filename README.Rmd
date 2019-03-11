@@ -70,7 +70,7 @@ condensedIdentity(x, ids = 5:6)
 ```
 
 ## Inbred founders
-How would the above result would change if individual 1 was in fact not a founder, but himself inbred. The "normal" approach to such a question would be to expand the pedigree `x` to include the complete family history. To illustrate, let us suppose he is the child of half siblings. We construct this by merging `x` with a suitably labeled half-sib pedigree: 
+How would the above result would change if individual 1 was himself inbred? The "normal" approach to answer this question would be to *expand* the pedigree to include the complete family history. For example, if he was the child of half siblings, we could perform this expansion by merging `x` with a suitably labeled half-sib pedigree: 
 ```{r}
 y = halfSibPed(sex1 = 1, sex2 = 2)
 y = addChildren(y, father = 4, mother = 5, nch = 1)
@@ -84,7 +84,7 @@ plot(z)
 plot(z, margin = c(1,1,1,1))
 ```
 
-Now that we have the complete pedigree we can answer the question by running `condensedIdentity()` on `z`.
+Now that we have the complete pedigree we could answer the original question by running `condensedIdentity()` on `z`.
 ```{r}
 condensedIdentity(z, ids = 5:6)
 ```
@@ -99,4 +99,5 @@ When we now run `condensedIdentity()` on `x`, this inbreeding is taken into acco
 ```{r}
 condensedIdentity(x, ids = 5:6)
 ```
-NB: At the moment inbred founders are not allowed in the X-chromosomal methods.
+
+NB: For now, only *autosomal* founder inbreeding coefficients are implemented.
