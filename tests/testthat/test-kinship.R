@@ -1,8 +1,9 @@
 context("Kinship")
 
 test_that("kinship coefficients are the same with ribd and kinship2", {
-  x = randomPed(4, founders=2)
+  x = randomPed(10, founders=2, seed=1234)
   expect_identical(kinship(x), kinship2_kinship(x))
+  expect_identical(kinshipX(x), kinship2_kinshipX(x))
 })
 
 

@@ -1,13 +1,13 @@
 #' Kinship coefficients
 #'
-#' Compute the matrix of kinship coefficients of all members of a pedigree. The
-#' founders may be inbred; see [pedtools::founderInbreeding()] for how to set
-#' this up.
+#' Compute the matrix of kinship coefficients (autosomal or X) of all members of
+#' a pedigree. The founders may be inbred; see [pedtools::founderInbreeding()]
+#' for how to set this up.
 #'
-#' For two (possibly identical) members $A, B$ of a pedigree, their _kinship
-#' coefficient_ is defined as the probability that random alleles sampled from
-#' $A$ and $B$ at the same locus, are identical by descent relative to the
-#' pedigree.
+#' For two (possibly identical) members $A, B$ of a pedigree, their autosomal
+#' (resp. X chromosomal) _kinship coefficient_ is defined as the probability
+#' that random alleles sampled from $A$ and $B$ at the same autosomal (resp. X
+#' chromosomal) locus, are identical by descent relative to the pedigree.
 #'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
 #'
@@ -21,7 +21,10 @@
 #' x = nuclearPed(2)
 #' kinship(x)
 #'
-#' # Recalculate if the father is 100% inbred
+#' # X chromosomal kinship coefficients in the family
+#' kinshipX(x)
+#'
+#' # Recalculate autosomal kinship if the father is 100% inbred
 #' founderInbreeding(x, 1) = 1
 #' kinship(x)
 #'
