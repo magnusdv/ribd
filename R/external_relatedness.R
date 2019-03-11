@@ -101,6 +101,25 @@ kinship2_kinship = function(x, ids = NULL) {
 
 #' @rdname relatednessCoeff
 #' @export
+kinship2_kinshipX = function(x, ids = NULL) {
+  if(!is.ped(x)) stop2("Input is not a `ped` object")
+  labs = labels(x)
+
+  if (!is.null(ids)) {
+    if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
+    if(!all(ids %in% labs)) stop2("Unknown ID label: ", setdiff(ids, labs))
+  }
+
+  kin.matrix = kinship2::kinship(1:pedsize(x), dadid = x$FIDX, momid = x$MIDX, sex = x$SEX, chrtype = "x")
+  dimnames(kin.matrix) = list(labs, labs)
+
+  if (is.null(ids))
+    return(kin.matrix)
+  kin.matrix[as.character(ids[1]), as.character(ids[2])]
+}
+
+#' @rdname relatednessCoeff
+#' @export
 jacquard = function(x, ids) {
   if (!requireNamespace("identity", quietly = TRUE))
       stop2("Package `identity` must be installed for this function to work")

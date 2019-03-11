@@ -4,6 +4,7 @@
 \alias{relatednessCoeff}
 \alias{kinship2_inbreeding}
 \alias{kinship2_kinship}
+\alias{kinship2_kinshipX}
 \alias{jacquard}
 \alias{jacquard2}
 \title{Relatedness coefficients by other programs}
@@ -11,6 +12,8 @@
 kinship2_inbreeding(x)
 
 kinship2_kinship(x, ids = NULL)
+
+kinship2_kinshipX(x, ids = NULL)
 
 jacquard(x, ids)
 
