@@ -2,9 +2,12 @@
 % Please edit documentation in R/inbreeding.R
 \name{inbreeding}
 \alias{inbreeding}
+\alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
 inbreeding(x)
+
+inbreedingX(x)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -13,16 +16,19 @@ inbreeding(x)
 A vector of length \code{pedsize(x)}.
 }
 \description{
-Compute the inbreeding coefficients of all members of a pedigree. This is a
-wrapper of \code{\link[=kinship]{kinship()}} which does the main work. The founders may be
-inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
+Compute the inbreeding coefficients of all members of a pedigree. These are
+wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}} which do the main work. The founders
+may be inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
 }
 \details{
-The inbreeding coefficient of a pedigree member is defined as the probability
-that, at a random autosomal locus, the two alleles carried by the member are
-identical by descent relative to the pedigree. It follows from the definition
-that the inbreeding coefficient of a member equals the kinship coefficient of
-the parents.
+The autosomal inbreeding coefficient of a pedigree member is defined as the
+probability that, at a random autosomal locus, the two alleles carried by the
+member are identical by descent relative to the pedigree. It follows from the
+definition that the inbreeding coefficient of a member equals the kinship
+coefficient of the parents.
+
+The X chromosomal inbreeding coefficient of an female member is defined
+similarly to the autosomal case above. For males is it always 1.
 }
 \examples{
 # Child of half siblings: f = 1/8
@@ -32,6 +38,13 @@ inbreeding(x)
 # If the father is 100\% inbred, the inbreeding coeff of the child doubles
 founderInbreeding(x, 1) = 1
 inbreeding(x)
+
+# The X inbreeding coefficients depend on the gender distribution
+x.pat = halfCousinPed(0, child = TRUE) # child of paternal half sibs
+inbreedingX(x.pat) # all zero
+
+x.mat = swapSex(x.pat, 1) # change to maternal half sibs
+inbreedingX(x.mat) # child now has f_X = 1/4
 
 }
 \seealso{
