@@ -40,25 +40,25 @@ kinship = function(x) {
   MIDX = x$MIDX
   FOU = founders(x, internal=TRUE)
   NONFOU = nonfounders(x, internal=TRUE)
+  N = pedsize(x)
 
   # Vector of inb coeffs for all founders (including those with 0)
   FOU_INB = founderInbreeding(x, ids=founders(x))
 
   # Initializing the kinship matrix.
   # Diagonal entries of founders are 0.5*(1+f)
-  self_kinships = rep(0, pedsize(x))
+  self_kinships = rep(0, N)
   self_kinships[FOU] = 0.5 * (1 + FOU_INB)
-
-  kins = diag(self_kinships)
+  kins = diag(self_kinships, nrow = N, ncol = N)
 
   # Vector of (maximal) generation number of each ID: dp[i] = 1 + max(dp[parents])
   # Simpler & faster than kindepth(). Requires "parents_before_children".
-  dp = rep(0, pedsize(x))
+  dp = rep(0, N)
   for(i in NONFOU)
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
 
   # Iteratively fill the kinship matrix, one generation at a time
-  for (gen in 1:max(dp)) {
+  for (gen in seq_len(max(dp))) {
     indx = which(dp == gen)
     Mindx = MIDX[indx]
     Findx = FIDX[indx]
