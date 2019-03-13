@@ -20,7 +20,7 @@ kinshipX = function(x) {
   N = pedsize(x)
 
   # Vector of X inb coeffs for all founders (including those with 0)
-  FOU_INB = rep(0, length(FOU)) #founderInbreeding(x, ids=founders(x))
+  FOU_INB = founderInbreeding(x, ids=founders(x), chromType = "x")
 
   # Initializing the kinship matrix.
   # Diagonal entries of founders are 0.5*(1+f)
