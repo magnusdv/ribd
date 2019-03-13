@@ -33,11 +33,8 @@
 #' condensedIdentityX(x_sisters, ids = 5:6)
 #' condensedIdentityX(x_brothers, ids = 5:6)
 #'
-condensedIdentityX = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse=Inf) {
+condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
-  if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
-  if(any(founderInbreeding(x) > 0)) stop2("Inbred founders are not yet implemented for this function")
-  if(sparse < Inf) stop2("Sparse arrays are not yet implemented for this function.")
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -45,116 +42,8 @@ condensedIdentityX = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse
 
   ids_int = internalID(x, ids)
 
-  FIDX = x$FIDX
-  MIDX = x$MIDX
-  SEX = x$SEX
-
-  phi2 = function(a, b) {
-    i2 <<- i2+1
-    if(a*b == 0) return(0)
-
-    # Sort: a>=b
-    if(a < b) {tmp=a; a=b; b=tmp}
-
-    if(SEX[a] == 1) {
-      if(a == b) 1
-      else phi2(MIDX[a], b)
-    }
-    else {
-      if(a==b) (1 + phi2(FIDX[a], MIDX[a]))/2
-      else (phi2(FIDX[a], b) + phi2(MIDX[a], b))/2
-    }
-  }
-
-  phi3 = function(a, b, c) {
-    i3 <<- i3+1
-    if(a*b*c == 0) return(0)
-
-    # Sort: a>=b>=c
-    if(a < b) {tmp=a; a=b; b=tmp}
-    if(b < c) {tmp=b; b=c; c=tmp}
-    if(a < b) {tmp=a; a=b; b=tmp}
-
-    if(SEX[a] == 1) {
-      if(a == b && a == c) 1
-      else if(a == b) phi2(MIDX[a], c)
-      else phi3(MIDX[a], b, c)
-    }
-    else {
-      if(a == b && a == c)
-        (1 + 3*phi2(FIDX[a], MIDX[a]))/4
-      else if(a == b)
-        (phi2(a, c) + phi3(FIDX[a], MIDX[a], c))/2
-      else
-        (phi3(FIDX[a], b, c) + phi3(MIDX[a], b, c))/2
-    }
-  }
-
-  phi4 = function(a, b, c, d) {
-    i4 <<- i4+1
-    if(a*b*c*d == 0) return(0)
-
-    # Sort: a >= b >= c >= d
-    s = sort.int(c(a,b,c,d),method="quick")
-    a = s[4]; b = s[3]; c = s[2]; d = s[1]
-
-    if(SEX[a] == 1) {
-      if(a == b && a == c && a == d)
-        1
-      else if(a == b && a == c)
-        phi2(a, d)
-      else if(a == b)
-        phi3(MIDX[a], c, d)
-      else
-        phi4(MIDX[a], b, c, d)
-    }
-    else {
-      if(a == b && a == c && a == d)
-        (1 + 7*phi2(FIDX[a], MIDX[a]))/8
-      else if(a == b && a == c)
-        (phi2(a, d) + 3*phi3(FIDX[a], MIDX[a], d))/4
-      else if(a == b)
-        (phi3(a, c, d) + phi4(FIDX[a], MIDX[a], c, d))/2
-      else
-        (phi4(FIDX[a], b, c, d) + phi4(MIDX[a], b, c, d))/2
-    }
-  }
-
-  phi22 = function(a, b, c, d) {
-    i22 <<- i22+1
-    if(a*b * c*d == 0) return(0) # Karigl-81: a*b == 0 AND c*d == 0. Misprint??
-
-    # Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
-    s = c(min(a,b), max(a,b), min(c,d), max(c,d)) # d,c,b,a
-    if(s[4] < s[2] || (s[4] == s[2] && s[3] < s[1]))
-      s[] = s[c(3,4,1,2)]
-    a = s[4]; b = s[3]; c = s[2]; d = s[1]
-
-    if(SEX[a] == 1) {
-      if(a == b && a == c && a == d)
-        1
-      else if(a == b && a == c)
-        phi2(MIDX[a], d)
-      else if(a == b)
-        phi2(c, d)
-      else if(a == c)
-        phi3(MIDX[a], b, d)
-      else
-        phi22(MIDX[a], b, c, d)
-    }
-    else {
-      if(a == b && a == c && a == d)
-        (1 + 3*phi2(FIDX[a], MIDX[a]))/4
-      else if(a == b && a == c)
-        (phi2(a, d) + phi3(FIDX[a], MIDX[a], d))/2
-      else if(a == b)
-        (phi2(c, d) + phi22(FIDX[a], MIDX[a], c, d))/2
-      else if(a == c)
-        (2*phi3(a, b, d) + phi22(FIDX[a], b, MIDX[a], d) + phi22(MIDX[a], b, FIDX[a], d))/4
-      else
-        (phi22(FIDX[a], b, c, d) + phi22(MIDX[a], b, c, d))/2
-    }
-  }
+  # Setup memoisation
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "x", verbose = verbose)
 
   M9 = matrix(c(
     1,1,1,1,1,1,1,1,1,
@@ -165,48 +54,41 @@ condensedIdentityX = function(x, ids, verbose=FALSE, checkAnswer=verbose, sparse
     8,0,2,0,4,0,2,1,0,
     16,0,4,0,4,0,2,1,0,
     4,4,2,2,2,2,1,1,1,
-    16,0,4,0,4,0,4,1,0), byrow=TRUE, ncol=9)
+    16,0,4,0,4,0,4,1,0), byrow = T, ncol = 9)
 
-  st = Sys.time()
+  # If input is a pair of indivs, return the 9 coeffs as a numeric vector
+  if(length(ids) == 2) {
+    id1 = ids_int[1]; id2 = ids_int[2]
+    RHS = c(
+      1,
+      2 * phi2(id1, id1, chromType = "x", mem = mem),
+      2 * phi2(id2, id2, chromType = "x", mem = mem),
+      4 * phi2(id1, id2, chromType = "x", mem = mem),
+      8 * phi3(id1, id1, id2, chromType = "x", mem = mem),
+      8 * phi3(id1, id2, id2, chromType = "x", mem = mem),
+      16 * phi4(id1, id1, id2, id2, chromType = "x", mem = mem),
+      4 * phi22(id1, id1, id2, id2, chromType = "x", mem = mem),
+      16 * phi22(id1, id2, id1, id2, chromType = "x", mem = mem))
 
-  # Initialize counters
-  i2 <- i3 <- i4 <- i22 <- 0
+    j = solve(M9, RHS)
 
-  id1 = ids_int[1]; id2 = ids_int[2]
-  RHS = c(1,
-          2*phi2(id1,id1),
-          2*phi2(id2,id2),
-          4*phi2(id1,id2),
-          8*phi3(id1,id1,id2),
-          8*phi3(id1,id2,id2),
-          16*phi4(id1,id1,id2,id2),
-          4*phi22(id1,id1,id2,id2),
-          16*phi22(id1,id2,id1,id2))
+    # Set NA at undefined states (when males are involved)
+    sex = getSex(x, c(id1, id2))
+    if(sex[1] == 1 && sex[2] == 1)
+      j[3:9] = NA
+    if(sex[1] == 1 && sex[2] == 2)
+      j[5:9] = NA
+    if(sex[1] == 2 && sex[2] == 1)
+      j[c(3:4,7:9)] = NA
 
-  j = solve(M9, RHS)
-  if(SEX[id1] == 1 && SEX[id2] == 1)
-    j[3:9] = NA
-  if(SEX[id1] == 1 && SEX[id2] == 2)
-    j[5:9] = NA
-  if(SEX[id1] == 2 && SEX[id2] == 1)
-    j[c(3:4,7:9)] = NA
+    if(verbose)
+      printCounts(mem)
 
+    if(checkAnswer)
+      compare_with_XIBD(x, ids, j)
 
-  if(verbose) {
-    secs = sprintf("%.1f", Sys.time()-st)
-    msg = glue::glue("
-    Function calls:
-      phi2  = {i2}
-      phi3  = {i3}
-      phi4  = {i4}
-      phi22 = {i22}
-    Time used: {secs} seconds")
-    print(msg)
+    return(j)
   }
-
-  if(checkAnswer) compare_with_XIBD(x, ids, j)
-
-  j
 }
 
 compare_with_XIBD = function(x, ids, j) {
