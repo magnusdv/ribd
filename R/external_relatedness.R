@@ -4,10 +4,10 @@
 #' various relatedness coefficients.
 #'
 #' `kinship2_inbreeding()` and `kinship2_kinship()` are wrappers of
-#' [kinship2::kinship(..., chrtype = "autosome")].
+#' [kinship2::kinship()] with the parameter `chrtype = "autosome"`.
 #'
 #' Similarly ,`kinship2_inbreedingX()` and `kinship2_kinshipX()` wrap
-#' [kinship2::kinship(..., chrtype = "x")].
+#' [kinship2::kinship()] using `chrtype = "x"`.
 #'
 #' `jacquard()` wraps [identity::identity.coefs()], which is an R interface for
 #' the C program `IdCoefs` written by Mark Abney (2009). The `identity.coefs()`
@@ -90,7 +90,8 @@ kinship2_kinshipX = function(x, ids = NULL) {
     if(!all(ids %in% labs)) stop2("Unknown ID label: ", setdiff(ids, labs))
   }
 
-  kin.matrix = kinship2::kinship(1:pedsize(x), dadid = x$FIDX, momid = x$MIDX, sex = x$SEX, chrtype = "x")
+  kin.matrix = kinship2::kinship(1:pedsize(x), dadid = x$FIDX, momid = x$MIDX,
+                                 sex = x$SEX, chrtype = "x")
   dimnames(kin.matrix) = list(labs, labs)
 
   if (is.null(ids))
@@ -99,7 +100,6 @@ kinship2_kinshipX = function(x, ids = NULL) {
 }
 
 #' @rdname external_coefs
-#' @importFrom kinship2 kinship
 #' @export
 kinship2_inbreeding = function(x) {
   kin.matrix = kinship2_kinship(x)
@@ -113,8 +113,7 @@ kinship2_inbreeding = function(x) {
   inb
 }
 
-#' @rdname relatednessCoeff
-#' @importFrom kinship2 kinship
+#' @rdname external_coefs
 #' @export
 kinship2_inbreedingX = function(x) {
   kin.matrix = kinship2_kinshipX(x)

@@ -5,6 +5,7 @@
 \alias{kinship2_kinship}
 \alias{kinship2_kinshipX}
 \alias{kinship2_inbreeding}
+\alias{kinship2_inbreedingX}
 \alias{jacquard}
 \alias{jacquard2}
 \title{Relatedness coefficients by other programs}
@@ -14,6 +15,8 @@ kinship2_kinship(x, ids = NULL)
 kinship2_kinshipX(x, ids = NULL)
 
 kinship2_inbreeding(x)
+
+kinship2_inbreedingX(x)
 
 jacquard(x, ids)
 
@@ -47,10 +50,10 @@ various relatedness coefficients.
 }
 \details{
 \code{kinship2_inbreeding()} and \code{kinship2_kinship()} are wrappers of
-\link[kinship2:kinship(..., chrtype = "autosome")]{kinship2::kinship(..., chrtype = "autosome")}.
+\code{\link[kinship2:kinship]{kinship2::kinship()}} with the parameter \code{chrtype = "autosome"}.
 
 Similarly ,\code{kinship2_inbreedingX()} and \code{kinship2_kinshipX()} wrap
-\link[kinship2:kinship(..., chrtype = "x")]{kinship2::kinship(..., chrtype = "x")}.
+\code{\link[kinship2:kinship]{kinship2::kinship()}} using \code{chrtype = "x"}.
 
 \code{jacquard()} wraps \code{\link[identity:identity.coefs]{identity::identity.coefs()}}, which is an R interface for
 the C program \code{IdCoefs} written by Mark Abney (2009). The \code{identity.coefs()}
