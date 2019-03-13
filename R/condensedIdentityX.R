@@ -89,6 +89,47 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer 
 
     return(j)
   }
+
+  # More than 2 individuals: Do all unordered pairs; return data.frame.
+  pairs = combn(ids_int, 2, simplify=F)
+
+  RHS = vapply(pairs, function(p) {
+    id1 = p[1]; id2 = p[2]
+    c(1,
+      2 * phi2(id1, id1, chromType = "x", mem = mem),
+      2 * phi2(id2, id2, chromType = "x", mem = mem),
+      4 * phi2(id1, id2, chromType = "x", mem = mem),
+      8 * phi3(id1, id1, id2, chromType = "x", mem = mem),
+      8 * phi3(id1, id2, id2, chromType = "x", mem = mem),
+      16 * phi4(id1, id1, id2, id2, chromType = "x", mem = mem),
+      4 * phi22(id1, id1, id2, id2, chromType = "x", mem = mem),
+      16 * phi22(id1, id2, id1, id2, chromType = "x", mem = mem))
+  }, FUN.VALUE = numeric(9))
+
+  # Compute identity coefficients
+  # Output is matrix with 9 rows
+  j = solve(M9, RHS)
+
+  # Build result data frame
+  labs = labels(x)
+  idcols = do.call(rbind, pairs)
+  res = data.frame(id1 = labs[idcols[, 1]],
+                   id2 = labs[idcols[, 2]],
+                   t.default(j),
+                   stringsAsFactors = F)
+  names(res)[3:11] = paste0("D", 1:9)
+
+  # Set NA at undefined states (when males are involved)
+  sex1 = getSex(x, res[,1])
+  sex2 = getSex(x, res[,2])
+  res[sex1 == 1 & sex2 == 1, 2 + 3:9] = NA
+  res[sex1 == 1 & sex2 == 2, 2 + 5:9] = NA
+  res[sex1 == 2 & sex2 == 1, 2 + c(3:4,7:9)] = NA
+
+  if(verbose)
+    printCounts(mem)
+
+  res
 }
 
 compare_with_XIBD = function(x, ids, j) {
