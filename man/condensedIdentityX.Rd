@@ -4,23 +4,23 @@
 \alias{condensedIdentityX}
 \title{Identity coefficients on X}
 \usage{
-condensedIdentityX(x, ids, verbose = FALSE, checkAnswer = verbose,
-  sparse = Inf)
+condensedIdentityX(x, ids, sparse = NA, verbose = FALSE,
+  checkAnswer = verbose)
 }
 \arguments{
 \item{x}{A pedigree object}
 
 \item{ids}{A numeric of length 2 containing ID labels of two pedigree members}
 
-\item{verbose}{A Logical}
-
-\item{checkAnswer}{If TRUE, the result is checked against the output of the
-XIBD package, if this is installed. (Ignored if any of the founders are inbred.)}
-
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
+
+\item{verbose}{A Logical}
+
+\item{checkAnswer}{If TRUE, the result is checked against the output of the
+XIBD package, if this is installed. (Ignored if any of the founders are inbred.)}
 }
 \value{
 A vector of length 9. Unless both of \code{ids} are female, some entries

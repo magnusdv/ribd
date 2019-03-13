@@ -40,6 +40,7 @@
 #' @importFrom utils combn
 #' @export
 condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose) {
+  if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -48,7 +49,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
   ids_int = internalID(x, ids)
 
   # Setup memoisation
-  mem = initialiseMemo(x, ids_int, sparse = sparse, verbose = verbose)
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "autosomal", verbose = verbose)
 
   M9 = matrix(c(
     1,1,1,1,1,1,1,1,1,
@@ -66,14 +67,14 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
     id1 = ids_int[1]; id2 = ids_int[2]
     RHS = c(
       1,
-      2 * phi2(id1, id1, mem = mem),
-      2 * phi2(id2, id2, mem = mem),
-      4 * phi2(id1, id2, mem = mem),
-      8 * phi3(id1, id1, id2, mem = mem),
-      8 * phi3(id1, id2, id2, mem = mem),
-      16 * phi4(id1, id1, id2, id2, mem = mem),
-      4 * phi22(id1, id1, id2, id2, mem = mem),
-      16 * phi22(id1, id2, id1, id2, mem = mem))
+      2 * phi2(id1, id1, chromType = "autosomal", mem = mem),
+      2 * phi2(id2, id2, chromType = "autosomal", mem = mem),
+      4 * phi2(id1, id2, chromType = "autosomal", mem = mem),
+      8 * phi3(id1, id1, id2, chromType = "autosomal", mem = mem),
+      8 * phi3(id1, id2, id2, chromType = "autosomal", mem = mem),
+      16 * phi4(id1, id1, id2, id2, chromType = "autosomal", mem = mem),
+      4 * phi22(id1, id1, id2, id2, chromType = "autosomal", mem = mem),
+      16 * phi22(id1, id2, id1, id2, chromType = "autosomal", mem = mem))
 
     j = solve(M9, RHS)
 
@@ -92,14 +93,14 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
   RHS = vapply(pairs, function(p) {
     id1 = p[1]; id2 = p[2]
     c(1,
-      2 * phi2(id1, id1, mem = mem),
-      2 * phi2(id2, id2, mem = mem),
-      4 * phi2(id1, id2, mem = mem),
-      8 * phi3(id1, id1, id2, mem = mem),
-      8 * phi3(id1, id2, id2, mem = mem),
-      16 * phi4(id1, id1, id2, id2, mem = mem),
-      4 * phi22(id1, id1, id2, id2, mem = mem),
-      16 * phi22(id1, id2, id1, id2, mem = mem))
+      2 * phi2(id1, id1, chromType = "autosomal", mem = mem),
+      2 * phi2(id2, id2, chromType = "autosomal", mem = mem),
+      4 * phi2(id1, id2, chromType = "autosomal", mem = mem),
+      8 * phi3(id1, id1, id2, chromType = "autosomal", mem = mem),
+      8 * phi3(id1, id2, id2, chromType = "autosomal", mem = mem),
+      16 * phi4(id1, id1, id2, id2, chromType = "autosomal", mem = mem),
+      4 * phi22(id1, id1, id2, id2, chromType = "autosomal", mem = mem),
+      16 * phi22(id1, id2, id1, id2, chromType = "autosomal", mem = mem))
     }, FUN.VALUE = numeric(9))
 
   # Compute identity coefficients
@@ -109,7 +110,10 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
   # Build result data frame
   labs = labels(x)
   idcols = do.call(rbind, pairs)
-  res = data.frame(id1 = labs[idcols[, 1]], id2 = labs[idcols[, 2]], t.default(j), stringsAsFactors = F)
+  res = data.frame(id1 = labs[idcols[, 1]],
+                   id2 = labs[idcols[, 2]],
+                   t.default(j),
+                   stringsAsFactors = F)
   names(res)[3:11] = paste0("D", 1:9)
 
   if(verbose)
