@@ -99,5 +99,3 @@ When we now run `condensedIdentity()` on `x`, this inbreeding is taken into acco
 ```{r}
 condensedIdentity(x, ids = 5:6)
 ```
-
-NB: For now, only *autosomal* founder inbreeding coefficients are implemented.

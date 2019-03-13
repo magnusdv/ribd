@@ -99,5 +99,3 @@ condensedIdentity(x, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
-
-NB: For now, only *autosomal* founder inbreeding coefficients are implemented.
