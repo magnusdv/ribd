@@ -21,12 +21,12 @@
 #'   4 for `generalisedKinship4()` and `generalisedKinship22()`.
 #' @param sparse A positive integer, indicating the pedigree size limit for using
 #'   sparse arrays. If NA, a default limit of 50 is used.
+#' @param chromType Either "autosomal" or "x".
 #' @param verbose A logical.
 #'
-#' @return A symmetric matrix containing all pairwise kinship coefficients in
-#'   `x`.
+#' @return A numeric of length 1.
 #'
-#' @seealso [kinship()]
+#' @seealso [kinship()], [kinshipX()], [condensedIdentity()], [condensedIdentityX()]
 #' @examples
 #' # Generalised kinship between three siblings
 #' x = nuclearPed(3)
@@ -43,7 +43,7 @@ NULL
 
 #' @rdname generalisedKinship
 #' @export
-generalisedKinship3 = function(x, ids, sparse = NA, verbose = FALSE) {
+generalisedKinship3 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -52,10 +52,10 @@ generalisedKinship3 = function(x, ids, sparse = NA, verbose = FALSE) {
   ids_int = internalID(x, ids)
 
   # Setup memoisation
-  mem = initialiseMemo(x, ids_int, sparse = sparse, verbose = verbose)
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = chromType, verbose = verbose)
 
   # Compute
-  res = phi3(ids_int[1], ids_int[2], ids_int[3], mem)
+  res = phi3(ids_int[1], ids_int[2], ids_int[3], chromType, mem)
 
   if(verbose)
     printCounts(mem)
@@ -65,7 +65,7 @@ generalisedKinship3 = function(x, ids, sparse = NA, verbose = FALSE) {
 
 #' @rdname generalisedKinship
 #' @export
-generalisedKinship4 = function(x, ids, sparse = NA, verbose = FALSE) {
+generalisedKinship4 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
@@ -74,9 +74,9 @@ generalisedKinship4 = function(x, ids, sparse = NA, verbose = FALSE) {
   ids_int = internalID(x, ids)
 
   # Setup memoisation
-  mem = initialiseMemo(x, ids_int, sparse = sparse, verbose = verbose)
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = chromType, verbose = verbose)
 
-  res = phi4(ids_int[1], ids_int[2], ids_int[3], ids_int[4], mem)
+  res = phi4(ids_int[1], ids_int[2], ids_int[3], ids_int[4], chromType, mem)
   if(verbose)
     printCounts(mem)
 
@@ -86,7 +86,7 @@ generalisedKinship4 = function(x, ids, sparse = NA, verbose = FALSE) {
 
 #' @rdname generalisedKinship
 #' @export
-generalisedKinship22 = function(x, ids, sparse = NA, verbose = FALSE) {
+generalisedKinship22 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
@@ -94,23 +94,23 @@ generalisedKinship22 = function(x, ids, sparse = NA, verbose = FALSE) {
   ids_int = internalID(x, ids)
 
   # Setup memoisation
-  mem = initialiseMemo(x, ids_int, sparse = sparse, verbose = verbose)
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = chromType, verbose = verbose)
 
-  res = phi22(ids_int[1], ids_int[2], ids_int[3], ids_int[4], mem)
+  res = phi22(ids_int[1], ids_int[2], ids_int[3], ids_int[4], chromType, mem)
   if(verbose)
     printCounts(mem)
 
   res
 }
 
-phi2 = function(a, b, mem) {
+phi2 = function(a, b, chromType, mem) { # chromType irrelevant
   mem$i2 = mem$i2 + 1
   if(a*b == 0) return(0)
 
   mem$KIN2[[a, b]]
 }
 
-phi3 = function(a, b, c, mem) {
+phi3 = function(a, b, c, chromType, mem) {
 
   mem$i3 = mem$i3 + 1
   if(a*b*c == 0) return(0)
@@ -131,13 +131,24 @@ phi3 = function(a, b, c, mem) {
   phi3_recurse = function(a, b, c) {
     mem$i3r = mem$i3r + 1
 
-    if(a == b && a == c)
-      return((1 + 3*phi2(FIDX[a], MIDX[a], mem = mem))/4)
-
-    if(a == b)
-      return((phi2(a, c, mem = mem) + phi3(FIDX[a], MIDX[a], c, mem = mem))/2)
-
-    return((phi3(FIDX[a], b, c, mem = mem) + phi3(MIDX[a], b, c, mem = mem))/2)
+    if(chromType == "x" && mem$SEX[a] == 1) {
+      if(a == b && a == c)
+        1
+      else if(a == b)
+        phi2(MIDX[a], c, chromType, mem)
+      else
+        phi3(MIDX[a], b, c, chromType, mem)
+    }
+    else {
+      if(a == b && a == c)
+        (1 + 3*phi2(FIDX[a], MIDX[a], chromType, mem))/4
+      else if(a == b)
+        (phi2(a, c, chromType, mem) +
+         phi3(FIDX[a], MIDX[a], c, chromType, mem))/2
+      else
+        (phi3(FIDX[a], b, c, chromType, mem) +
+         phi3(MIDX[a], b, c, chromType, mem))/2
+    }
   }
 
   # Lookup in array; compute if necessary.
@@ -148,7 +159,7 @@ phi3 = function(a, b, c, mem) {
   res
 }
 
-phi4 = function(a, b, c, d, mem) {
+phi4 = function(a, b, c, d, chromType, mem) {
 
   mem$i4 = mem$i4 + 1
   if(a*b*c*d == 0) return(0)
@@ -171,16 +182,29 @@ phi4 = function(a, b, c, d, mem) {
   phi4_recurse = function(a, b, c, d) {
     mem$i4r = mem$i4r + 1
 
-    if(a == b && a == c && a == d)
-      return((1 + 7*phi2(FIDX[a], MIDX[a], mem = mem))/8)
-
-    if(a == b && a == c)
-      return((phi2(a, d, mem = mem) + 3*phi3(FIDX[a], MIDX[a], d, mem = mem))/4)
-
-    if(a == b)
-      return((phi3(a, c, d, mem = mem) + phi4(FIDX[a], MIDX[a], c, d, mem = mem))/2)
-
-    return((phi4(FIDX[a], b, c, d, mem = mem) + phi4(MIDX[a], b, c, d, mem = mem))/2)
+    if(chromType == "x" && mem$SEX[a] == 1) {
+      if(a == b && a == c && a == d)
+        1
+      else if(a == b && a == c)
+        phi2(a, d, chromType, mem)
+      else if(a == b)
+        phi3(MIDX[a], c, d, chromType, mem)
+      else
+        phi4(MIDX[a], b, c, d, chromType, mem)
+    }
+    else {
+      if(a == b && a == c && a == d)
+        (1 + 7*phi2(FIDX[a], MIDX[a], chromType, mem))/8
+      else if(a == b && a == c)
+        (phi2(a, d, chromType, mem) +
+       3*phi3(FIDX[a], MIDX[a], d, chromType, mem))/4
+      else if(a == b)
+        (phi3(a, c, d, chromType, mem) +
+         phi4(FIDX[a], MIDX[a], c, d, chromType, mem))/2
+      else
+        (phi4(FIDX[a], b, c, d, chromType, mem) +
+         phi4(MIDX[a], b, c, d, chromType, mem))/2
+    }
   }
 
   # Lookup in array; compute if necessary.
@@ -191,7 +215,7 @@ phi4 = function(a, b, c, d, mem) {
   res
 }
 
-phi22 = function(a, b, c, d, mem = NULL) {
+phi22 = function(a, b, c, d, chromType, mem = NULL) {
   mem$i22 = mem$i22 + 1
   if(a*b*c*d == 0) return(0)
 
@@ -211,25 +235,39 @@ phi22 = function(a, b, c, d, mem = NULL) {
   phi22_recurse = function(a, b, c, d) {
     mem$i22r = mem$i22r + 1
 
-    if(a == b && a == c && a == d)
-      return((1 + 3*phi2(FIDX[a], MIDX[a], mem = mem))/4)
-
-    if(a == b && a == c)
-      return((phi2(a, d, mem = mem) + phi3(FIDX[a], MIDX[a], d, mem = mem))/2)
-
-    if(a == b) { #NB modification to allow inbred founders!
-      if(mem$isFounder[a])
-        return(0.5*phi2(c, d, mem = mem)*(1 + mem$founderInb[a]))
-
-      return((phi2(c, d, mem = mem) + phi22(FIDX[a], MIDX[a], c, d, mem = mem))/2)
+    if(chromType == "x" && mem$SEX[a] == 1) {
+      if(a == b && a == c && a == d)
+        1
+      else if(a == b && a == c)
+        phi2(MIDX[a], d, chromType, mem)
+      else if(a == b)
+        phi2(c, d, chromType, mem)
+      else if(a == c)
+        phi3(MIDX[a], b, d, chromType, mem)
+      else
+        phi22(MIDX[a], b, c, d, chromType, mem)
     }
-
-    if(a == c)
-      return((2*phi3(a, b, d, mem = mem) +
-                phi22(FIDX[a], b, MIDX[a], d, mem = mem) +
-                phi22(MIDX[a], b, FIDX[a], d, mem = mem))/4)
-
-    return((phi22(FIDX[a], b, c, d, mem = mem) + phi22(MIDX[a], b, c, d, mem = mem))/2)
+    else {
+      if(a == b && a == c && a == d)
+        (1 + 3*phi2(FIDX[a], MIDX[a], chromType, mem))/4
+      else if(a == b && a == c)
+        (phi2(a, d, chromType, mem) +
+         phi3(FIDX[a], MIDX[a], d, chromType, mem))/2
+      else if(a == b) { #NB modification to allow inbred founders!
+        if(mem$isFounder[a])
+          0.5*phi2(c, d, chromType, mem) * (1 + mem$founderInb[a])
+        else
+          (phi2(c, d, chromType, mem) +
+           phi22(FIDX[a], MIDX[a], c, d, chromType, mem))/2
+      }
+      else if(a == c)
+        (2*phi3(a, b, d, chromType, mem) +
+           phi22(FIDX[a], b, MIDX[a], d, chromType, mem) +
+           phi22(MIDX[a], b, FIDX[a], d, chromType, mem))/4
+      else
+        (phi22(FIDX[a], b, c, d, chromType, mem) +
+         phi22(MIDX[a], b, c, d, chromType, mem))/2
+    }
   }
 
   # Lookup in array; compute if necessary.

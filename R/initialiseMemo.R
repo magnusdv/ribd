@@ -1,4 +1,6 @@
-initialiseMemo = function(ped, ids, sparse = 50, verbose = FALSE) {
+initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbose = FALSE) {
+
+  chromType = match.arg(tolower(chromType), c("autosomal", "x"))
 
   # Create memory storage
   mem = new.env()
@@ -8,23 +10,17 @@ initialiseMemo = function(ped, ids, sparse = 50, verbose = FALSE) {
 
   FIDX = ped$FIDX
   MIDX = ped$MIDX
-  FOU = founders(ped, internal = T)
-
-  # For quick look-up:
-  isFounder = rep(FALSE, pedsize(ped))
-  isFounder[FOU] = TRUE
+  SEX = ped$SEX
 
   # Logical matrix showing who has a common ancestor within the pedigree.
   anc = has_common_ancestor(ped)
 
   # Compute kinship matrix directly
-  KIN2 = kinship(ped)
+  KIN2 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
 
   maxId = max(ids)
-  if(is.na(sparse))
-    sparse = 50
-  if(is.numeric(sparse))
-    sparse = maxId > sparse
+  if(is.na(sparse)) sparse = 20
+  if(is.numeric(sparse)) sparse = maxId > sparse
 
   if(sparse) {
     if(verbose) cat("Using sparse lookup tables\n")
@@ -39,11 +35,16 @@ initialiseMemo = function(ped, ids, sparse = 50, verbose = FALSE) {
     KIN22 = array(NA_real_, dim = rep(maxId, 4))
   }
 
+  # For quick look-up:
+  FOU = founders(ped, internal = T)
+  isFounder = rep(FALSE, pedsize(ped))
+  isFounder[FOU] = TRUE
+
   # Founder inbreeding
   # A vector of length pedsize(ped), with inb.coeffs at all founder idx,
   # and NA entries everywhere else. Enables quick look-up e.g. founderInb[a].
   founderInb = rep(NA_real_, pedsize(ped))
-  founderInb[FOU] = founderInbreeding(ped, ids=founders(ped))
+  founderInb[FOU] = founderInbreeding(ped, ids=founders(ped), chromType = chromType)
 
   for(i in FOU) {
     if(i > maxId) break # otherwise out of range!
@@ -56,6 +57,7 @@ initialiseMemo = function(ped, ids, sparse = 50, verbose = FALSE) {
   mem$ANC = anc
   mem$FIDX = FIDX
   mem$MIDX = MIDX
+  mem$SEX = SEX
 
   mem$isFounder = isFounder
   mem$founderInb = founderInb

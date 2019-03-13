@@ -7,11 +7,14 @@
 \alias{generalisedKinship22}
 \title{Generalised kinship coefficients}
 \usage{
-generalisedKinship3(x, ids, sparse = NA, verbose = FALSE)
+generalisedKinship3(x, ids, sparse = NA, chromType = "autosomal",
+  verbose = FALSE)
 
-generalisedKinship4(x, ids, sparse = NA, verbose = FALSE)
+generalisedKinship4(x, ids, sparse = NA, chromType = "autosomal",
+  verbose = FALSE)
 
-generalisedKinship22(x, ids, sparse = NA, verbose = FALSE)
+generalisedKinship22(x, ids, sparse = NA, chromType = "autosomal",
+  verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -22,11 +25,12 @@ generalisedKinship22(x, ids, sparse = NA, verbose = FALSE)
 \item{sparse}{A positive integer, indicating the pedigree size limit for using
 sparse arrays. If NA, a default limit of 50 is used.}
 
+\item{chromType}{Either "autosomal" or "x".}
+
 \item{verbose}{A logical.}
 }
 \value{
-A symmetric matrix containing all pairwise kinship coefficients in
-\code{x}.
+A numeric of length 1.
 }
 \description{
 Compute generalised kinship coefficients (as defined by Karigl, 1981)
@@ -59,5 +63,5 @@ stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}
+\code{\link[=kinship]{kinship()}}, \code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}
 }
