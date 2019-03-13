@@ -2,7 +2,7 @@
 % Please edit documentation in R/condensedIdentity.R
 \name{condensedIdentity}
 \alias{condensedIdentity}
-\title{Identity coefficients}
+\title{Condensed identity coefficients}
 \usage{
 condensedIdentity(x, ids, sparse = NA, verbose = FALSE,
   checkAnswer = verbose)
@@ -10,8 +10,8 @@ condensedIdentity(x, ids, sparse = NA, verbose = FALSE,
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
 
-\item{ids}{A character (or coercible to character) of length 2, containing ID
-labels of two pedigree members}
+\item{ids}{A character (or coercible to character) containing ID labels of
+two or more pedigree members.}
 
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
@@ -25,12 +25,17 @@ result is checked against the output of \code{\link[identity:identity.coefs]{ide
 (Ignored if any of the founders are inbred.)}
 }
 \value{
-A vector of length 9, containing the condensed identity coefficients.
+If \code{ids} has length 2: A vector of length 9, containing the condensed
+identity coefficients.
+
+If \code{ids} has length > 2: A data frame with one row for each pair of
+individuals, and 11 columns. The first two columns contain the ID labels,
+and columns 3-11 contain the condensed identity coefficients.
 }
 \description{
-Computes the 9 condensed identity coefficients of a pairwise relationship.
-Founders of the pedigree may be inbred; use \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
-to set this up.
+Computes the 9 condensed identity coefficients of pairwise relationships in a
+pedigree. Founders of the pedigree may be inbred; use
+\code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} to set this up.
 }
 \details{
 The implementation is a modified version of Karigl's recursive algorithm
@@ -54,5 +59,5 @@ G. Karigl (1981). \emph{A recursive algorithm for the calculation of
 identity coefficients} Annals of Human Genetics, vol. 45.
 }
 \seealso{
-\code{\link[=kappa]{kappa()}}, \code{\link[pedtools:ped]{pedtools::ped()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
+\code{\link[=kappa]{kappa()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
 }

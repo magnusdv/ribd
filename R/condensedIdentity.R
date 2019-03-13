@@ -1,15 +1,15 @@
-#' Identity coefficients
+#' Condensed identity coefficients
 #'
-#' Computes the 9 condensed identity coefficients of a pairwise relationship.
-#' Founders of the pedigree may be inbred; use [pedtools::founderInbreeding()]
-#' to set this up.
+#' Computes the 9 condensed identity coefficients of pairwise relationships in a
+#' pedigree. Founders of the pedigree may be inbred; use
+#' [pedtools::founderInbreeding()] to set this up.
 #'
 #' The implementation is a modified version of Karigl's recursive algorithm
 #' (1981).
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object
-#' @param ids A character (or coercible to character) of length 2, containing ID
-#'   labels of two pedigree members
+#' @param ids A character (or coercible to character) containing ID labels of
+#'   two or more pedigree members.
 #' @param verbose A Logical
 #' @param checkAnswer If TRUE, and the `identity` package is installed, the
 #'   result is checked against the output of [identity::identity.coefs()].
@@ -19,11 +19,17 @@
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
 #'
-#' @return A vector of length 9, containing the condensed identity coefficients.
+#' @return If `ids` has length 2: A vector of length 9, containing the condensed
+#'   identity coefficients.
+#'
+#'   If `ids` has length > 2: A data frame with one row for each pair of
+#'   individuals, and 11 columns. The first two columns contain the ID labels,
+#'   and columns 3-11 contain the condensed identity coefficients.
+#'
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
 #'   identity coefficients_ Annals of Human Genetics, vol. 45.
 #'
-#' @seealso [kappa()], [pedtools::ped()], [pedtools::founderInbreeding()]
+#' @seealso [kappa()], [condensedIdentityX()], [pedtools::founderInbreeding()]
 #'
 #' @examples
 #' # One generation of full sib mating.

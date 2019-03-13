@@ -8,9 +8,10 @@ condensedIdentityX(x, ids, sparse = NA, verbose = FALSE,
   checkAnswer = verbose)
 }
 \arguments{
-\item{x}{A pedigree object}
+\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
 
-\item{ids}{A numeric of length 2 containing ID labels of two pedigree members}
+\item{ids}{A character (or coercible to character) containing ID labels of
+two or more pedigree members.}
 
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
@@ -20,11 +21,17 @@ ordinary arrays.}
 \item{verbose}{A Logical}
 
 \item{checkAnswer}{If TRUE, the result is checked against the output of the
-XIBD package, if this is installed. (Ignored if any of the founders are inbred.)}
+XIBD package, if this is installed. (Ignored if any of the founders are
+inbred.)}
 }
 \value{
-A vector of length 9. Unless both of \code{ids} are female, some entries
-are NA.
+If \code{ids} has length 2: A vector of length 9, containing the condensed
+identity coefficients. If any of the individuals are male, certain states
+are undefined, and the corresponding coefficients are NA.
+
+If \code{ids} has length > 2: A data frame with one row for each pair of
+individuals, and 11 columns. The first two columns contain the ID labels,
+and columns 3-11 contain the condensed identity coefficients.
 }
 \description{
 Computes the X chromosomal condensed identity coefficients of a pairwise
@@ -45,4 +52,7 @@ condensedIdentityX(x, ids = 5:6)
 condensedIdentityX(x_sisters, ids = 5:6)
 condensedIdentityX(x_brothers, ids = 5:6)
 
+}
+\seealso{
+\code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
 }
