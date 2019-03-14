@@ -54,3 +54,74 @@ kappa = function(x, ids, ...) {
   }
   j[9:7]
 }
+
+#' @export
+kappaIBD = function(x, ids, sparse = NA, verbose = FALSE) {
+  if(!is.ped(x)) stop2("Input is not a `ped` object")
+
+  # Enforce parents to precede their children
+  if(!has_parents_before_children(x))
+    x = parents_before_children(x)
+
+  ids_int = internalID(x, ids)
+
+  # Setup memoisation
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "autosomal", verbose = verbose)
+  KIN2 = mem$KIN2
+  INB = 2*diag(KIN2) - 1 # inbreeding coeffs
+
+  # System of equations:
+  # k0 + k1 +   k2 = 1
+  #      k1 + 2*k2 = 4*phi_{ab}
+  #      k1 + 4*k2 = 16*phi_{ab,ab}
+  # ==> Solve for k0, k1, k2
+
+  # If input is a pair of indivs, return the 9 coeffs as a numeric vector
+  if(length(ids) == 2) {
+    if(any(INB[ids] > .Machine$double.eps)) {
+      message("The kappa coefficients are undefined for inbred individuals.\n",
+              sprintf("  %s: f = %f\n  %s: f = %f", ids[1], INB[ids[1]], ids[2], INB[ids[2]]))
+      kappa = c(NA_real_, NA_real_, NA_real_)
+    }
+    else {
+      id1 = ids_int[1]; id2 = ids_int[2]
+      u = KIN2[[id1, id2]]
+      v = phi22(id1, id2, id1, id2, chromType = "autosomal", mem = mem)
+      kappa = c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
+    }
+
+    if(verbose)
+      printCounts(mem)
+
+    return(kappa)
+  }
+
+  # More than 2 individuals: Do all unordered pairs; return data.frame.
+  pairs = combn(ids_int, 2, simplify=F)
+
+  kappas = vapply(pairs, function(p) {
+    if(any(INB[p] > .Machine$double.eps)) {
+      c(NA_real_, NA_real_, NA_real_)
+    }
+    else {
+      id1 = p[1]; id2 = p[2]
+      u = KIN2[[id1, id2]]
+      v = phi22(id1, id2, id1, id2, chromType = "autosomal", mem = mem)
+      c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
+    }
+  }, FUN.VALUE = numeric(3))
+
+  # Build result data frame
+  labs = labels(x)
+  idcols = do.call(rbind, pairs)
+  res = data.frame(id1 = labs[idcols[, 1]],
+                   id2 = labs[idcols[, 2]],
+                   t.default(kappas),
+                   stringsAsFactors = F)
+  names(res)[3:5] = paste0("kappa", 0:2)
+
+  if(verbose)
+    printCounts(mem)
+
+  res
+}
