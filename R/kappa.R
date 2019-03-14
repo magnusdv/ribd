@@ -186,17 +186,18 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
     # If the pair includes an inbred female, return NA's
     if(any(SEX[p] == 2 & INB[p] > .Machine$double.eps))
       c(NA_real_, NA_real_, NA_real_)
-
-    id1 = p[1]; id2 = p[2]
-    u = KIN2[[id1, id2]]
-    switch(sum(SEX[p] == 2) + 1,
-           c(1 - u, u, NA), # both males
-           c(1 - 2*u, 2*u, NA), # one male, one female
-           { # both female
-             v = phi22(id1, id2, id1, id2, chromType = "x", mem = mem)
-             c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
-           })
-    }, FUN.VALUE = numeric(3))
+    else {
+      id1 = p[1]; id2 = p[2]
+      u = KIN2[[id1, id2]]
+      switch(sum(SEX[p] == 2) + 1,
+             c(1 - u, u, NA), # both males
+             c(1 - 2*u, 2*u, NA), # one male, one female
+             { # both female
+               v = phi22(id1, id2, id1, id2, chromType = "x", mem = mem)
+               c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
+             })
+    }
+  }, FUN.VALUE = numeric(3))
 
   if(verbose)
     printCounts(mem)
