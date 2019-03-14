@@ -117,8 +117,72 @@ kappaIbd = function(x, ids, sparse = NA, verbose = FALSE) {
 
   res
 }
+
+#' @export
+kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
+  if(!is.ped(x)) stop2("Input is not a `ped` object")
+
+  # Enforce parents to precede their children
+  if(!has_parents_before_children(x))
+    x = parents_before_children(x)
+
+  ids_int = internalID(x, ids)
+
+  # Setup memoisation
+  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "x", verbose = verbose)
+  KIN2 = mem$KIN2
+  INB = 2*diag(KIN2) - 1 # inbreeding coeffs
+  SEX = mem$SEX
+
+  if(verbose && any(INB[SEX == 2] > .Machine$double.eps)) {
+    message("Warning: X-kappas involving inbred females are undefined:")
+    inbred = females(x)[INB[SEX == 2] > .Machine$double.eps]
+    for(id in inbred)
+      message(sprintf("  %s: f = %f", id, INB[id]))
+    cat("\n")
+  }
+
+  # All unordered pairs
+  pairs = combn(ids_int, 2, simplify=F)
+
+  # System of equations:
+  # k0 + k1 +   k2 = 1
+  #      k1 + 2*k2 = 4*phi_{ab}
+  #      k1 + 4*k2 = 16*phi_{ab,ab}
+  # ==> Solve for k0, k1, k2
+
+  # Compute kappa coefficients
+  kappas = vapply(pairs, function(p) {
+
+    # If the pair includes an inbred female, return NA's
+    if(any(SEX[p] == 2 & INB[p] > .Machine$double.eps))
+      c(NA_real_, NA_real_, NA_real_)
+
+    id1 = p[1]; id2 = p[2]
+    u = KIN2[[id1, id2]]
+    switch(sum(SEX[p] == 2) + 1,
+           c(1 - u, u, NA), # both males
+           c(1 - 2*u, 2*u, NA), # one male, one female
+           { # both female
+             v = phi22(id1, id2, id1, id2, chromType = "x", mem = mem)
+             c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
+           })
+    }, FUN.VALUE = numeric(3))
+
   if(verbose)
     printCounts(mem)
+
+  if(length(ids) == 2)
+    return(kappas[,1])
+
+  # Build result data frame
+  labs = labels(x)
+  idcols = do.call(rbind, pairs)
+  res = data.frame(id1 = labs[idcols[, 1]],
+                   id2 = labs[idcols[, 2]],
+                   t.default(kappas),
+                   stringsAsFactors = F)
+  names(res)[3:5] = paste0("kappa", 0:2)
 
   res
 }
