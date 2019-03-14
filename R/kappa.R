@@ -1,29 +1,60 @@
 #' IBD (kappa) coefficients
 #'
 #' Computes the three IBD coefficients summarising the relationship between two
-#' non-inbred individuals.
+#' non-inbred individuals. Both autosomal and X chromosomal versions are
+#' implemented. `kappa()` is a synonym for `kappaIbd()`
 #'
-#' For any pair of non-inbred individuals A and B, their genetic relationship
-#' can be summarized by the IBD coefficients \eqn{(\kappa_0, \kappa_1,
-#' \kappa_2)}{(\kappa0, \kappa1, \kappa2)}, where \deqn{\kappa_i = P(A and B
-#' share i alleles IBD at a random autosomal locus)}
+#' For non-inbred individuals a and b, their autosomal IBD coefficients
+#' \eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
+#' P(a and b share i alleles IBD at a random autosomal locus)}
 #'
-#' The current implementation calls [condensedIdentity()] and returns the three last
-#' coefficients in the reverse order.
+#' The autosomal kappa coefficients are computed using the method described by
+#' Karigl (1981) for the condensed identity coefficients. The program first
+#' checks if any of the individuals are inbred; if so, `c(NA, NA, NA)` is
+#' returned. If none of the individuals are inbred, Karigl's system of equations
+#' is reduced to only 3 equations: \deqn{\kappa0 + \kappa1 + \kappa2 = 1,}
+#' \deqn{\kappa1 + 2*\kappa2 = 4*\phi_{ab},} \deqn{\kappa1 + 4*\kappa2 =
+#' 16*\phi_{ab,ab}.} Here \eqn{\phi_{ab}} is the standard kinship coefficient,
+#' and \eqn{\phi_{ab,ab}} is the generalised kinship coefficient defined by
+#' Karigl (1981). The program calls [generalisedKinship22()] to compute this.
 #'
-#' The function checks if any of the `ids` individuals are inbred. If so, a
-#' message is printed to the screen, and `c(NA, NA, NA)` is returned.
+#' The X chromosomal IBD coefficients are defined as in the autosomal case, with
+#' the exception that \eqn{kappa2} is undefined when at least one of the two
+#' individuals is male. Hence the computation is greatly simplified when males
+#' are involved:
+#'
+#' * Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi, \phi, NA)}
+#'
+#' * One male, one female: \eqn{(\kappa0, \kappa1, \kappa2) = (1-2*\phi, 2*\phi,
+#' NA)}
+#'
+#' * Two females: As in the autosomal case.
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object
-#' @param ids A character (or coercible to character) of length 2, containing ID
-#'   labels of two pedigree members
-#' @param ... Arguments passed on to `condensedIdentity`
+#' @param ids A character (or coercible to character) containing ID labels of
+#'   two or more pedigree members.
+#' @param sparse A positive integer, indicating the pedigree size limit for
+#'   using sparse arrays (as implemented by the
+#'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
+#'   ordinary arrays.
+#' @param verbose A logical
 #'
-#' @return The probability vector \eqn{(\kappa_0, \kappa_1, \kappa_2)}{(\kappa0,
-#'   \kappa1, \kappa2)}. If any of the two individuals are inbred, `c(NA, NA,
-#'   NA)` is returned.
+#' @return If `ids` has length 2: A numeric vector of length 3: \eqn{(\kappa0,
+#'   \kappa1, \kappa2)}
 #'
-#' @seealso [condensedIdentity()]
+#'   If `ids` has length > 2: A data frame with one row for each pair of
+#'   individuals, and 5 columns. The first two columns contain the ID labels,
+#'   and columns 3-5 contain the IBD coefficients.
+#'
+#'   For pairs involving inbred individuals (inbred *females* in the X version)
+#'   all three coefficients are reported as NA. Furthermore, the X chromosomal
+#'   \eqn{kappa2} is NA whenever at least one of the two individuals is male.
+#'
+#'
+#' @references G. Karigl (1981). _A recursive algorithm for the calculation of
+#'   identity coefficients_ Annals of Human Genetics, vol. 45.
+#'
+#' @seealso [kinship()], [condensedIdentity()]
 #' @examples
 #' # Siblings
 #' x = nuclearPed(2)
@@ -42,19 +73,6 @@
 #' k = kappa(x, 4:5)
 #' stopifnot(identical(k, c(0, 1, 0)))
 #'
-#' @export
-kappa = function(x, ids, ...) {
-  j = condensedIdentity(x, ids, ...)
-  id1_inbred = any(j[1:4] > .Machine$double.eps)
-  id2_inbred = any(j[c(1,2,5,6)] > .Machine$double.eps)
-  if(id1_inbred || id2_inbred) {
-    message("Inbred individuals: ", toString(ids[c(id1_inbred, id2_inbred)]),
-            "\nThe kappa coefficients are undefined for inbred individuals.")
-    return(c(NA_real_, NA_real_, NA_real_))
-  }
-  j[9:7]
-}
-
 #' @export
 kappaIbd = function(x, ids, sparse = NA, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
@@ -118,6 +136,15 @@ kappaIbd = function(x, ids, sparse = NA, verbose = FALSE) {
   res
 }
 
+#' @rdname kappaIbd
+#' @export
+kappa = function(x, ids) {
+  warning("The function `kappa()` is renamed to `kappaIbd()` in order to avoid conflict with `base::kappa()`",
+          call. = FALSE)
+  kappaIbd(x, ids)
+}
+
+#' @rdname kappaIbd
 #' @export
 kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
