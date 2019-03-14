@@ -13,11 +13,11 @@ inbreedingX(x)
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
 }
 \value{
-A vector of length \code{pedsize(x)}.
+A numeric vector of length \code{pedsize(x)}.
 }
 \description{
 Compute the inbreeding coefficients of all members of a pedigree. These are
-wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}} which do the main work. The founders
+simple wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}}. The founders
 may be inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
 }
 \details{
@@ -29,6 +29,9 @@ coefficient of the parents.
 
 The X chromosomal inbreeding coefficient of an female member is defined
 similarly to the autosomal case above. For males is it always 1.
+
+The inbreeding coefficients are computed from the kinship coefficients by the formula
+\deqn{f_a = 2*\phi_{aa} - 1.}{f = 2*phi - 1.}
 }
 \examples{
 # Child of half siblings: f = 1/8

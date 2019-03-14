@@ -1,7 +1,7 @@
 #' Inbreeding coefficients
 #'
 #' Compute the inbreeding coefficients of all members of a pedigree. These are
-#' wrappers of [kinship()] and [kinshipX()] which do the main work. The founders
+#' simple wrappers of [kinship()] and [kinshipX()]. The founders
 #' may be inbred; see [pedtools::founderInbreeding()] for how to set this up.
 #'
 #' The autosomal inbreeding coefficient of a pedigree member is defined as the
@@ -13,9 +13,12 @@
 #' The X chromosomal inbreeding coefficient of an female member is defined
 #' similarly to the autosomal case above. For males is it always 1.
 #'
+#' The inbreeding coefficients are computed from the kinship coefficients by the formula
+#' \deqn{f_a = 2*\phi_{aa} - 1.}{f = 2*phi - 1.}
+#'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
 #'
-#' @return A vector of length `pedsize(x)`.
+#' @return A numeric vector of length `pedsize(x)`.
 #'
 #' @seealso [kinship()]
 #' @examples
@@ -36,35 +39,13 @@
 #'
 #' @export
 inbreeding = function(x) {
-  kin.matrix = kinship(x)
-
-  # Initialize result vector
-  inb = numeric(pedsize(x))
-  names(inb) = labels(x)
-
-  # Fill in founder inbreeding
-  inb[founders(x)] = founderInbreeding(x)
-
-  # Non-founders
-  inb[nonfounders(x)] = kin.matrix[cbind(x$FIDX, x$MIDX)] # founders -> kin[0,0] -> excluded
-
-  inb
+  kin = kinship(x)
+  2 * diag(kin) - 1
 }
 
 #' @rdname inbreeding
 #' @export
 inbreedingX = function(x) {
-  kin.matrix = kinshipX(x)
-
-  # Initialize result vector
-  inb = numeric(pedsize(x))
-  names(inb) = labels(x)
-
-  # Fill in founder inbreeding
-  # inb[founders(x)] = founderInbreeding(x)
-
-  # Non-founders
-  inb[nonfounders(x)] = kin.matrix[cbind(x$FIDX, x$MIDX)] # founders -> kin[0,0] -> excluded
-
-  inb
+  kin = kinshipX(x)
+  2 * diag(kin) - 1
 }
