@@ -2,7 +2,8 @@
 #'
 #' Computes the three IBD coefficients summarising the relationship between two
 #' non-inbred individuals. Both autosomal and X chromosomal versions are
-#' implemented. `kappa()` is a synonym for `kappaIbd()`
+#' implemented. `kappa()` is a synonym for `kappaIbd()`, but will most likely be
+#' removed (since it conflicts with `base::kappa()`).
 #'
 #' For non-inbred individuals a and b, their autosomal IBD coefficients
 #' \eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
@@ -19,9 +20,10 @@
 #' Karigl (1981). The program calls [generalisedKinship22()] to compute this.
 #'
 #' The X chromosomal IBD coefficients are defined as in the autosomal case, with
-#' the exception that \eqn{kappa2} is undefined when at least one of the two
+#' the exception that \eqn{\kappa2} is undefined when at least one of the two
 #' individuals is male. Hence the computation is greatly simplified when males
-#' are involved:
+#' are involved. Denoting the standard kinship coefficient by \eqn{\phi}, the
+#' formulas are:
 #'
 #' * Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi, \phi, NA)}
 #'
@@ -138,10 +140,10 @@ kappaIbd = function(x, ids, sparse = NA, verbose = FALSE) {
 
 #' @rdname kappaIbd
 #' @export
-kappa = function(x, ids) {
+kappa = function(x, ids, ...) {
   warning("The function `kappa()` is renamed to `kappaIbd()` in order to avoid conflict with `base::kappa()`",
           call. = FALSE)
-  kappaIbd(x, ids)
+  kappaIbd(x, ids, ...)
 }
 
 #' @rdname kappaIbd

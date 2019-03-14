@@ -8,7 +8,7 @@
 \usage{
 kappaIbd(x, ids, sparse = NA, verbose = FALSE)
 
-kappa(x, ids)
+kappa(x, ids, ...)
 
 kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 }
@@ -40,7 +40,8 @@ all three coefficients are reported as NA. Furthermore, the X chromosomal
 \description{
 Computes the three IBD coefficients summarising the relationship between two
 non-inbred individuals. Both autosomal and X chromosomal versions are
-implemented. \code{kappa()} is a synonym for \code{kappaIbd()}
+implemented. \code{kappa()} is a synonym for \code{kappaIbd()}, but will most likely be
+removed (since it conflicts with \code{base::kappa()}).
 }
 \details{
 For non-inbred individuals a and b, their autosomal IBD coefficients
@@ -58,9 +59,10 @@ and \eqn{\phi_{ab,ab}} is the generalised kinship coefficient defined by
 Karigl (1981). The program calls \code{\link[=generalisedKinship22]{generalisedKinship22()}} to compute this.
 
 The X chromosomal IBD coefficients are defined as in the autosomal case, with
-the exception that \eqn{kappa2} is undefined when at least one of the two
+the exception that \eqn{\kappa2} is undefined when at least one of the two
 individuals is male. Hence the computation is greatly simplified when males
-are involved:
+are involved. Denoting the standard kinship coefficient by \eqn{\phi}, the
+formulas are:
 \itemize{
 \item Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi, \phi, NA)}
 \item One male, one female: \eqn{(\kappa0, \kappa1, \kappa2) = (1-2*\phi, 2*\phi,
