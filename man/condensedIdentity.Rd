@@ -18,7 +18,7 @@ using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
 
-\item{verbose}{A Logical}
+\item{verbose}{A logical}
 
 \item{checkAnswer}{If TRUE, and the \code{identity} package is installed, the
 result is checked against the output of \code{\link[identity:identity.coefs]{identity::identity.coefs()}}.

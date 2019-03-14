@@ -10,14 +10,14 @@
 #' @param x A pedigree in the form of a [`pedtools::ped`] object
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
-#' @param verbose A Logical
-#' @param checkAnswer If TRUE, and the `identity` package is installed, the
-#'   result is checked against the output of [identity::identity.coefs()].
-#'   (Ignored if any of the founders are inbred.)
 #' @param sparse A positive integer, indicating the pedigree size limit for
 #'   using sparse arrays (as implemented by the
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
+#' @param verbose A logical
+#' @param checkAnswer If TRUE, and the `identity` package is installed, the
+#'   result is checked against the output of [identity::identity.coefs()].
+#'   (Ignored if any of the founders are inbred.)
 #'
 #' @return If `ids` has length 2: A vector of length 9, containing the condensed
 #'   identity coefficients.
