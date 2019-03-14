@@ -56,7 +56,7 @@ kappa = function(x, ids, ...) {
 }
 
 #' @export
-kappaIBD = function(x, ids, sparse = NA, verbose = FALSE) {
+kappaIbd = function(x, ids, sparse = NA, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
@@ -70,35 +70,24 @@ kappaIBD = function(x, ids, sparse = NA, verbose = FALSE) {
   KIN2 = mem$KIN2
   INB = 2*diag(KIN2) - 1 # inbreeding coeffs
 
+  if(verbose && any(INB[ids] > .Machine$double.eps)) {
+    message("Warning: kappas involving inbred individuals are undefined:")
+    inbred = ids[INB[ids] > .Machine$double.eps]
+    for(id in inbred)
+      message(sprintf("  %s: f = %f", id, INB[id]))
+    cat("\n")
+  }
+
+  # All unordered pairs
+  pairs = combn(ids_int, 2, simplify=F)
+
   # System of equations:
   # k0 + k1 +   k2 = 1
   #      k1 + 2*k2 = 4*phi_{ab}
   #      k1 + 4*k2 = 16*phi_{ab,ab}
   # ==> Solve for k0, k1, k2
 
-  # If input is a pair of indivs, return the 9 coeffs as a numeric vector
-  if(length(ids) == 2) {
-    if(any(INB[ids] > .Machine$double.eps)) {
-      message("The kappa coefficients are undefined for inbred individuals.\n",
-              sprintf("  %s: f = %f\n  %s: f = %f", ids[1], INB[ids[1]], ids[2], INB[ids[2]]))
-      kappa = c(NA_real_, NA_real_, NA_real_)
-    }
-    else {
-      id1 = ids_int[1]; id2 = ids_int[2]
-      u = KIN2[[id1, id2]]
-      v = phi22(id1, id2, id1, id2, chromType = "autosomal", mem = mem)
-      kappa = c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
-    }
-
-    if(verbose)
-      printCounts(mem)
-
-    return(kappa)
-  }
-
-  # More than 2 individuals: Do all unordered pairs; return data.frame.
-  pairs = combn(ids_int, 2, simplify=F)
-
+  # Compute kappa coefficients
   kappas = vapply(pairs, function(p) {
     if(any(INB[p] > .Machine$double.eps)) {
       c(NA_real_, NA_real_, NA_real_)
@@ -111,6 +100,12 @@ kappaIBD = function(x, ids, sparse = NA, verbose = FALSE) {
     }
   }, FUN.VALUE = numeric(3))
 
+  if(verbose)
+    printCounts(mem)
+
+  if(length(ids) == 2)
+    return(kappas[,1])
+
   # Build result data frame
   labs = labels(x)
   idcols = do.call(rbind, pairs)
@@ -120,6 +115,8 @@ kappaIBD = function(x, ids, sparse = NA, verbose = FALSE) {
                    stringsAsFactors = F)
   names(res)[3:5] = paste0("kappa", 0:2)
 
+  res
+}
   if(verbose)
     printCounts(mem)
 
