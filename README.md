@@ -12,11 +12,19 @@ The main functions in ribd are:
 -   `kinship()` : Computes the autosomal kinship matrix
 -   `kinshipX()` : Computes the X chromosomal kinship matrix
 
--   `kappa()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
--   `kappaX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members
+-   `inbreeding()` : Computes the autosomal inbreeding coefficients
+-   `inbreedingX()` : Computes the X chromosomal inbreeding coefficients
+
+-   `kappaIbd()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
+-   `kappaIbdX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members
 
 -   `condensedIdentity()` : Computes the autosomal condensed identity coefficients of two pedigree members
 -   `condensedIdentityX()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
+
+The package also computes some lesser-known coefficients:
+
+-   `generalisedKinship()` Computes generalised kinship coefficients, as defined by Karigl (1981)
+-   `twoLocusKinship()` : Computes two-locus kinship coefficients, as defined by Thompson (1988)
 
 A novel feature of `ribd` is the ability to handle pedigrees with inbred founders. More about this below!
 
