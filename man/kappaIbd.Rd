@@ -6,7 +6,7 @@
 \alias{kappaIbdX}
 \title{IBD (kappa) coefficients}
 \usage{
-kappaIbd(x, ids, sparse = NA, verbose = FALSE)
+kappaIbd(x, ids = labels(x), verbose = FALSE)
 
 kappa(x, ids, ...)
 
@@ -18,14 +18,14 @@ kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
 
+\item{verbose}{A logical}
+
+\item{...}{Further arguments}
+
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
-
-\item{verbose}{A logical}
-
-\item{...}{Further arguments}
 }
 \value{
 If \code{ids} has length 2: A numeric vector of length 3: \eqn{(\kappa0,
@@ -38,6 +38,8 @@ and columns 3-5 contain the IBD coefficients.
 For pairs involving inbred individuals (inbred \emph{females} in the X version)
 all three coefficients are reported as NA. Furthermore, the X chromosomal
 \eqn{kappa2} is NA whenever at least one of the two individuals is male.
+
+#'
 }
 \description{
 Computes the three IBD coefficients summarising the relationship between two
@@ -50,15 +52,17 @@ For non-inbred individuals a and b, their autosomal IBD coefficients
 \eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
 P(a and b share i alleles IBD at a random autosomal locus)}
 
-The autosomal kappa coefficients are computed using the method described by
-Karigl (1981) for the condensed identity coefficients. The program first
-checks if any of the individuals are inbred; if so, \code{c(NA, NA, NA)} is
-returned. If none of the individuals are inbred, Karigl's system of equations
-is reduced to only 3 equations: \deqn{\kappa0 + \kappa1 + \kappa2 = 1,}
-\deqn{\kappa1 + 2*\kappa2 = 4*\phi_{ab},} \deqn{\kappa1 + 4*\kappa2 =
-16*\phi_{ab,ab}.} Here \eqn{\phi_{ab}} is the standard kinship coefficient,
-and \eqn{\phi_{ab,ab}} is the generalised kinship coefficient defined by
-Karigl (1981). The program calls \code{\link[=generalisedKinship22]{generalisedKinship22()}} to compute this.
+The autosomal kappa coefficients are computed from the kinship coefficients.
+When a and b are both nonfounders, the following formulas are well-known:
+\itemize{
+\item \eqn{\kappa2 = \phi_MM * \phi_FF + \phi_MF * \phi_FM}
+\item \eqn{\kappa1 = 4 * \phi_ab - 2 * \kappa2}
+\item \eqn{\kappa0 = 1 - \kappa1 - \kappa2}
+}
+
+Here \eqn{\phi_MM} denotes the kinship coefficient between the mothers of a
+and b, and so on. If either a or b is a founder, then \eqn{\kappa2 = 0},
+while the other two formulas remain as above.
 
 The X chromosomal IBD coefficients are defined as in the autosomal case, with
 the exception that \eqn{\kappa2} is undefined when at least one of the two
@@ -80,20 +84,17 @@ stopifnot(identical(k, c(.25, .5, .25)))
 
 # Quad half first cousins
 x = quadHalfFirstCousins()
-k = kappa(x, leaves(x))
+k = kappaIbd(x, leaves(x))
 stopifnot(identical(k, c(17/32, 14/32, 1/32)))
 
 # Paternal half brothers with 100\% inbred father
 # Genetically indistinguishable from an (outbred) father-son relationship
 x = halfSibPed()
 founderInbreeding(x, 1) = 1
-k = kappa(x, 4:5)
+
+k = kappaIbd(x, 4:5)
 stopifnot(identical(k, c(0, 1, 0)))
 
-}
-\references{
-G. Karigl (1981). \emph{A recursive algorithm for the calculation of
-identity coefficients} Annals of Human Genetics, vol. 45.
 }
 \seealso{
 \code{\link[=kinship]{kinship()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}

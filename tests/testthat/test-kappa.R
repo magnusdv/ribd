@@ -2,7 +2,7 @@ context("Kinship")
 
 test_that("kappa gives message and returns NA,NA,NA if inbreeding", {
   x = fullSibMating(1)
-  expect_message(kappaIbd(x, 5:6, verbose=T), "kappas involving inbred individuals are undefined")
+  expect_message(kappaIbd(x, 5:6, verbose=T), "kappa coefficients are only defined for non-inbred individuals")
   expect_identical(kappaIbd(x, 5:6), rep(NA_real_, 3))
 })
 
