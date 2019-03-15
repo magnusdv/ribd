@@ -40,6 +40,7 @@
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
 #' @param verbose A logical
+#' @param ... Further arguments
 #'
 #' @return If `ids` has length 2: A numeric vector of length 3: \eqn{(\kappa0,
 #'   \kappa1, \kappa2)}

@@ -24,6 +24,8 @@ using sparse arrays (as implemented by the
 ordinary arrays.}
 
 \item{verbose}{A logical}
+
+\item{...}{Further arguments}
 }
 \value{
 If \code{ids} has length 2: A numeric vector of length 3: \eqn{(\kappa0,
