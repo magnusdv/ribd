@@ -9,17 +9,10 @@ The goal of `ribd` is to compute various coefficients of relatedness between ped
 
 The main functions in ribd are:
 
--   `kinship()` : Computes the autosomal kinship matrix
--   `kinshipX()` : Computes the X chromosomal kinship matrix
-
--   `inbreeding()` : Computes the autosomal inbreeding coefficients
--   `inbreedingX()` : Computes the X chromosomal inbreeding coefficients
-
--   `kappaIbd()` : Computes the IBD (kappa) coefficients of two non-inbred pedigree members
--   `kappaIbdX()` : Computes the X chromosomal IBD coefficients of two non-inbred pedigree members
-
--   `condensedIdentity()` : Computes the autosomal condensed identity coefficients of two pedigree members
--   `condensedIdentityX()` : Computes the X chromosomal condensed identity coefficients of two pedigree members
+-   `kinship()`, `kinshipX()` : Computes kinship matrices
+-   `inbreeding()`, `inbreedingX()` : Computes inbreeding coefficients
+-   `kappaIbd()`, `kappaIbdX()` : Computes IBD coefficients (*κ*<sub>0</sub>, *κ*<sub>1</sub>, *κ*<sub>2</sub>) of non-inbred pedigree members
+-   `condensedIdentity()`, `condensedIdentityX()` : Computes Jacquard's condensed identity coefficients of any pedigree members
 
 The package also computes some lesser-known coefficients:
 
