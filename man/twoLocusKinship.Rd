@@ -4,28 +4,39 @@
 \alias{twoLocusKinship}
 \title{Two-locus kinship coefficients}
 \usage{
-twoLocusKinship(x, ids, r, verbose = FALSE)
+twoLocusKinship(x, ids, r, verbose = FALSE, debug = FALSE)
 }
 \arguments{
-\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
+\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
 
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
 
-\item{r}{A number in the interval \eqn{[0, 0.5]}; the recombination rate between the two loci.}
+\item{r}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
+between the two loci.}
 
-\item{verbose}{A logical}
+\item{verbose}{A logical.}
+
+\item{debug}{A logical. If TRUE, detailed messages are printed during the
+recursion process.}
 }
 \description{
-Computes the two-locus kinship coefficient for two pedigree members, at two
-loci separated by a given recombination rate. WORK IN PROGRESS
+Computes the two-locus kinship coefficient of a pair of pedigree members, at
+a given recombination rate.
 }
 \details{
+Let A, B be two pedigree members, and L1, L2 two loci with a given
+recombination rate r. The two-locus kinship coefficient \eqn{\phi_{AB}(r)} is
+defined as the probability that random gametes segregating from A and B has
+IBD alleles at both L1 and L2 simultaneously.
+
 The implementation is based on the recursive algorithm described by Thompson
 (1988).
 }
 \examples{
-# Full sibs
+######################
+# Example 1: Full sibs
+######################
 x = nuclearPed(2)
 
 k_0 = twoLocusKinship(x, ids = 3:4, r = 0)
@@ -33,30 +44,30 @@ k_0.5 = twoLocusKinship(x, ids = 3:4, r = 0.5)
 
 stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 
-#######################################
-# Reproducing Fig. 3 in Thompson (1988)
+
+##################################################
+# Example 2: Reproducing Fig. 3 in Thompson (1988)
 # Note that in the article, curve (a) is wrong.
-# (See published Erratum.)
-#######################################
+# See Erratum: https://doi.org/10.1093/imammb/6.1.1
+##################################################
 
 # Pedigrees (a) - (d)
 peds = list(
   a = list(ped = linearPed(3), ids = c(1,7)),
   b = list(ped = halfCousinPed(0, 1), ids = c(3,7)),
   c = list(ped = cousinPed(1), ids = c(5,8)),
-  d = list(ped = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE),
-           ids = c(5,9)))
+  d = list(ped = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE), ids = c(5,9))
+)
 
 # Recombination values
 rseq = seq(0, 0.5, length = 20)
 
 # Compute two-locus kinship coefficients
-kvals = sapply(peds, function(x)
-  sapply(rseq, function(r) twoLocusKinship(x$ped, x$ids, r)))
+kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 
 # Plot
-matplot(rseq, kvals, type="l")
-legend("topright", letters[1:4], col = 1:4, lty = 1:4)
+matplot(rseq, kvals, type="l", lwd=2, )
+legend("topright", names(peds), col = 1:4, lty = 1:4)
 
 }
 \references{

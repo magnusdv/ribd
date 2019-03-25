@@ -1,24 +1,34 @@
 #' Two-locus kinship coefficients
 #'
-#' Computes the two-locus kinship coefficient for two pedigree members, at two
-#' loci separated by a given recombination rate. WORK IN PROGRESS
+#' Computes the two-locus kinship coefficient of a pair of pedigree members, at
+#' a given recombination rate.
+#'
+#' Let A, B be two pedigree members, and L1, L2 two loci with a given
+#' recombination rate r. The two-locus kinship coefficient \eqn{\phi_{AB}(r)} is
+#' defined as the probability that random gametes segregating from A and B has
+#' IBD alleles at both L1 and L2 simultaneously.
 #'
 #' The implementation is based on the recursive algorithm described by Thompson
 #' (1988).
 #'
-#' @param x A pedigree in the form of a [`pedtools::ped`] object
+#' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
-#' @param r A number in the interval \eqn{[0, 0.5]}; the recombination rate between the two loci.
-#' @param verbose A logical
-#'
+#' @param r A number in the interval \eqn{[0, 0.5]}; the recombination rate
+#'   between the two loci.
+#' @param verbose A logical.
+#' @param debug A logical. If TRUE, detailed messages are printed during the
+#'   recursion process.
 #'
 #' @references E. A. Thompson (1988). _Two-locus and Three-locus Gene Identity
 #'   by Descent in Pedigrees_ IMA Journal of Mathematics Applied in Medicine &
 #'   Biology, vol. 5.
 #'
+#'
 #' @examples
-#' # Full sibs
+#' ######################
+#' # Example 1: Full sibs
+#' ######################
 #' x = nuclearPed(2)
 #'
 #' k_0 = twoLocusKinship(x, ids = 3:4, r = 0)
@@ -26,47 +36,59 @@
 #'
 #' stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 #'
-#' #######################################
-#' # Reproducing Fig. 3 in Thompson (1988)
+#'
+#' ##################################################
+#' # Example 2: Reproducing Fig. 3 in Thompson (1988)
 #' # Note that in the article, curve (a) is wrong.
-#' # (See published Erratum.)
-#' #######################################
+#' # See Erratum: https://doi.org/10.1093/imammb/6.1.1
+#' ##################################################
 #'
 #' # Pedigrees (a) - (d)
 #' peds = list(
 #'   a = list(ped = linearPed(3), ids = c(1,7)),
 #'   b = list(ped = halfCousinPed(0, 1), ids = c(3,7)),
 #'   c = list(ped = cousinPed(1), ids = c(5,8)),
-#'   d = list(ped = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE),
-#'            ids = c(5,9)))
+#'   d = list(ped = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE), ids = c(5,9))
+#' )
 #'
 #' # Recombination values
 #' rseq = seq(0, 0.5, length = 20)
 #'
 #' # Compute two-locus kinship coefficients
-#' kvals = sapply(peds, function(x)
-#'   sapply(rseq, function(r) twoLocusKinship(x$ped, x$ids, r)))
+#' kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 #'
 #' # Plot
-#' matplot(rseq, kvals, type="l")
-#' legend("topright", letters[1:4], col = 1:4, lty = 1:4)
+#' matplot(rseq, kvals, type="l", lwd=2, )
+#' legend("topright", names(peds), col = 1:4, lty = 1:4)
 #'
+#' @importFrom utils combn
 #' @export
-twoLocusKinship = function(x, ids, r, verbose = FALSE) {
+twoLocusKinship = function(x, ids, r, verbose = FALSE, debug = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
 
-  mem = initialiseTwoLocusMemo(x, r)
-
   ids_int = internalID(x, ids)
-  id1 = ids_int[1]
-  id2 = ids_int[2]
-  A = C = c(id1, 0)
-  B = D = c(id2, 0)
-  res = twoLocKin(A, B, C, D, mem, indent = ifelse(verbose, 0, NA))
+
+  mem = NULL
+  memTemplate = as.list(initialiseTwoLocusMemo(x, r=NULL))
+
+  # Do all unordered pairs; return data.frame.
+  pairs = combn(ids_int, 2, simplify=F)
+  if(length(ids) > 2) pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
+
+  coefs = lapply(r, function(rr) {
+    mem = as.environment(memTemplate)
+    mem$r = rr
+
+    unlist(lapply(pairs, function(p) {
+      A = C = c(p[1], 0)
+      B = D = c(p[2], 0)
+      twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
+    }))
+  })#, FUN.VALUE = numeric(length(pairs)))
 
   # Print info
   if(verbose) {
@@ -79,6 +101,18 @@ twoLocusKinship = function(x, ids, r, verbose = FALSE) {
                      Total time used: {totsecs} seconds"))
   }
 
+  if(length(ids) == 2)
+    return(unlist(coefs))
+
+  # Build result data frame
+  labs = labels(x)
+  idcols = do.call(rbind, pairs)
+  idcols[] = labs[idcols]
+  res = data.frame(id1 = idcols[,1], id2 = idcols[,2],
+                   r = rep(r, each=length(pairs)),
+                   phi2 = unlist(coefs),
+                   stringsAsFactors = F)
+  #names(res) = c("id1", "id2", paste("phi2", r, sep="_"))
   res
 }
 
@@ -240,24 +274,5 @@ initialiseTwoLocusMemo = function(ped, r, chromType = "autosomal") {
   mem$initTime = Sys.time() - st
 
   mem
-}
-
-test = function(x) {
-  if(!is.ped(x)) return()
-  k1 = function(x, ids) kinship2_kinship(x, ids)
-  k2_0 = function(x,ids) twoLocusKinship(x,ids,r=0, verbose = F)
-  k2_05 = function(x,ids) twoLocusKinship(x,ids,r=0.5, verbose = F)
-  for(ids in combn(labels(x), 2, simplify = F)) {
-    if(k2_0(x,ids) != k1(x,ids)) {
-      cat("Error r=0!", ids, "\n")
-      #x11(); plot(x, col=list(red=ids))
-      #return(list(x, ids))
-    }
-    if(k2_05(x,ids) != k1(x,ids)^2) {
-      cat("Error r=0.5!", ids, "\n")
-      #x11(); plot(x, col=list(red=ids))
-      return(list(x, ids))
-    }
-  }
 }
 
