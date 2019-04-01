@@ -100,3 +100,18 @@ condensedIdentity(x, ids = 5:6)
 #> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
+
+The condensed identity states
+-----------------------------
+
+The following figure shows the 9 *condensed identity states* of two individuals *a* and *b*. Each state shows the pattern of IBD between the 4 homologous alleles at an autosomal locus. The states are shown in the ordering used by Jacquard and most subsequent authors. This is also the order of the coefficients output by `condensedIdentity()`. <img src="man/figures/jacquardStates.png" align="left">
+
+### Identity states on X
+
+The X chromosomal version of `condensedIdentityX()` is called `condensedIdentityX()`. What this function computes requires some explanation, which we offer here.
+
+The point of `condensedIdentityX()` is to compute the coefficients (i.e., the expected proportions) of the pairwise identity states for a locus on the X chromosome. What these states are depends on the sexes of the involved individuals: either female-female, female-male, male-female or male-male. In some sense the first case is the easiest: When both are female the states are the same as in the autosomal case.
+
+Males, being hemizygous, have only 1 allele of a locus on X. Hence when males are involved the total number of alleles is less than 4, rendering the autosomal states pictured above meaningless. However, to avoid drawing (and learning the ordering of) new states for each sex combination, we re-use the autosomal states by using the following simple rule: **Replace the single allele of any male, with a pair of autozygous alleles**. In this way we get a one-to-one map from the X states to the autosomal state.
+
+For simplicity the output always contain 9 coefficients, but with NA's in the positions of undefined states (depending on the sex combination). Hopefully this should all be clear from the following table: <img src="man/figures/jacquardStatesX.png" align="left">
