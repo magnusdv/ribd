@@ -6,6 +6,18 @@
 #' The implementation is inspired by Karigl's recursive algorithm (1981) for the
 #' autosomal case, modified to account for X-linked inheritance.
 #'
+#' The X chromosomal pairwise identity states depend on the sexes of the two
+#' individuals. If both are female, the states are the same as in the autosomal
+#' case. When males are involved, the two individuals have less than 4 alleles,
+#' hence the states differ from the autosomal ones. However, to avoid drawing
+#' (and learning) new pictures we re-use the autosomal states by using the
+#' following simple rule: **Replace the single allele of any male, with a pair
+#' of autozygous alleles**. In this way each X state corresponds to a unique
+#' autosomal state.
+#'
+#' For simplicity the output always contain 9 coefficients, but with NA's in the
+#' positions of undefined states (depending on the sex combination). The README
+#' file on the github home page of ribd has a table making all of this clear.
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object
 #' @param ids A character (or coercible to character) containing ID labels of
@@ -21,7 +33,7 @@
 #'
 #' @return If `ids` has length 2: A vector of length 9, containing the condensed
 #'   identity coefficients. If any of the individuals are male, certain states
-#'   are undefined, and the corresponding coefficients are NA.
+#'   are undefined, and the corresponding coefficients are NA. (See Details.)
 #'
 #'   If `ids` has length > 2: A data frame with one row for each pair of
 #'   individuals, and 11 columns. The first two columns contain the ID labels,
