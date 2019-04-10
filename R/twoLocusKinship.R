@@ -63,7 +63,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-twoLocusKinship = function(x, ids, r, verbose = FALSE, debug = FALSE) {
+twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debug = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
@@ -72,12 +72,39 @@ twoLocusKinship = function(x, ids, r, verbose = FALSE, debug = FALSE) {
 
   ids_int = internalID(x, ids)
 
-  mem = NULL
-  memTemplate = as.list(initialiseTwoLocusMemo(x, r=NULL))
+  if(length(ids) == 2) {
+    mem = initialiseTwoLocusMemo(x, r = r, recombinants = recombinants)
 
-  # Do all unordered pairs; return data.frame.
+    A = C = c(ids_int[1], 0)
+    B = D = c(ids_int[2], 0)
+    phi11 = twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
+
+    # Print info
+    if(verbose) {
+      initsecs = sprintf("%.2f", mem$initTime)
+      totsecs = sprintf("%.1f", Sys.time()-mem$st)
+      print(glue::glue("
+                       Calls = {mem$i}
+                       Lookups = {mem$ilook}
+                       Recursions: {mem$irec}
+                          eq. 7: {mem$eq7}
+                          eq. 8: {mem$eq8}
+                          eq. 9a: {mem$eq9a}
+                          eq. 9b: {mem$eq9b}
+                          eq. 10: {mem$eq10}
+                          eq. 11: {mem$eq11}
+                       Total time used: {totsecs} seconds"))
+    }
+
+    return(phi11)
+  }
+
+  # If length(ids) > 2: Do all unordered pairs; return data.frame
+  mem = NULL
+  memTemplate = as.list(initialiseTwoLocusMemo(x, r = NULL, recombinants = recombinants))
+
   pairs = combn(ids_int, 2, simplify=F)
-  if(length(ids) > 2) pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
+  pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
 
   coefs = lapply(r, function(rr) {
     mem = as.environment(memTemplate)
@@ -88,21 +115,7 @@ twoLocusKinship = function(x, ids, r, verbose = FALSE, debug = FALSE) {
       B = D = c(p[2], 0)
       twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
     }))
-  })#, FUN.VALUE = numeric(length(pairs)))
-
-  # Print info
-  if(verbose) {
-    initsecs = sprintf("%.2f", mem$initTime)
-    totsecs = sprintf("%.1f", Sys.time()-mem$st)
-    print(glue::glue("
-                     Calls = {mem$i}
-                     Lookups = {mem$ilook}
-                     Recursions: {mem$irec}
-                     Total time used: {totsecs} seconds"))
-  }
-
-  if(length(ids) == 2)
-    return(unlist(coefs))
+  })
 
   # Build result data frame
   labs = labels(x)
@@ -112,7 +125,7 @@ twoLocusKinship = function(x, ids, r, verbose = FALSE, debug = FALSE) {
                    r = rep(r, each=length(pairs)),
                    phi2 = unlist(coefs),
                    stringsAsFactors = F)
-  #names(res) = c("id1", "id2", paste("phi2", r, sep="_"))
+
   res
 }
 
@@ -149,6 +162,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
     a = A[1]; b = B[1]; c = C[1]; d = D[1]
 
     if(a > b && a > c) { # eq. 7
+      mem$eq7 = mem$eq7 + 1
       if(isFou)
         0
       else {
@@ -158,6 +172,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
       }
     }
     else if(a == b && a > c) { # eq. 8
+      mem$eq8 = mem$eq8 + 1
       if(isFou)
         0.5 * k1[[c,d]]
       else {
@@ -166,6 +181,9 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
       }
     }
     else if(a > b && a == c) { # eqs. 9a, 9b
+      if(A[2] == C[2]) mem$eq9a = mem$eq9a + 1
+      else mem$eq9b = mem$eq9b + 1
+
       if(isFou)
         0
       else {
@@ -177,12 +195,13 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
         if(A[2] == C[2]) { # eq. 9a
           0.5 * ((1-r)*(t1 + t2) + r*(t3 + t4))
         }
-        else { # eq. 9a
+        else { # eq. 9b
           0.25 * (t1 + t2 + t3 + t4)
         }
       }
     }
     else if(a == b && a == c && a > d) { # eq. 10
+      mem$eq10 = mem$eq10 + 1
       if(isFou)
         0
       else {
@@ -192,6 +211,8 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
       }
     }
     else if((a == b && a == c && a == d)) { # eq. 11
+      mem$eq11 = mem$eq11 + 1
+
       R = .5*(r^2 + (1-r)^2)
       if(isFou)
         R
@@ -239,7 +260,7 @@ printMess = function(plist, indent) {
           strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
 
-initialiseTwoLocusMemo = function(ped, r, chromType = "autosomal") {
+initialiseTwoLocusMemo = function(ped, r, recombinants=NULL, chromType = "autosomal") {
   # Create memory storage
   mem = new.env()
 
@@ -250,6 +271,11 @@ initialiseTwoLocusMemo = function(ped, r, chromType = "autosomal") {
   mem$MIDX = ped$MIDX
   mem$SEX = ped$SEX
   mem$r = r
+
+  # Conditions on recombinant/non-recombinant gametes
+  if(is.null(recombinants))
+    recombinants = list(r = NULL, nr = NULL)
+  mem$recombinants = recombinants
 
   # Logical matrix showing who has a common ancestor within the pedigree.
   mem$anc = has_common_ancestor(ped)
@@ -268,6 +294,7 @@ initialiseTwoLocusMemo = function(ped, r, chromType = "autosomal") {
 
   # Counters
   mem$i = mem$ilook = mem$irec = 0
+  mem$eq7 = mem$eq8 = mem$eq9a = mem$eq9b = mem$eq10 = mem$eq11 = 0
 
   # Start time
   mem$st = st
