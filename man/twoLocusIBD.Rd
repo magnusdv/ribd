@@ -2,7 +2,7 @@
 % Please edit documentation in R/twoLocusIBD.R
 \name{twoLocusIBD}
 \alias{twoLocusIBD}
-\title{Two-locus IBD coefficients}
+\title{Two-locus IBD coefficients (EXPERIMENTAL)}
 \usage{
 twoLocusIBD(x, ids, r)
 }
@@ -31,6 +31,7 @@ The method of computation is via the two-locus kinship coefficients involving
 the parents of A and B.
 }
 \examples{
+
 ######################################
 # A classic example of three relationships with the same one-locus IBD
 # coefficients, but different two-locus IBD coefficients. As a consequence,
@@ -38,20 +39,29 @@ the parents of A and B.
 # are separable (in theory) using pairs of linked markers.
 ######################################
 peds = list(
-  GrandP  = list(ped = linearPed(2),    ids = c(1,5)),
-  Uncle   = list(ped = cousinPed(0, 1), ids = c(3,6)),
-  HalfSib = list(ped = halfSibPed(),    ids = c(4,5)))
+    GrandP  = list(ped = linearPed(2),    ids = c(1,5)))
+  # Uncle   = list(ped = cousinPed(0, 1), ids = c(3,6)),  # Not yet
+  # HalfSib = list(ped = halfSibPed(),    ids = c(4,5)))  # Not yet
 
 # Recombination values
-rseq = seq(0, 0.5, length = 20)
+rseq = seq(0, 0.5, length = 11)
 
 # Compute two-locus IBD coefficients (k11)
-# kvals = sapply(peds, function(x)
-#    sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r)))
+kvals = sapply(peds, function(x)
+  sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r)))
 
 # Plot
-# matplot(rseq, kvals, type="l")
-# legend("topright", names(peds), col = 1:3, lty = 1:3)
+matplot(rseq, kvals, type="l")
+legend("topright", names(peds), col = 1:3, lty = 1:3)
+
+#########################
+# A more complex pedigree
+#########################
+y = addSon(cousinPed(0, child = TRUE), 5)
+ids = c(1, 7) # neither is inbred
+
+# TODO: Check if the following is correct
+sapply(rseq, function(r) twoLocusIBD(y, ids, r))
 
 }
 \seealso{
