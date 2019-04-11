@@ -72,8 +72,11 @@ twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debu
 
   ids_int = internalID(x, ids)
 
+  # Convert recombination conditions from logical to list(r = , nr = )
+  recombList = if(is.null(recombinants)) NULL else list(nr = ids[!recombinants], r = ids[recombinants])
+
   if(length(ids) == 2) {
-    mem = initialiseTwoLocusMemo(x, r = r, recombinants = recombinants)
+    mem = initialiseTwoLocusMemo(x, r = r, recomb = recombList)
 
     A = C = c(ids_int[1], 0)
     B = D = c(ids_int[2], 0)
@@ -101,7 +104,7 @@ twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debu
 
   # If length(ids) > 2: Do all unordered pairs; return data.frame
   mem = NULL
-  memTemplate = as.list(initialiseTwoLocusMemo(x, r = NULL, recombinants = recombinants))
+  memTemplate = as.list(initialiseTwoLocusMemo(x, r = NULL, recomb = recombList))
 
   pairs = combn(ids_int, 2, simplify=F)
   pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
@@ -154,6 +157,8 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
   ANC = mem$anc
   k1 = mem$k1
   r = mem$r
+  forceNonRec = a %in% mem$recomb$nr
+  forceRec = a %in% mem$recomb$r
 
   ### The recursions (eqs. 7-11 in Thompson (1988))
 
@@ -163,6 +168,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
 
     if(a > b && a > c) { # eq. 7
       mem$eq7 = mem$eq7 + 1
+
       if(isFou)
         0
       else {
@@ -173,6 +179,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
     }
     else if(a == b && a > c) { # eq. 8
       mem$eq8 = mem$eq8 + 1
+
       if(isFou)
         0.5 * k1[[c,d]]
       else {
@@ -180,45 +187,83 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
         0.5 * (k1[[c,d]] + twoLocKin(c(FF, a), c(MM, a), C, D, mem, indent = indent + 2))
       }
     }
-    else if(a > b && a == c) { # eqs. 9a, 9b
-      if(A[2] == C[2]) mem$eq9a = mem$eq9a + 1
-      else mem$eq9b = mem$eq9b + 1
+    else if(a > b && a == c) { # eqs. 9a & 9b
+      if(A[2] == C[2]) { # eq. 9a
+        mem$eq9a = mem$eq9a + 1
 
-      if(isFou)
-        0
-      else {
-        t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
-        t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
-        t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
-        t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+        if(isFou)
+          0
+        else if(forceNonRec) {
+          t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
+          t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
 
-        if(A[2] == C[2]) { # eq. 9a
+          0.5 * (1-r) * (t1 + t2)
+        }
+        else if(forceRec) {
+          t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+
+          0.5 * r * (t3 + t4)
+        }
+        else {
+          t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
+          t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+
           0.5 * ((1-r)*(t1 + t2) + r*(t3 + t4))
         }
-        else { # eq. 9b
+      }
+      else {  # eq. 9b
+        mem$eq9b = mem$eq9b + 1
+        if(isFou)
+          0
+        else {
+          t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
+          t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+
           0.25 * (t1 + t2 + t3 + t4)
         }
       }
     }
     else if(a == b && a == c && a > d) { # eq. 10
       mem$eq10 = mem$eq10 + 1
+
       if(isFou)
         0
       else {
         t3 = twoLocKin(c(FF, a), c(MM, a), c(FF, a), D, mem, indent = indent + 2)
         t4 = twoLocKin(c(FF, a), c(MM, a), c(MM, a), D, mem, indent = indent + 2)
-        0.25 * (k1[[FF, d]] + k1[[MM, d]] + t3 + t4)
+        s = 0.25 * (k1[[FF, d]] + k1[[MM, d]] + t3 + t4)
+
+        if(forceNonRec)
+          (1-r) * s
+        else if(forceRec)
+          r * s
+        else
+          s
       }
     }
     else if((a == b && a == c && a == d)) { # eq. 11
       mem$eq11 = mem$eq11 + 1
 
       R = .5*(r^2 + (1-r)^2)
-      if(isFou)
-        R
+      if(isFou) {
+        if(forceNonRec && forceRec) 0
+        else if(forceNonRec) .5 * (1-r)^2
+        else if(forceRec) .5 * r^2
+        else R
+      }
       else {
-        t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
-        2*r*(1-r)*k1[[MM, FF]] + R*(1 + t4)
+        if(forceNonRec && forceRec) r*(1-r)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
+        else {
+          t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
+          if(forceNonRec) .5 * (1-r)^2 * (1 + t4)
+          else if(forceRec) .5 * r^2 * (1 + t4)
+          else 2*r*(1-r)*k1[[MM, FF]] + R*(1 + t4)
+        }
       }
     }
   }
@@ -260,7 +305,7 @@ printMess = function(plist, indent) {
           strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
 
-initialiseTwoLocusMemo = function(ped, r, recombinants=NULL, chromType = "autosomal") {
+initialiseTwoLocusMemo = function(ped, r, recomb = NULL, chromType = "autosomal") {
   # Create memory storage
   mem = new.env()
 
@@ -273,9 +318,9 @@ initialiseTwoLocusMemo = function(ped, r, recombinants=NULL, chromType = "autoso
   mem$r = r
 
   # Conditions on recombinant/non-recombinant gametes
-  if(is.null(recombinants))
-    recombinants = list(r = NULL, nr = NULL)
-  mem$recombinants = recombinants
+  if(is.null(recomb))
+    recomb = list(r = NULL, nr = NULL)
+  mem$recomb = recomb
 
   # Logical matrix showing who has a common ancestor within the pedigree.
   mem$anc = has_common_ancestor(ped)
