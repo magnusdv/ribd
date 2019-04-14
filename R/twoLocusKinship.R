@@ -248,22 +248,44 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
     }
     else if((a == b && a == c && a == d)) { # eq. 11
       mem$eq11 = mem$eq11 + 1
-
       R = .5*(r^2 + (1-r)^2)
-      if(isFou) {
-        if(forceNonRec && forceRec) 0
-        else if(forceNonRec) .5 * (1-r)^2
-        else if(forceRec) .5 * r^2
-        else R
-      }
-      else {
-        if(forceNonRec && forceRec) r*(1-r)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
-        else {
-          t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
-          if(forceNonRec) .5 * (1-r)^2 * (1 + t4)
-          else if(forceRec) .5 * r^2 * (1 + t4)
-          else 2*r*(1-r)*k1[[MM, FF]] + R*(1 + t4)
+
+      # This case needs further branching! A bit vague in the EAT-paper.
+      type = sum(c(A[2], B[2]) %in% c(C[2], D[2]))
+
+      if(type == 2) { # this is eq. 11 in the paper
+        if(isFou) {
+          if(forceNonRec && forceRec) 0
+          else if(forceNonRec) .5 * (1-r)^2
+          else if(forceRec) .5 * r^2
+          else R
         }
+        else {
+          if(forceNonRec && forceRec) r*(1-r)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
+          else {
+            t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
+            if(forceNonRec) .5 * (1-r)^2 * (1 + t4)
+            else if(forceRec) .5 * r^2 * (1 + t4)
+            else 2*r*(1-r)*k1[[MM, FF]] + R*(1 + t4)
+          }
+        }
+      }
+      else if(type == 1) { # a.k.a. k2(J(A1, A2), L(A1, A3))
+        if(forceNonRec | forceRec)
+          stop2("Special case: Not implemented.")
+        if(isFou)
+          1/4
+        else {
+          t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
+          t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
+          t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+
+          0.5 * ((1-r)*(t1 + t2) + r*(t3 + t4))
+        }
+      }
+      else if(type == 0) { # a.k.a. k2(J(A1, A2), L(A3, A4))
+        stop2("Special case k2(J(A1, A2), L(A3, A4)): Not implemented yet")
       }
     }
   }
