@@ -5,7 +5,7 @@
 #'
 #' Let A, B be two pedigree members, and L1, L2 two loci with a given
 #' recombination rate r. The two-locus IBD coefficient
-#' \eqn{\kappa_{1,1}(r)}{k_11(r)} is defined as the probability that A and B
+#' \eqn{\kappa_{1,1}(\rho)}{k_11(\rho)} is defined as the probability that A and B
 #' have IBD status 1 at both L1 and L2 simultaneously. Note that it is not
 #' required that the IBD alleles are in cis (or in trans for that matter), in
 #' either individual.
@@ -16,7 +16,7 @@
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two pedigree members.
-#' @param r A number in the interval \eqn{[0, 0.5]}; the recombination rate
+#' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
 #'   between the two loci.
 #'
 #' @return
@@ -57,7 +57,7 @@
 #' sapply(rseq, function(r) twoLocusIBD(y, ids, r))
 #'
 #' @export
-twoLocusIBD = function(x, ids, r) {
+twoLocusIBD = function(x, ids, rho) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must have length exactly 2")
 
@@ -81,16 +81,16 @@ twoLocusIBD = function(x, ids, r) {
 
   # In descendant case, use special formula
   if(directDescend) {
-    p11_nr_nr = twoLocusKinship(x, ids, r, recombinants = c(F,F))
-    p11_r_nr = twoLocusKinship(x, ids, r, recombinants = c(T,F))
+    p11_nr_nr = twoLocusKinship(x, ids, rho, recombinants = c(F,F))
+    p11_r_nr = twoLocusKinship(x, ids, rho, recombinants = c(T,F))
 
     # Impossible since ids[2] is direct descendent of ids[1]:
-    # p11_nr_r = twoLocusKinship(x, ids, r, recombinants = c(F,T))
-    # p11_r_r = twoLocusKinship(x, ids, r, recombinants = c(T,T))
+    # p11_nr_r = twoLocusKinship(x, ids, rho, recombinants = c(F,T))
+    # p11_r_r = twoLocusKinship(x, ids, rho, recombinants = c(T,T))
 
-    k11_cs_cs = 4 * p11_nr_nr/(1-r)^2
-    if(r > 0)
-      k11_tr_cs = 4 * p11_r_nr/(r*(1-r))
+    k11_cs_cs = 4 * p11_nr_nr/(1-rho)^2
+    if(rho > 0)
+      k11_tr_cs = 4 * p11_r_nr/(rho*(1-rho))
     else k11_tr_cs = 0
     # print(k11_cs_cs)
     k11 = k11_cs_cs + k11_tr_cs
@@ -114,7 +114,7 @@ twoLocusIBD = function(x, ids, r) {
   phi11 = matrix(NA, ncol = pedsize(x), nrow = pedsize(x),
                  dimnames = list(labels(x), labels(x)))
 
-  phi11.df = twoLocusKinship(x, ids=labels(x), r)
+  phi11.df = twoLocusKinship(x, ids=labels(x), rho)
   int1 = internalID(x, phi11.df$id1)
   int2 = internalID(x, phi11.df$id2)
   phi11[cbind(int1, int2)] = phi11[cbind(int2, int1)] = phi11.df$phi2

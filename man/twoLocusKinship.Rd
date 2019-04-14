@@ -4,7 +4,7 @@
 \alias{twoLocusKinship}
 \title{Two-locus kinship coefficients}
 \usage{
-twoLocusKinship(x, ids, r, recombinants = NULL, verbose = FALSE,
+twoLocusKinship(x, ids, rho, recombinants = NULL, verbose = FALSE,
   debug = FALSE)
 }
 \arguments{
@@ -13,7 +13,7 @@ twoLocusKinship(x, ids, r, recombinants = NULL, verbose = FALSE,
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
 
-\item{r}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
+\item{rho}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
 between the two loci.}
 
 \item{verbose}{A logical.}
@@ -27,7 +27,7 @@ a given recombination rate.
 }
 \details{
 Let A, B be two pedigree members, and L1, L2 two loci with a given
-recombination rate r. The two-locus kinship coefficient \eqn{\phi_{AB}(r)} is
+recombination rate rho. The two-locus kinship coefficient \eqn{\phi_{AB}(rho)} is
 defined as the probability that random gametes segregating from A and B has
 IBD alleles at both L1 and L2 simultaneously.
 
@@ -40,8 +40,8 @@ The implementation is based on the recursive algorithm described by Thompson
 ######################
 x = nuclearPed(2)
 
-k_0 = twoLocusKinship(x, ids = 3:4, r = 0)
-k_0.5 = twoLocusKinship(x, ids = 3:4, r = 0.5)
+k_0 = twoLocusKinship(x, ids = 3:4, rho = 0)
+k_0.5 = twoLocusKinship(x, ids = 3:4, rho = 0.5)
 
 stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 

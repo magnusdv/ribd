@@ -4,7 +4,7 @@
 \alias{twoLocusIBD}
 \title{Two-locus IBD coefficients (EXPERIMENTAL)}
 \usage{
-twoLocusIBD(x, ids, r)
+twoLocusIBD(x, ids, rho)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -12,7 +12,7 @@ twoLocusIBD(x, ids, r)
 \item{ids}{A character (or coercible to character) containing ID labels of
 two pedigree members.}
 
-\item{r}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
+\item{rho}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
 between the two loci.}
 }
 \description{
@@ -22,7 +22,7 @@ pedigree members, at a given recombination rate.
 \details{
 Let A, B be two pedigree members, and L1, L2 two loci with a given
 recombination rate r. The two-locus IBD coefficient
-\eqn{\kappa_{1,1}(r)}{k_11(r)} is defined as the probability that A and B
+\eqn{\kappa_{1,1}(\rho)}{k_11(\rho)} is defined as the probability that A and B
 have IBD status 1 at both L1 and L2 simultaneously. Note that it is not
 required that the IBD alleles are in cis (or in trans for that matter), in
 either individual.
@@ -51,7 +51,7 @@ kvals = sapply(peds, function(x)
   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r)))
 
 # Plot
-matplot(rseq, kvals, type="l")
+matplot(rseq, kvals, type = "l")
 legend("topright", names(peds), col = 1:3, lty = 1:3)
 
 #########################

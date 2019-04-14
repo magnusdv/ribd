@@ -4,7 +4,7 @@
 #' a given recombination rate.
 #'
 #' Let A, B be two pedigree members, and L1, L2 two loci with a given
-#' recombination rate r. The two-locus kinship coefficient \eqn{\phi_{AB}(r)} is
+#' recombination rate rho. The two-locus kinship coefficient \eqn{\phi_{AB}(rho)} is
 #' defined as the probability that random gametes segregating from A and B has
 #' IBD alleles at both L1 and L2 simultaneously.
 #'
@@ -14,7 +14,7 @@
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
-#' @param r A number in the interval \eqn{[0, 0.5]}; the recombination rate
+#' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
 #'   between the two loci.
 #' @param verbose A logical.
 #' @param debug A logical. If TRUE, detailed messages are printed during the
@@ -31,8 +31,8 @@
 #' ######################
 #' x = nuclearPed(2)
 #'
-#' k_0 = twoLocusKinship(x, ids = 3:4, r = 0)
-#' k_0.5 = twoLocusKinship(x, ids = 3:4, r = 0.5)
+#' k_0 = twoLocusKinship(x, ids = 3:4, rho = 0)
+#' k_0.5 = twoLocusKinship(x, ids = 3:4, rho = 0.5)
 #'
 #' stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 #'
@@ -63,7 +63,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debug = FALSE) {
+twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, debug = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
@@ -76,7 +76,7 @@ twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debu
   recombList = if(is.null(recombinants)) NULL else list(nr = ids[!recombinants], r = ids[recombinants])
 
   if(length(ids) == 2) {
-    mem = initialiseTwoLocusMemo(x, r = r, recomb = recombList)
+    mem = initialiseTwoLocusMemo(x, rho = rho, recomb = recombList)
 
     A = C = c(ids_int[1], 0)
     B = D = c(ids_int[2], 0)
@@ -104,14 +104,14 @@ twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debu
 
   # If length(ids) > 2: Do all unordered pairs; return data.frame
   mem = NULL
-  memTemplate = as.list(initialiseTwoLocusMemo(x, r = NULL, recomb = recombList))
+  memTemplate = as.list(initialiseTwoLocusMemo(x, rho = NULL, recomb = recombList))
 
   pairs = combn(ids_int, 2, simplify=F)
   pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
 
-  coefs = lapply(r, function(rr) {
+  coefs = lapply(rho, function(r) {
     mem = as.environment(memTemplate)
-    mem$r = rr
+    mem$rho = r
 
     unlist(lapply(pairs, function(p) {
       A = C = c(p[1], 0)
@@ -125,7 +125,7 @@ twoLocusKinship = function(x, ids, r, recombinants = NULL, verbose = FALSE, debu
   idcols = do.call(rbind, pairs)
   idcols[] = labs[idcols]
   res = data.frame(id1 = idcols[,1], id2 = idcols[,2],
-                   r = rep(r, each=length(pairs)),
+                   rho = rep(rho, each=length(pairs)),
                    phi2 = unlist(coefs),
                    stringsAsFactors = F)
 
@@ -156,7 +156,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
   isFou = mem$isFounder[a]
   ANC = mem$anc
   k1 = mem$k1
-  r = mem$r
+  rho = mem$rho
   forceNonRec = a %in% mem$recomb$nr
   forceRec = a %in% mem$recomb$r
 
@@ -197,13 +197,13 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
           t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
           t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
 
-          0.5 * (1-r) * (t1 + t2)
+          0.5 * (1-rho) * (t1 + t2)
         }
         else if(forceRec) {
           t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
           t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
 
-          0.5 * r * (t3 + t4)
+          0.5 * rho * (t3 + t4)
         }
         else {
           t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
@@ -211,7 +211,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
           t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
           t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
 
-          0.5 * ((1-r)*(t1 + t2) + r*(t3 + t4))
+          0.5 * ((1-rho)*(t1 + t2) + rho*(t3 + t4))
         }
       }
       else {  # eq. 9b
@@ -239,16 +239,16 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
         s = 0.25 * (k1[[FF, d]] + k1[[MM, d]] + t3 + t4)
 
         if(forceNonRec)
-          (1-r) * s
+          (1-rho) * s
         else if(forceRec)
-          r * s
+          rho * s
         else
           s
       }
     }
     else if((a == b && a == c && a == d)) { # eq. 11
       mem$eq11 = mem$eq11 + 1
-      R = .5*(r^2 + (1-r)^2)
+      R = .5*(rho^2 + (1-rho)^2)
 
       # This case needs further branching! A bit vague in the EAT-paper.
       type = sum(c(A[2], B[2]) %in% c(C[2], D[2]))
@@ -256,17 +256,17 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
       if(type == 2) { # this is eq. 11 in the paper
         if(isFou) {
           if(forceNonRec && forceRec) 0
-          else if(forceNonRec) .5 * (1-r)^2
-          else if(forceRec) .5 * r^2
+          else if(forceNonRec) .5 * (1-rho)^2
+          else if(forceRec) .5 * rho^2
           else R
         }
         else {
-          if(forceNonRec && forceRec) r*(1-r)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
+          if(forceNonRec && forceRec) rho*(1-rho)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
           else {
             t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
-            if(forceNonRec) .5 * (1-r)^2 * (1 + t4)
-            else if(forceRec) .5 * r^2 * (1 + t4)
-            else 2*r*(1-r)*k1[[MM, FF]] + R*(1 + t4)
+            if(forceNonRec) .5 * (1-rho)^2 * (1 + t4)
+            else if(forceRec) .5 * rho^2 * (1 + t4)
+            else 2*rho*(1-rho)*k1[[MM, FF]] + R*(1 + t4)
           }
         }
       }
@@ -281,7 +281,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
           t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
           t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
 
-          0.5 * ((1-r)*(t1 + t2) + r*(t3 + t4))
+          0.5 * ((1-rho)*(t1 + t2) + rho*(t3 + t4))
         }
       }
       else if(type == 0) { # a.k.a. k2(J(A1, A2), L(A3, A4))
@@ -327,7 +327,7 @@ printMess = function(plist, indent) {
           strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
 
-initialiseTwoLocusMemo = function(ped, r, recomb = NULL, chromType = "autosomal") {
+initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosomal") {
   # Create memory storage
   mem = new.env()
 
@@ -337,7 +337,7 @@ initialiseTwoLocusMemo = function(ped, r, recomb = NULL, chromType = "autosomal"
   mem$FIDX = ped$FIDX
   mem$MIDX = ped$MIDX
   mem$SEX = ped$SEX
-  mem$r = r
+  mem$rho = rho
 
   # Conditions on recombinant/non-recombinant gametes
   if(is.null(recomb))
