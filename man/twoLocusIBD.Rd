@@ -15,6 +15,9 @@ two pedigree members.}
 \item{rho}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
 between the two loci.}
 }
+\value{
+A single numeric.
+}
 \description{
 Computes the two-locus IBD coefficient \eqn{\kappa_{1,1}}{k_11} of a pair of
 pedigree members, at a given recombination rate.

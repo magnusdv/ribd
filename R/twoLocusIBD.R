@@ -19,7 +19,7 @@
 #' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
 #'   between the two loci.
 #'
-#' @return
+#' @return A single numeric.
 #'
 #' @seealso [twoLocusKinship()]
 #'
