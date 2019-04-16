@@ -4,9 +4,9 @@
 #' a given recombination rate.
 #'
 #' Let A, B be two pedigree members, and L1, L2 two loci with a given
-#' recombination rate rho. The two-locus kinship coefficient \eqn{\phi_{AB}(rho)} is
-#' defined as the probability that random gametes segregating from A and B has
-#' IBD alleles at both L1 and L2 simultaneously.
+#' recombination rate rho. The two-locus kinship coefficient
+#' \eqn{\phi_{AB}(rho)} is defined as the probability that random gametes
+#' segregating from A and B has IBD alleles at both L1 and L2 simultaneously.
 #'
 #' The implementation is based on the recursive algorithm described by Thompson
 #' (1988).
@@ -14,8 +14,12 @@
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
-#' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
-#'   between the two loci.
+#' @param rho A numeric vector of recombination rates; all entries must be in
+#'   the interval \eqn{[0, 0.5]}.
+#' @param recombinants A logical of length 2, applicaple only when `ids` has
+#'   length 2. When given, it indicates whether each of the two gametes is a
+#'   recombinant or non-recombinant. This parameter is mainly used by
+#'   [twoLocusIBD()].
 #' @param verbose A logical.
 #' @param debug A logical. If TRUE, detailed messages are printed during the
 #'   recursion process.
@@ -65,47 +69,73 @@
 #' @export
 twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, debug = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
+  if(length(ids) < 2) stop2("Argument `ids` must have length at least 2")
+  if(!is.numeric(rho))
+    stop2("Argument `rho` must be numeric")
+  if(any(rho < 0 | rho > 0.5))
+    stop2("Argument `rho` cannot have entries outside the interval [0, 0.5]: ", rho[rho < 0 | rho > 0.5])
+  if(!is.null(recombinants) && length(ids) > 2)
+    stop2("Argument `recombinants` must be NULL when `ids` has length > 2")
+  if(debug && (length(ids) > 2 || length(rho) > 1))
+    stop2("Debugging mode is only allowed when `ids` has length 2, and `rho` has length 1")
 
   # Enforce parents to precede their children
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
 
-  # Convert recombination conditions from logical to list(r = , nr = )
-  recombList = if(is.null(recombinants)) NULL else list(nr = ids[!recombinants], r = ids[recombinants])
-
   ids_int = internalID(x, ids)
 
-  if(length(ids) == 2) {
-    mem = initialiseTwoLocusMemo(x, rho = rho, recomb = recombList)
+  # Convert recombination conditions from logical to list(r = , nr = )
+  if(!is.null(recombinants))
+    rList = list(nr = ids[!recombinants], r = ids[recombinants])
+  else
+    rList = NULL
 
+  # Simplest case: Allows verbose output and/or debugging mode
+  if(length(ids) == 2 && length(rho) == 1) {
     A = C = c(ids_int[1], -1) # using negative numbers to enforce independent gametes
     B = D = c(ids_int[2], -2)
+    mem = initialiseTwoLocusMemo(x, rho = rho, recomb = rList)
+
     phi11 = twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
 
     # Print info
     if(verbose) {
       initsecs = sprintf("%.2f", mem$initTime)
-      totsecs = sprintf("%.1f", Sys.time()-mem$st)
+      totsecs = sprintf("%.1f", Sys.time() - mem$st)
       print(glue::glue("
-                       Calls = {mem$i}
-                       Lookups = {mem$ilook}
-                       Recursions: {mem$irec}
-                          eq. 7  : {mem$eq7}
-                          eq. 8  : {mem$eq8}
-                          eq. 9a : {mem$eq9a}
-                          eq. 9b : {mem$eq9b}
-                          eq. 10 : {mem$eq10}
-                          eq. 11a: {mem$eq11a}
-                          eq. 11b: {mem$eq11b}
-                       Total time used: {totsecs} seconds"))
+        Calls = {mem$i}
+        Lookups = {mem$ilook}
+        Recursions: {mem$irec}
+          eq. 7  : {mem$eq7}
+          eq. 8  : {mem$eq8}
+          eq. 9a : {mem$eq9a}
+          eq. 9b : {mem$eq9b}
+          eq. 10 : {mem$eq10}
+          eq. 11a: {mem$eq11a}
+          eq. 11b: {mem$eq11b}
+        Total time used: {totsecs} seconds"))
     }
+  }
 
-    return(phi11)
+  # Storage template: Reset for each rho
+  memTemplate = as.list(initialiseTwoLocusMemo(x, rho = NULL, recomb = rList))
+
+  # If single pair: Return only vector of coefficients
+  if(length(ids) == 2) {
+    A = C = c(ids_int[1], -1) # using negative numbers to enforce independent gametes
+    B = D = c(ids_int[2], -2)
+
+    coefs = vapply(rho, function(r) {
+      mem = as.environment(memTemplate)
+      mem$rho = r
+      twoLocKin(A, B, C, D, mem, indent = NA)
+    }, FUN.VALUE = 0)
+
+    return(coefs)
   }
 
   # If length(ids) > 2: Do all unordered pairs; return data.frame
-  mem = NULL
-  memTemplate = as.list(initialiseTwoLocusMemo(x, rho = NULL, recomb = recombList))
 
   pairs = combn(ids_int, 2, simplify=F)
   pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
@@ -117,7 +147,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
     unlist(lapply(pairs, function(p) {
       A = C = c(p[1], -1)
       B = D = c(p[2], -2)
-      twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
+      twoLocKin(A, B, C, D, mem, indent = NA)
     }))
   })
 
@@ -187,7 +217,6 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
         recurse_eq11b(A,B,C,D,mem,indent)
     }
   }
-
 
   # If no common ancestors, return 0
   if(!(ANC[a,b] && ANC[c,d]))
@@ -367,42 +396,67 @@ recurse_eq11a = function(A,B,C,D,mem,indent) { # Case k2(A1,A2; A1,A2): Eq. 11 i
 }
 
 
-recurse_eq11b = function(A,B,C,D,mem,indent) { # k2(A1,A2; A1,A3)
+recurse_eq11b = function(A,B,C,D,mem,indent) { # k2(A1,A2; A1,A3) or k2(A1,A2; A3,A4)
   # Recursion formula given by Weeks&Lange
   mem$eq11b = mem$eq11b + 1
   a = A[1]
-  if(mem$nonrecomb[a] || mem$recomb[a])
-    stop2("11b) conditional: Not implemented")
+  rho = mem$rho
 
-  if(mem$isFounder[a])
+  # Condition on recomb status: only for k2(A1,A2; A1,A3)
+  nonrecomb = mem$nonrecomb[a] && A[2] == C[2] && A[2] %in% c(-1, -2)
+  recomb = mem$recomb[a] && A[2] == C[2] && A[2] %in% c(-1, -2)
+  if(nonrecomb && recomb)
+    stop2("Recursion 11b) Special case not implemented")
+
+
+  if(mem$isFounder[a]) {
+    if(nonrecomb) return((1 - rho)/4)
+    if(recomb) return(rho/4)
     return(1/4)
+  }
 
   FF = mem$FIDX[a]
   MM = mem$MIDX[a]
   k1 = mem$k1
 
   parents2L = twoLocKin(c(FF, a), c(MM, a), c(FF, a), c(MM, a), mem, indent = indent + 2)
-  1/4 + 1/2 * k1[[FF, MM]] + 1/4 * parents2L
+  res = 1/4 + 1/2 * k1[[FF, MM]] + 1/4 * parents2L
+
+  if(nonrecomb) res = (1 - rho) * res
+  if(recomb) res = rho * res
+
+  res
 }
 
 
 sortPairs = function(A,B,C,D) {
-  # Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
   plist = list(A,B,C,D)
 
-  if(plist[[1]][1] < plist[[2]][1])
+  ### Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
+  if (plist[[1]][1] < plist[[2]][1])
     plist[1:2] = plist[2:1]
-  if(plist[[3]][1] < plist[[4]][1])
+  if (plist[[3]][1] < plist[[4]][1])
     plist[3:4] = plist[4:3]
-  if(plist[[1]][1] < plist[[3]][1] ||
-     (plist[[1]][1] == plist[[3]][1] && plist[[2]][1] < plist[[4]][1]))
+  if (plist[[1]][1] < plist[[3]][1] || (plist[[1]][1] == plist[[3]][1] && plist[[2]][1] < plist[[4]][1]))
     plist[] = plist[c(3,4,1,2)]
 
-  # ensure segregation indicators are sorted appropriately
+  ### Ensure segregation indicators are sorted appropriately
   A = plist[[1]]; B = plist[[2]]; C = plist[[3]]; D = plist[[4]]
-  if(A[1]==B[1] && A[1] == C[1] && A[1] == D[1]) {
-    if(A[2] != C[2] && A[2] == D[2])
-      plist[3:4] = plist[4:3]
+
+  # Only necessary when a = b = c
+  if (A[1] == B[1] && A[1] == C[1]) {
+    if (A[1] == D[1]) { # case 1: All equal
+      if(A[2] != C[2] && A[2] == D[2])
+        plist[3:4] = plist[4:3]
+      else if(A[2] != C[2] && B[2] == C[2])
+        plist[1:2] = plist[2:1]
+      else if(A[2] != C[2] && B[2] == D[2])
+        plist[] = plist[c(2:1,4:3)]
+    }
+    else { # case 2: a = b = c != d
+      if(A[2] != C[2] && B[2] == C[2])
+        plist[1:2] = plist[2:1]
+    }
   }
 
   plist
@@ -423,7 +477,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
 
   # Conditions on recombinant/non-recombinant gametes
   mem$recomb = mem$nonrecomb = rep(FALSE, pedsize(ped))
-  if(is.null(recomb)) {
+  if(!is.null(recomb)) {
     mem$recomb[internalID(ped, recomb$r)] = TRUE
     mem$nonrecomb[internalID(ped, recomb$nr)] = TRUE
   }

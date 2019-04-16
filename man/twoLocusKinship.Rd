@@ -13,8 +13,13 @@ twoLocusKinship(x, ids, rho, recombinants = NULL, verbose = FALSE,
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
 
-\item{rho}{A number in the interval \eqn{[0, 0.5]}; the recombination rate
-between the two loci.}
+\item{rho}{A numeric vector of recombination rates; all entries must be in
+the interval \eqn{[0, 0.5]}.}
+
+\item{recombinants}{A logical of length 2, applicaple only when \code{ids} has
+length 2. When given, it indicates whether each of the two gametes is a
+recombinant or non-recombinant. This parameter is mainly used by
+\code{\link[=twoLocusIBD]{twoLocusIBD()}}.}
 
 \item{verbose}{A logical.}
 
@@ -27,9 +32,9 @@ a given recombination rate.
 }
 \details{
 Let A, B be two pedigree members, and L1, L2 two loci with a given
-recombination rate rho. The two-locus kinship coefficient \eqn{\phi_{AB}(rho)} is
-defined as the probability that random gametes segregating from A and B has
-IBD alleles at both L1 and L2 simultaneously.
+recombination rate rho. The two-locus kinship coefficient
+\eqn{\phi_{AB}(rho)} is defined as the probability that random gametes
+segregating from A and B has IBD alleles at both L1 and L2 simultaneously.
 
 The implementation is based on the recursive algorithm described by Thompson
 (1988).
