@@ -163,6 +163,46 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
   res
 }
 
+# Thompson (1988) k2(J(A,B), L(C,D)). A = c(id, segind) a.s.o.
+twoLocusK2 = function(x, J, L, rho, verbose = FALSE, debug = FALSE) {
+  if(!is.ped(x))
+    stop2("Input is not a `ped` object")
+  if(!is.list(J) || length(J) != 2)
+    stop2("Argument `J` must be a list of length 2: ", J)
+  if(!is.list(L) || length(L) != 2)
+    stop2("Argument `L` must be a list of length 2: ", L)
+  if(!is.numeric(rho) && length(rho) != 1)
+    stop2("Argument `rho` must be a single numeric")
+
+  # Enforce parents to precede their children
+  if(!has_parents_before_children(x))
+    x = parents_before_children(x)
+
+  mem = initialiseTwoLocusMemo(x, rho = rho)
+
+  # Convert to internal numeric labels
+  convertAndFix = function(S, segind) {
+    S[1] = internalID(x, S[1])
+    if(length(S) == 1)  # If segregation index missing, insert supplied value
+      S = c(S, segind)
+    else if(S[2] > 0)
+      S[2] = internalID(x, S[2])
+    S
+  }
+
+  # Taken (negative) segreg indices
+  takenSeg = min(0, J[[1]][2], J[[2]][2], L[[1]][2], L[[2]][2])
+
+  A = convertAndFix(J[[1]], takenSeg - 1)
+  B = convertAndFix(J[[2]], takenSeg - 2)
+  C = convertAndFix(L[[1]], takenSeg - 3)
+  D = convertAndFix(L[[2]], takenSeg - 4)
+
+  twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
+}
+
+
+
 
 ####################
 # Internal functions
@@ -181,9 +221,6 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
 
   A = plist[[1]]; B = plist[[2]]; C = plist[[3]]; D = plist[[4]]
   a = A[1]; b = B[1]; c = C[1]; d = D[1]
-
-  isFou = mem$isFounder[a]
-  ANC = mem$anc
 
   k2_recurse = function(A,B,C,D) {
     mem$irec = mem$irec + 1
@@ -218,9 +255,16 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
     }
   }
 
+  isFou = mem$isFounder[a]
+  ANC = mem$anc
+
   # If no common ancestors, return 0
   if(!(ANC[a,b] && ANC[c,d]))
     return(printAndReturn(0, indent))
+
+  # TODO: Reduce dimensionality if possible, as in weeks & lange
+  # TODO: Use symmetry if (A1, B2, A1, B2), as in Thompson
+  # TODO: Special cases not covered in conditional recomb/nonrecomb: Indicate segreg!
 
   # Lookup in array; compute if necessary.
   mem$ilook = mem$ilook + 1
