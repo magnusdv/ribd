@@ -32,9 +32,9 @@
 #' # are separable (in theory) using pairs of linked markers.
 #' ######################################
 #' peds = list(
-#'     GrandP  = list(ped = linearPed(2),    ids = c(1,5)))
-#'   # Uncle   = list(ped = cousinPed(0, 1), ids = c(3,6)),  # Not yet
-#'   # HalfSib = list(ped = halfSibPed(),    ids = c(4,5)))  # Not yet
+#'     GrandParent  = list(ped = linearPed(2),    ids = c(1,5)),
+#'     HalfSib      = list(ped = halfSibPed(),    ids = c(4,5)),
+#'     Uncle        = list(ped = cousinPed(0, 1), ids = c(3,6)))
 #'
 #' # Recombination values
 #' rseq = seq(0, 0.5, length = 11)
@@ -44,7 +44,9 @@
 #'   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r)))
 #'
 #' # Plot
-#' matplot(rseq, kvals, type = "l")
+#' matplot(rseq, kvals, type = "l", xlab = "Recombination rate", ylab = "",
+#'         main = expression(paste("Two-locus IBD:  ", kappa[`1,1`])))
+#'
 #' legend("topright", names(peds), col = 1:3, lty = 1:3)
 #'
 #' #########################
@@ -53,8 +55,17 @@
 #' y = addSon(cousinPed(0, child = TRUE), 5)
 #' ids = c(1, 7) # neither is inbred
 #'
-#' # TODO: Check if the following is correct
-#' sapply(rseq, function(r) twoLocusIBD(y, ids, r))
+#' # Exact two-locus k11
+#' k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r))
+#' plot(rseq, k11, type="l", ylim = c(0, 0.5))
+#'
+#' \dontrun{
+#' # Check by simulation (increase Nsim!)
+#' library(ibdsim2)
+#' k11.sim = sapply(rseq, function(r)
+#'                  estimateTwoLocusIBD(y, ids, r, Nsim = 100)['ibd1', 'ibd1'])
+#' points(rseq, k11.sim, col = 2)
+#' }
 #'
 #' @export
 twoLocusIBD = function(x, ids, rho) {
@@ -65,39 +76,43 @@ twoLocusIBD = function(x, ids, rho) {
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
 
-  # Sort ids so that ids[1] comes first in the internal ordering
   ids_int = internalID(x, ids)
-  if(ids_int[1] > ids_int[2]) {
-    ids[] = ids[2:1]
-    ids_int[] = ids_int[2:1]
-  }
+
+  ### Sort ids so that ids[1] comes first in the internal ordering
+  # if(ids_int[1] > ids_int[2]) {
+  #  ids[] = ids[2:1]
+  #  ids_int[] = ids_int[2:1]
+  # }
+  # directDescend = ids_int[1] %in% ancestors(x, ids_int[2], internal = T)
 
   # Check that none of the ids are inbred
   if(any(inbreeding(x)[ids_int] > 0))
     stop2("IBD coefficients are not defined for pairs of inbred individuals")
 
-  # Is ids[2] a direct descendant of ids[1]?
-  directDescend = ids_int[1] %in% ancestors(x, ids_int[2], internal = T)
+  # One-locus IBD coefficients
+  kap = kappaIbd(x, ids)
 
-  # In descendant case, use special formula
-  if(directDescend) {
-    p11_nr_nr = twoLocusKinship(x, ids, rho, recombinants = c(F,F))
-    p11_r_nr = twoLocusKinship(x, ids, rho, recombinants = c(T,F))
+  # If kappa2 = 0
+  if(kap[3] == 0) {
+    p11.hh = twoLocusKinship(x, ids, rho, recombinants = c(F,F))
+    p11.rh = twoLocusKinship(x, ids, rho, recombinants = c(T,F))
+    p11.hr = twoLocusKinship(x, ids, rho, recombinants = c(F,T))
+    p11.rr = twoLocusKinship(x, ids, rho, recombinants = c(T,T))
 
-    # Impossible since ids[2] is direct descendent of ids[1]:
-    # p11_nr_r = twoLocusKinship(x, ids, rho, recombinants = c(F,T))
-    # p11_r_r = twoLocusKinship(x, ids, rho, recombinants = c(T,T))
+    # Compute k11 as sum of four probs: cc = cis/cis; ct = cis/trans etc
+    # If rho = 0, then only the cc part is nonzero
+    k11.cc = p11.hh * 4/(1-rho)^2
 
-    k11_cs_cs = 4 * p11_nr_nr/(1-rho)^2
-    if(rho > 0)
-      k11_tr_cs = 4 * p11_r_nr/(rho*(1-rho))
-    else k11_tr_cs = 0
-    # print(k11_cs_cs)
-    k11 = k11_cs_cs + k11_tr_cs
-    return(k11)
+    if(rho == 0)
+      return(k11.cc)
+
+    k11.ct = p11.hr * 4/(rho*(1-rho))
+    k11.tc = p11.rh * 4/(rho*(1-rho))
+    k11.tt = p11.rr * 4/(rho^2)
+
+    return(k11.cc + k11.ct + k11.tc + k11.tt)
   }
-
-  stop2("Sorry, only directly linear relationships are implemented so far.")
+  stop2("Relationships with kappa2 > 0 are not implemented yet")
 
   id1 = ids[1]
   id2 = ids[2]
@@ -106,7 +121,6 @@ twoLocusIBD = function(x, ids, rho) {
   mo1 = mother(x, id1)
   mo2 = mother(x, id2)
 
-  fou = founders(x)
   phi = kinship(x)
 
   # Matrix of two-locus kinship for all pairs
@@ -123,24 +137,15 @@ twoLocusIBD = function(x, ids, rho) {
   phi01 = phi10 = phi - phi11
   phi00 = 1 - 2*phi + phi11
 
+  # The following probabilities are known:
+  k22.h = phi11[fa1, fa2] * phi11[mo1, mo2] + phi11[fa1, mo2] * phi11[mo1, fa2]
+  k21.h = phi11[fa1, fa2] * phi10[mo1, mo2] + phi11[fa1, mo2] * phi10[mo1, fa2] +
+          phi11[mo1, fa2] * phi10[fa1, mo2] + phi11[mo1, mo2] * phi10[fa1, fa2]
+  k11.cc = phi11[fa1, fa2] * phi00[mo1, mo2] + phi11[fa1, mo2] * phi00[mo1, fa2] +
+           phi11[mo1, fa2] * phi00[fa1, mo2] + phi11[mo1, mo2] * phi00[fa1, fa2]
 
-  pp = list(c(fa1, fa2), c(fa1, mo2),c(mo1, fa2), c(mo1, mo2))
-  a = matrix(NA, nrow=4, ncol=4)
-  for(i in 1:4) for(j in 1:4) {
-    if(i == j) {
-      pi = pp[[i]]
-      pj = pp[[5-i]]
-      a[i,j] = phi11[pi[1], pi[2]] * phi00[pj[1], pj[2]]
-    }
-    else {
-      pi = pp[[i]]
-      pj = pp[[j]]
-      a[i,j] = phi10[pi[1], pi[2]] * phi01[pj[1], pj[2]]
-    }
-  }
+  phi11.rr = twoLocusKinship(x, ids=ids, rho, recombinants = c(T,T))
+  k11.tt = phi11.rr * 4/rho^2 - 2*k22.h - 2*k21.h
 
-  phi11[fa1, fa2] * phi00[mo1, mo2] + phi10[fa1, fa2] * (phi01[fa1, mo2] + phi01[mo1, fa2] + phi01[mo1, mo2]) +
-    phi11[fa1, mo2] * phi00[mo1, fa2] + phi10[fa1, mo2] * (phi01[fa1, fa2] + phi01[mo1, fa2] + phi01[mo1, mo2]) +
-    phi11[mo1, fa2] * phi00[fa1, mo2] + phi10[mo1, fa2] * (phi01[fa1, fa2] + phi01[fa1, mo2] + phi01[mo1, mo2]) +
-    phi11[mo1, mo2] * phi00[fa1, fa2] + phi10[mo1, mo2] * (phi01[fa1, fa2] + phi01[fa1, mo2] + phi01[mo1, fa2])
+  return(c(k22.h = k22.h, k21.h = k21.h, k11.cc = k11.cc, k11.tt = k11.tt))
 }

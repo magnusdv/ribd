@@ -42,9 +42,9 @@ the parents of A and B.
 # are separable (in theory) using pairs of linked markers.
 ######################################
 peds = list(
-    GrandP  = list(ped = linearPed(2),    ids = c(1,5)))
-  # Uncle   = list(ped = cousinPed(0, 1), ids = c(3,6)),  # Not yet
-  # HalfSib = list(ped = halfSibPed(),    ids = c(4,5)))  # Not yet
+    GrandParent  = list(ped = linearPed(2),    ids = c(1,5)),
+    HalfSib      = list(ped = halfSibPed(),    ids = c(4,5)),
+    Uncle        = list(ped = cousinPed(0, 1), ids = c(3,6)))
 
 # Recombination values
 rseq = seq(0, 0.5, length = 11)
@@ -54,7 +54,9 @@ kvals = sapply(peds, function(x)
   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r)))
 
 # Plot
-matplot(rseq, kvals, type = "l")
+matplot(rseq, kvals, type = "l", xlab = "Recombination rate", ylab = "",
+        main = expression(paste("Two-locus IBD:  ", kappa[`1,1`])))
+
 legend("topright", names(peds), col = 1:3, lty = 1:3)
 
 #########################
@@ -63,8 +65,17 @@ legend("topright", names(peds), col = 1:3, lty = 1:3)
 y = addSon(cousinPed(0, child = TRUE), 5)
 ids = c(1, 7) # neither is inbred
 
-# TODO: Check if the following is correct
-sapply(rseq, function(r) twoLocusIBD(y, ids, r))
+# Exact two-locus k11
+k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r))
+plot(rseq, k11, type="l", ylim = c(0, 0.5))
+
+\dontrun{
+# Check by simulation (increase Nsim!)
+library(ibdsim2)
+k11.sim = sapply(rseq, function(r)
+                 estimateTwoLocusIBD(y, ids, r, Nsim = 100)['ibd1', 'ibd1'])
+points(rseq, k11.sim, col = 2)
+}
 
 }
 \seealso{
