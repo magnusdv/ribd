@@ -62,7 +62,7 @@
 #' kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 #'
 #' # Plot
-#' matplot(rseq, kvals, type="l", lwd=2, )
+#' matplot(rseq, kvals, type="l", lwd=2)
 #' legend("topright", names(peds), col = 1:4, lty = 1:4)
 #'
 #' @importFrom utils combn
@@ -95,8 +95,14 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
   if(length(ids) == 2 && length(rho) == 1) {
     A = C = c(ids_int[1], -1) # using negative numbers to enforce independent gametes
     B = D = c(ids_int[2], -2)
-    mem = initialiseTwoLocusMemo(x, rho = rho, recomb = rList)
 
+    # Counters for verbose output
+    counters = c("i","ilook","irec","eq7","eq8","eq9a","eq9b","eq10","eq11a","eq11b")
+
+    # Initialise memory storage
+    mem = initialiseTwoLocusMemo(x, rho = rho, recomb = rList, counters = counters)
+
+    # Compute!
     phi11 = twoLocKin(A, B, C, D, mem, indent = ifelse(debug, 0, NA))
 
     # Print info
@@ -178,7 +184,10 @@ twoLocusK2 = function(x, J, L, rho, verbose = FALSE, debug = FALSE) {
   if(!has_parents_before_children(x))
     x = parents_before_children(x)
 
-  mem = initialiseTwoLocusMemo(x, rho = rho)
+  # Counters for verbose output
+  counters = c("i","ilook","irec","eq7","eq8","eq9a","eq9b","eq10","eq11a","eq11b")
+
+  mem = initialiseTwoLocusMemo(x, rho = rho, counters = counters)
 
   # Convert to internal numeric labels
   convertAndFix = function(S, segind) {
@@ -283,9 +292,9 @@ printMess = function(plist, indent) {
                   strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
 
-printAndReturn = function(res, indent) {
+printAndReturn = function(res, indent, comment = NULL) {
   if(!is.na(indent))
-    message(strrep(" ", indent), res)
+    message(strrep(" ", indent), res, comment)
   res
 }
 
@@ -296,7 +305,7 @@ recurse_eq7 = function(A,B,C,D,mem,indent) {
   mem$eq7 = mem$eq7 + 1
   a = A[1]
   if(mem$isFounder[a])
-    return(0, indent)
+    return(0)
 
   FF = mem$FIDX[a]
   MM = mem$MIDX[a]
@@ -506,49 +515,4 @@ sortPairs = function(A,B,C,D) {
   plist
 }
 
-
-initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosomal") {
-  # Create memory storage
-  mem = new.env()
-
-  # Start timing
-  st = Sys.time()
-
-  mem$FIDX = ped$FIDX
-  mem$MIDX = ped$MIDX
-  mem$SEX = ped$SEX
-  mem$rho = rho
-
-  # Conditions on recombinant/non-recombinant gametes
-  mem$recomb = mem$nonrecomb = rep(FALSE, pedsize(ped))
-  if(!is.null(recomb)) {
-    mem$recomb[internalID(ped, recomb$r)] = TRUE
-    mem$nonrecomb[internalID(ped, recomb$nr)] = TRUE
-  }
-
-  # Logical matrix showing who has a common ancestor within the pedigree.
-  mem$anc = has_common_ancestor(ped)
-
-  # Compute kinship matrix directly
-  mem$k1 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
-
-  # Storage for two-locus kinship values
-  mem$k2 = list()
-
-  # For quick look-up:
-  FOU = founders(ped, internal = T)
-  isFounder = rep(FALSE, pedsize(ped))
-  isFounder[FOU] = TRUE
-  mem$isFounder = isFounder
-
-  # Counters
-  mem$i = mem$ilook = mem$irec = 0
-  mem$eq7 = mem$eq8 = mem$eq9a = mem$eq9b = mem$eq10 = mem$eq11a = mem$eq11b = 0
-
-  # Start time
-  mem$st = st
-  mem$initTime = Sys.time() - st
-
-  mem
-}
 
