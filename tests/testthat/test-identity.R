@@ -1,6 +1,5 @@
 context("Identity")
 
-library(pedtools)
 ident = function(x, ids, ...) condensedIdentity(x, ids, verbose=F, ...)
 
 test_that("inbreeding coefficients of zero have no effect", {

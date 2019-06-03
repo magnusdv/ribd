@@ -72,7 +72,7 @@ rseq = seq(0, 0.5, length = 20)
 kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 
 # Plot
-matplot(rseq, kvals, type="l", lwd=2, )
+matplot(rseq, kvals, type="l", lwd=2)
 legend("topright", names(peds), col = 1:4, lty = 1:4)
 
 }
