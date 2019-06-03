@@ -4,6 +4,25 @@ stop2 = function(...) {
   do.call(stop, a)
 }
 
+# Quick version of combn(., 2)
+comb2 = function(n, vec = F){
+  if(vec) {
+    v = n
+    n = length(v)
+  }
+  if (n < 2)
+    return(matrix(nrow = 0, ncol = 2))
+
+  x = rep.int(seq_len(n - 1), (n - 1):1)
+  o = c(0, cumsum((n-2):1))
+  y = seq_along(x) + 1 - o[x]
+  res = cbind(x, y, deparse.level = 0)
+
+  if(vec)
+    res = cbind(v[res[,1]], v[res[,2]])
+
+  res
+}
 
 # A safer version of base::sample
 safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
@@ -14,4 +33,16 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 
 # Fast intersection. NB: assumes no duplicates!
 .myintersect = function(x, y) y[match(x, y, 0L)]
+
+# TODO: Move to pedtools
+foundersFirst = function(x) {
+  fou = founders(x, internal = T)
+
+  # Check if all foundders are already first
+  if(length(fou) == max(fou))
+    return(x)
+
+  nonfou = nonfounders(x, internal = T)
+  reorderPed(x, neworder = c(fou, nonfou))
+}
 
