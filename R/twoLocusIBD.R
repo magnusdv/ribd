@@ -1,18 +1,18 @@
 #' Two-locus IBD coefficients
 #'
-#' Computes the two-locus IBD coefficients \eqn{\kappa_{i,j}}{k_ij} of a pair of
-#' pedigree members, at a given recombination rate.
+#' Computes the 3*3 matrix of two-locus IBD coefficients of a pair of non-inbred
+#' pedigree members, for a given recombination rate.
 #'
 #' Let A, B be two pedigree members, and L1, L2 two loci with a given
-#' recombination rate r. The two-locus IBD coefficient
-#' \eqn{\kappa_{i,j}(\rho)}{k_ij(\rho)}, where \eqn{0 \leq i,j \leq 2} is
+#' recombination rate \eqn{\rho}. The two-locus IBD coefficients
+#' \eqn{\kappa_{i,j}(\rho)}{\kappa_ij(\rho)}, for \eqn{0 \le i,j \le 2} are
 #' defined as the probability that A and B have `i` alleles IBD at L1 and `j`
 #' alleles IBD at L2 simultaneously. Note that IBD alleles at the two loci are
-#' not required to be in cis (or in trans for that matter).
+#' not required to be _in cis_ (or _in trans_ for that matter).
 #'
 #' The method of computation depends on the (single-locus) IBD coefficient
-#' \eqn{\kappa[2]}. If this is zero (e.g. if A is a direct ancestor of B, or
-#' vice versa) the two-locus IBD coefficients are easily computable from the
+#' \eqn{\kappa_2}. If this is zero (e.g. if A is a direct ancestor of B, or vice
+#' versa) the two-locus IBD coefficients are easily computable from the
 #' two-locus kinship coefficients, as implemented in [twoLocusKinship()]. In the
 #' general case, the computation is more involved, requiring _generalised
 #' two-locus kinship_ coefficients. This is implemented in the function
@@ -24,34 +24,40 @@
 #' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
 #'   between the two loci.
 #' @param coefs A character indicating which coefficient(s) to compute. A subset
-#'   of ("k00", "k01", "k02", "k10", "k11", "k12", "k20", "k21", "k22")
+#'   of `c('k00', 'k01', 'k02', 'k10', 'k11', 'k12', 'k20', 'k21', 'k22')`. By
+#'   default, all coefficients are computed.
 #' @param detailed A logical, indicating whether the condensed (default) or
 #'   detailed coefficients should be returned.
 #' @param verbose A logical.
 #'
-#' @return A single numeric.
+#' @return By default, a symmetric 3*3 matrix containing the two-locus IBD
+#'   coefficients \eqn{\kappa_{i,j}}{\kappa_ij}.
+#'
+#'   If either `coefs` is explicitly given (i.e., not NULL), or `detailed =
+#'   TRUE`, the computed coefficients are returned as a named vector.
 #'
 #' @seealso [twoLocusKinship()]
 #'
 #' @examples
+#' # Some variables used in several examples below
+#' rseq = seq(0, 0.5, length = 11)  # recombination values
 #'
-#' # Some variables used to make the plots in the first three examples
-#' rseq = rseq = seq(0, 0.5, length = 11)  # recombination values
 #' xlab = "Recombination rate"
 #' main = expression(paste("Two-locus IBD:  ", kappa[`1,1`]))
 #'
-#' ######################################
-#' # A classic example of three relationships with the same one-locus
-#' # IBD coefficients, but different two-locus IBD coefficient k11.
+#' ###################################################################
+#' # Example 1: A classic example of three relationships with the same
+#' # one-locus IBD coefficients, but different two-locus coefficients.
 #' # As a consequence, these relationships cannot be separated using
-#' # unlinked markers, but are (theoretically) separable with linked markers.
-#' ######################################
+#' # unlinked markers, but are (theoretically) separable with linked
+#' # markers.
+#' ###################################################################
 #' peds = list(
-#'     GrandParent  = list(ped = linearPed(2),    ids = c(1, 5)),
-#'     HalfSib      = list(ped = halfSibPed(),    ids = c(4, 5)),
-#'     Uncle        = list(ped = cousinPed(0, 1), ids = c(3, 6)))
+#'     GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
+#'     HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
+#'     Uncle       = list(ped = cousinPed(0, 1), ids = c(3, 6)))
 #'
-#' # Compute the two-locus IBD coefficient k11 for each rho
+#' # Compute `k11` for each rho
 #' kvals = sapply(peds, function(x)
 #'   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
 #'
@@ -59,15 +65,16 @@
 #' matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
 #' legend("topright", names(peds), col = 1:3, lty = 1:3)
 #'
-#' ##########################################################
+#'
+#' ############################################################
 #' # Example 2: Inspired by Fig. 3 in Thompson (1988),
 #' # and its erratum: https://doi.org/10.1093/imammb/6.1.1.
 #' #
 #' # These relationships are also analysed in ?twoLocusKinship,
 #' # where we show that they have identical two-locus kinship
-#' # coefficients. Here we demonstrate that they are in fact
-#' # separable by means of the two-locus IBD coefficient k11.
-#' ##########################################################
+#' # coefficients. Here we demonstrate that they have different
+#' # two-locus IBD coefficients.
+#' ############################################################
 #'
 #' # List of pedigrees and ID pairs
 #' peds = list(
@@ -75,7 +82,7 @@
 #'   HalfUncle  = list(ped = halfCousinPed(0, 1), ids = c(3, 7))
 #' )
 #'
-#' # Compute two-locus IBD coefficients (k11)
+#' # Compute `k11` for each rho
 #' kvals = sapply(peds, function(x)
 #'   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
 #'
@@ -83,7 +90,8 @@
 #' matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
 #' legend("topright", names(peds), col = 1:2, lty = 1:2)
 #'
-#' #####################################################################
+#'
+#' ######################################################################
 #' # Example 3: Two-locus IBD of two half sisters whose mother have
 #' # inbreeding coefficient 1/4. We compare two different realisations
 #' # of this:
@@ -93,7 +101,7 @@
 #' # We show below that these relationships have different two-locus
 #' # coefficients. This exemplifies that a single-locus inbreeding
 #' # coefficient cannot replace the genealogy in analyses of linked loci.
-#' #####################################################################
+#' ######################################################################
 #'
 #' xPO = addChildren(nuclearPed(1, sex = 2), 1, 3, nch = 1, sex = 2)
 #' xPO = addDaughter(addDaughter(xPO, 4), 4)
@@ -107,7 +115,7 @@
 #' peds = list(PO = list(ped = xPO, ids = c(6, 8)),
 #'             SIB = list(ped = xSIB, ids = c(7, 9)))
 #'
-#' # Compute two-locus IBD coefficients (k11)
+#' # Compute `k11` for each rho
 #' kvals = sapply(peds, function(x)
 #'   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
 #'
@@ -123,14 +131,15 @@
 #' k11_S = 1/16*(8*r^6 - 32*r^5 + 58*r^4 - 58*r^3 + 43*r^2 - 20*r + 10)
 #' all.equal(kvals[, "SIB"], k11_S, check.names = FALSE)
 #'
+#'
 #' ################################################
 #' # Example 4:
 #' # The complete two-locus IBD matrix of full sibs
 #' ################################################
 #'
 #' x = nuclearPed(2)
-#' mat = twoLocusIBD(x, ids = 3:4, rho = 0.25)
-#' mat
+#' k2_mat = twoLocusIBD(x, ids = 3:4, rho = 0.25)
+#' k2_mat
 #'
 #' # Compare with explicit formulas
 #' IBDSibs = function(rho) {
@@ -145,10 +154,38 @@
 #'   m
 #' }
 #'
-#' stopifnot(all.equal(mat, IBDSibs(0.25)))
+#' stopifnot(all.equal(k2_mat, IBDSibs(0.25)))
+#'
+#'
+#' #####################################################
+#' # Example 5: Two-locus IBD of quad half first cousins
+#' #
+#' # We use this to exemplilfy two simple properties of
+#' # the two-locus IBD matrix.
+#' #####################################################
+#'
+#' x = quadHalfFirstCousins()
+#' ids = c(9, 10)
+#'
+#' # First compute the one-locus IBD coefficients (= c(17, 14, 1)/32)
+#' k1 = kappaIbd(x, ids)
+#'
+#' ### Case 1: Complete linkage (`rho = 0`).
+#' # In this case the two-locus IBD matrix has `k1` on the diagonal,
+#' # and 0's everywhere else.
+#' k2_mat_0 = twoLocusIBD(x, ids = ids, rho = 0)
+#'
+#' stopifnot(all.equal(k2_mat_0, diag(k1), check.attributes = FALSE))
+#'
+#' #' ### Case 2: Unlinked loci (`rho = 0.5`).
+#' # In this case the two-locus IBD matrix is the outer product of
+#' # `k1` with itself.
+#' k2_mat_0.5 = twoLocusIBD(x, ids = ids, rho = 0.5)
+#' stopifnot(all.equal(k2_mat_0.5, k1 %o% k1, check.attributes = FALSE))
+#'
 #'
 #' ########################################################
-#' # Example 5: Using simulation (from the ibdsim2 package)
+#' # Example 6: Using simulation (from the ibdsim2 package)
 #' # to validate two-locus IBD coefs
 #' ########################################################
 #'
