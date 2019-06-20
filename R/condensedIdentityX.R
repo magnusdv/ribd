@@ -58,8 +58,8 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer 
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 
@@ -156,7 +156,7 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer 
 compare_with_XIBD = function(x, ids, j) {
   cat("Comparison with `XIBD` package: ")
 
-  if(any(founderInbreeding(x) > 0)) {
+  if(hasInbredFounders(x)) {
     message("skipped. (Pedigree has inbred founders.)")
     return()
   }

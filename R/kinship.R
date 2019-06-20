@@ -33,10 +33,10 @@ kinship = function(x) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Ensure standard order of pedigree members
-  standardOrder = has_parents_before_children(x)
+  standardOrder = hasParentsBeforeChildren(x)
   if(!standardOrder) {
     origOrder = labels(x)
-    x = parents_before_children(x)
+    x = parentsBeforeChildren(x)
   }
 
   FIDX = x$FIDX
@@ -46,7 +46,7 @@ kinship = function(x) {
   N = pedsize(x)
 
   # Vector of inb coeffs for all founders (including those with 0)
-  FOU_INB = founderInbreeding(x, ids=founders(x))
+  FOU_INB = founderInbreeding(x)
 
   # Initializing the kinship matrix.
   # Diagonal entries of founders are 0.5*(1+f)
@@ -55,7 +55,7 @@ kinship = function(x) {
   kins = diag(self_kinships, nrow = N, ncol = N)
 
   # Vector of (maximal) generation number of each ID: dp[i] = 1 + max(dp[parents])
-  # Simpler & faster than kindepth(). Requires "parents_before_children".
+  # Simpler & faster than kindepth(). Requires "parentsBeforeChildren".
   dp = rep(0, N)
   for(i in NONFOU)
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])

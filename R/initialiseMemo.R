@@ -13,7 +13,7 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   SEX = ped$SEX
 
   # Logical matrix showing who has a common ancestor within the pedigree.
-  anc = has_common_ancestor(ped)
+  anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly
   KIN2 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))

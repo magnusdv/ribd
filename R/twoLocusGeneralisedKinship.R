@@ -1,8 +1,8 @@
 twoLocusGeneralisedKinship = function(x, locus1, locus2, rho, verbose = F, debug = F) {
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   x = foundersFirst(x)
 
@@ -103,6 +103,10 @@ genKin2L = function(kin, mem, indent = 0) {
     return(printAndReturn(res, indent))
   }
 
+  if(t + u == 0) {
+    print(kin)
+    stop2("Case t +u = 0 is still not implemented!")
+  }
   if(s + u == 0) {
     A1 = .5^un * (1-rho)^ev
     A2 = .5^un * rho^ev

@@ -80,8 +80,8 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
     stop2("Debugging mode is only allowed when `ids` has length 2, and `rho` has length 1")
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 
@@ -181,8 +181,8 @@ twoLocusK2 = function(x, J, L, rho, verbose = FALSE, debug = FALSE) {
     stop2("Argument `rho` must be a single numeric")
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   # Counters for verbose output
   counters = c("i","ilook","irec","eq7","eq8","eq9a","eq9b","eq10","eq11a","eq11b")

@@ -46,8 +46,8 @@ NULL
 generalisedKinship3 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 
@@ -68,8 +68,8 @@ generalisedKinship3 = function(x, ids, sparse = NA, chromType = "autosomal", ver
 generalisedKinship4 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 
@@ -88,8 +88,8 @@ generalisedKinship4 = function(x, ids, sparse = NA, chromType = "autosomal", ver
 #' @export
 generalisedKinship22 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 

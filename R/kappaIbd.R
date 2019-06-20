@@ -153,8 +153,8 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ids_int = internalID(x, ids)
 

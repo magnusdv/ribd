@@ -154,7 +154,7 @@ jacquard2 = function(x, ids, verbose = FALSE, cleanup = TRUE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
 
-  x = parents_before_children(x)
+  x = parentsBeforeChildren(x)
   ped = as.data.frame(x)[, 1:3]
 
   write.table(ped, file = "__paramlink2idcoefs__.ped", quote = F, row.names = F, col.names = F)

@@ -225,8 +225,8 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
   ### Compute coefficients assuming kappa2 == 0 ###
 
   ### Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   ### k11
   k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(F,F)) * 4/(1-rho)^2
@@ -298,8 +298,8 @@ twoLocusIBD_bilinear = function(x, ids, rho, coefs = NULL, detailed = F, verbose
     stop2("`ids` must be non-founders in this function")
 
   # Enforce parents to precede their children
-  if(!has_parents_before_children(x))
-    x = parents_before_children(x)
+  if(!hasParentsBeforeChildren(x))
+    x = parentsBeforeChildren(x)
 
   x = foundersFirst(x)
 

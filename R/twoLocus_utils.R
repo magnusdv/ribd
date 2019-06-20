@@ -303,7 +303,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
 
   # Logical matrix showing who has a common ancestor within the pedigree.
   # TODO: is this neccessary? (since we also include k1 below)
-  mem$anc = has_common_ancestor(ped)
+  mem$anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly
   mem$k1 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
