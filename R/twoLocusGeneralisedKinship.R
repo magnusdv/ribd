@@ -26,12 +26,16 @@ genKin2L = function(kin, mem, indent = 0) {
   print(kin, indent = indent)
   kin = kinReduce(kin)
 
-  if(length(kin$locus1) == 0)
+  ll = lengths(kin)
+  if(sum(ll) == 0)
     return(printAndReturn(1, indent, comment = " (empty)"))
 
-  if(length(kin$locus1) == 1 && length(kin$locus1[[1]]$from) == 1 &&
-     (length(kin$locus2) == 0 || length(kin$locus2[[1]]$from) == 1))
-    return(printAndReturn(1, indent, comment = " (trivial)"))
+  if(all(ll <= 1)) {
+    triv1 = ll[1] == 0 || length(kin$locus1[[1]]$from) == 1
+    triv2 = ll[2] == 0 || length(kin$locus2[[1]]$from) == 1
+    if(triv1 && triv2)
+      return(printAndReturn(1, indent, comment = " (trivial)"))
+  }
 
   if(boundary0_test(kin, mem))
     return(printAndReturn(0, indent, comment = " (boundary 0)"))
