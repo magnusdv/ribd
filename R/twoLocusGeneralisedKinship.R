@@ -108,8 +108,13 @@ genKin2L = function(kin, mem, indent = 0) {
   }
 
   if(t + u == 0) {
-    print(kin)
-    stop2("Case t +u = 0 is still not implemented!")
+    A.2 = .5^(r + s)
+    res =
+      A.2 * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2)) +
+      A.2 * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2))
+
+    return(printAndReturn(res, indent))
+
   }
   if(s + u == 0) {
     A1 = .5^un * (1-rho)^ev
