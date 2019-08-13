@@ -1,6 +1,6 @@
 context("Two-locus generalised kinship")
 
-tlgk = function(x, loc1, loc2 = list(), rho = 0.25, ...)
+tlgk = function(x, loc1, loc2 = "", rho = 0.25, ...)
   twoLocusGeneralisedKinship(x, loc1, loc2, rho = rho, ...)
 
 test_that("two-loc generalised kinship, trivial examples", {
@@ -14,6 +14,26 @@ test_that("two-loc generalised kinship, trivial examples", {
   expect_equal(tlgk(x, "3>-1 = 3>-2 = 3>-3"), 1/4)
   expect_equal(tlgk(x, "3>-1 = 3>-2 = 3>-3 = 1>3"), 1/8)
   expect_equal(tlgk(x, "3>-1 = 3>-2 = 3>-3, 1>3"), 1/8)
+
+  # r > 0, s > 0, t = u = 0
+  expect_equal(tlgk(x, "3>-1, 3>-2"), 1/2)
+  expect_equal(tlgk(x, loc1="", loc2="3>-1, 3>-2"), 1/2)
+  expect_equal(tlgk(x, "3>-1 = 3>-2, 3>-3"), 1/4)  # r=2, s=1
+  expect_equal(tlgk(x, "3>-1, 3>-2 = 3>-3"), 1/4)  # r=1, s=2
+  expect_equal(tlgk(x, "", "3>-1 = 3>-2, 3>-3"), 1/4) # reverse loci
+  expect_equal(tlgk(x, "", "3>-1, 3>-2 = 3>-3"), 1/4)  # reverse loci
+
+  # r > 0, t > 0, s = u = 0
+  expect_equal(tlgk(x, "3>-1", "3>-1"), 1)
+  expect_equal(tlgk(x, "3>-1 = 3>-2", "3>-1 = 3>-2"), 5/16)
+  expect_equal(tlgk(x, "3>-1 = 3>-2", "3>-1 = 3>-3"), 1/4)
+
+  # r > 0, s > 0, t > 0, u = 0
+  expect_equal(tlgk(x, "3>-1, 3>-2", "3>-1 = 3>-2"), 3/16)
+  expect_equal(tlgk(x, "3>-1 = 3>-2, 3>-3", "3>-1 = 3>-2 = 3>-3"), 3/64)
+
+  # r > 0, s > 0, t > 0, u > 0
+  expect_equal(tlgk(x, "3>-1, 3>-2", "3>-1, 3>-2"), 5/16)
 })
 
 test_that("two-loc gen kinship in inbred family", {
