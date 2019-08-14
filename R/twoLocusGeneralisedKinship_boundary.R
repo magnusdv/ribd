@@ -72,6 +72,18 @@ boundary3_value = function(kin, mem) {
     L1a = L1[ids1 == a]
     L2a = L2[ids2 == a]
 
+    # Completely inbred?
+    if(mem$isCompletelyInbred[a]) {
+      if(length(L1a) > 1 || length(L2a) > 1) { # Impossible!
+        res = 0
+        break
+      }
+      res = res * 1  # Otherwise trivial
+      next
+    }
+
+    ### By now a can be assumed to be outbred ###
+
     # Only present in locus1
     if(length(L2a) == 0) {
       res = res * 0.5 ^ (length(unlist(L1a))/2 - 1) # dividing by 2: counting both from/to
