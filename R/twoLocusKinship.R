@@ -320,8 +320,12 @@ recurse_eq8 = function(A,B,C,D,mem,indent) {
   a = A[1]
   phi_cd = mem$k1[[C[1], D[1]]] # kinship of c and d
 
-  if(mem$isFounder[a])
-    return(0.5 *  phi_cd)
+  if(mem$isFounder[a]) {
+    if(mem$isCompletelyInbred[a])
+      return(phi_cd)
+    else
+      return(0.5 *  phi_cd)
+  }
 
   FF = mem$FIDX[a]
   MM = mem$MIDX[a]
@@ -417,6 +421,9 @@ recurse_eq11a = function(A,B,C,D,mem,indent) { # Case k2(A1,A2; A1,A2): Eq. 11 i
   R = .5 * ((1-rho)^2 + rho^2)
 
   if(mem$isFounder[a]) {
+    if(mem$isCompletelyInbred[a])
+      return(1)
+
     if(forceNonRec && forceRec)
       res = 0
     else if(forceNonRec)
