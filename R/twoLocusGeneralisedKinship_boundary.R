@@ -42,6 +42,7 @@ boundary2_test = function(kin, mem) {
   return(F)
 }
 
+# Boundary condition 3: Are all sources founders?
 boundary3_test = function(kin, mem) {
   loc1 = unlist(lapply(kin$locus1, function(g) g$from))
   loc2 = unlist(lapply(kin$locus2, function(g) g$from))
@@ -52,8 +53,8 @@ boundary3_test = function(kin, mem) {
   return(F)
 }
 
-# If pivot and everybody else is founder,
-# and neither boundary 1 or 2
+# Return value in boundary case 3
+# Assuming B0, B1, B2 don't apply!
 boundary3_value = function(kin, mem) {
 
   L1 = kin$locus1
