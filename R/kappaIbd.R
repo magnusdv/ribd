@@ -93,11 +93,11 @@ kappaIbd = function(x, ids = labels(x), verbose = FALSE) {
   KIN = kinship(x)
   INB = 2*diag(KIN) - 1 # inbreeding coeffs
 
-  if(verbose && any(INB[ids] > .Machine$double.eps)) {
-    message("Warning: kappa coefficients are only defined for non-inbred individuals.")
-    inbred = ids[INB[ids] > .Machine$double.eps]
-    for(id in inbred)
-      message(sprintf("%s: f = %f", id, INB[id]))
+  isInbred = INB[ids] > .Machine$double.eps
+  if(any(isInbred) && inbredAction > 0) {
+    msg = paste0(c(sprintf(" Individual '%s' is inbred (f = %g)", ids[isInbred], INB[ids[isInbred]]),
+                  "Kappa coefficients are only defined for non-inbred individuals."), collapse = "\n")
+    switch(inbredAction, {message("Warning:"); message(msg)}, stop2(msg))
   }
 
   # Build result data frame
