@@ -320,12 +320,23 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   isFounder[FOU] = TRUE
   mem$isFounder = isFounder
 
+  ### Founder inbreeding
+  # For linked loci only *completely* inbred founders are meaningful.
+  finb = founderInbreeding(ped, ids = founders(ped), named = T)
+  if(length(partials <- finb[finb > 0 & finb < 1]) > 0) {
+    stop2("Partial founder inbreeding detected!",
+          sprintf("\n  Individual '%s' (f = %f)", names(partials), partials),
+          "\nTwo-locus coefficients are well-defined only when each founder is either outbred or completely inbred.")
+  }
+
+  # A logical vector for quick look-up e.g. isCompletelyInbred[a].
+  isCompletelyInbred = rep(NA, pedsize(ped))
+  isCompletelyInbred[FOU] = finb == 1
+  mem$isCompletelyInbred = isCompletelyInbred
+
   # Counters
   for(cou in counters)
     assign(cou, 0, envir = mem)
-
-  #mem$i = mem$ilook = mem$irec = 0
-  #mem$eq7 = mem$eq8 = mem$eq9a = mem$eq9b = mem$eq10 = mem$eq11a = mem$eq11b = 0
 
   # Start time
   mem$st = st
