@@ -25,19 +25,6 @@ boundary1_test = function(kin, mem) {
   return(F)
 }
 
-# Boundary condition 2: Any group with >1 founders?
-boundary2_testOLD = function(kin, mem) {
-  for(i in 1:2) {
-    for(g in kin[[i]]) {
-      ids = unique.default(g$from)
-      if(sum(mem$isFounder[ids]) > 1) {
-        mem$b2 = mem$b2 + 1
-        return(T)
-      }
-    }
-  }
-  return(F)
-}
 
 # Boundary condition 2: Any group with 2 unrelated indivs?
 boundary2_test = function(kin, mem) {
