@@ -283,6 +283,9 @@ kinList2internal = function(ped, kinList) {
 
 # Initialise memoisation used in twoLocusKinship and twoLocusGeneralisedKinship
 initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosomal", counters = NULL) {
+  if(chromType != "autosomal")
+    stop2("Only `chromType = autosomal` is implemented at the moment")
+
   # Create memory storage
   mem = new.env()
 
