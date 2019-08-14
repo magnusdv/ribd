@@ -168,7 +168,7 @@
 #' ids = c(9, 10)
 #'
 #' # First compute the one-locus IBD coefficients (= c(17, 14, 1)/32)
-#' k1 = kappaIbd(x, ids)
+#' k1 = kappaIBD(x, ids)
 #'
 #' ### Case 1: Complete linkage (`rho = 0`).
 #' # In this case the two-locus IBD matrix has `k1` on the diagonal,
@@ -213,8 +213,8 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must have length exactly 2")
 
-  # One-locus IBD coefficients
-  kap = kappaIbd(x, ids)
+  # One-locus IBD coefficients (stop if anyone is inbred)
+  kap = kappaIBD(x, ids, inbredAction = 2)
 
   # If kappa2 > 0: Use elaborate method
   if(kap[3] > 0) {

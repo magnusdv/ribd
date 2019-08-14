@@ -180,7 +180,7 @@ x = quadHalfFirstCousins()
 ids = c(9, 10)
 
 # First compute the one-locus IBD coefficients (= c(17, 14, 1)/32)
-k1 = kappaIbd(x, ids)
+k1 = kappaIBD(x, ids)
 
 ### Case 1: Complete linkage (`rho = 0`).
 # In this case the two-locus IBD matrix has `k1` on the diagonal,
