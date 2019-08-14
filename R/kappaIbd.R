@@ -58,7 +58,7 @@
 #'
 #'  Unless `inbredAction = 2`, the coefficients of pairs involving inbred
 #'  individuals (inbred *females* in the X version) are reported as NA.
-#'  Furthermore, the X chromosomal \eqn{kappa2} is NA whenever at least one of
+#'  Furthermore, the X chromosomal \eqn{\kappa2} is NA whenever at least one of
 #'  the two individuals is male.
 #'
 #'
