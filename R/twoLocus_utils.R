@@ -325,7 +325,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   finb = founderInbreeding(ped, ids = founders(ped), named = T)
   if(length(partials <- finb[finb > 0 & finb < 1]) > 0) {
     stop2("Partial founder inbreeding detected!",
-          sprintf("\n  Individual '%s' (f = %f)", names(partials), partials),
+          sprintf("\n  Individual '%s' (f = %g)", names(partials), partials),
           "\nTwo-locus coefficients are well-defined only when each founder is either outbred or completely inbred.")
   }
 
