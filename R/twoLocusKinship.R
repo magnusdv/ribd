@@ -329,7 +329,7 @@ recurse_eq8 = function(A,B,C,D,mem,indent) {
 
   FF = mem$FIDX[a]
   MM = mem$MIDX[a]
-  0.5 * (phi_cd + twoLocKin(c(FF, a), c(MM, a), C, D, mem, indent = indent + 2))
+  0.5 * (phi_cd + twoLocKin(c(FF, a), c(MM, a+100), C, D, mem, indent = indent + 2))
 }
 
 recurse_eq9a = function(A,B,C,D,mem,indent) {
@@ -342,11 +342,13 @@ recurse_eq9a = function(A,B,C,D,mem,indent) {
   MM = mem$MIDX[a]
   rho = mem$rho
 
+
   # Terms used in various formulas
+  # NB (a+100): used to separate meioses involved in selfing, i.e. if FF = MM.
   t1 = function() twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
   t2 = function() twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
-  t3 = function() twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
-  t4 = function() twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+  t3 = function() twoLocKin(c(FF, a), B, c(MM, a+100), D, mem, indent = indent + 2)
+  t4 = function() twoLocKin(c(MM, a), B, c(FF, a+100), D, mem, indent = indent + 2)
 
   if(mem$nonrecomb[a])              # force non-rec
     res = 0.5 * (1-rho) * (t1() + t2())
@@ -368,10 +370,11 @@ recurse_eq9b = function(A,B,C,D,mem,indent) {
   FF = mem$FIDX[a]
   MM = mem$MIDX[a]
 
+  # NB (a+100): used to separate meioses involved in selfing, i.e. if FF = MM.
   t1 = twoLocKin(c(FF, a), B, c(FF, a), D, mem, indent = indent + 2)
   t2 = twoLocKin(c(MM, a), B, c(MM, a), D, mem, indent = indent + 2)
-  t3 = twoLocKin(c(FF, a), B, c(MM, a), D, mem, indent = indent + 2)
-  t4 = twoLocKin(c(MM, a), B, c(FF, a), D, mem, indent = indent + 2)
+  t3 = twoLocKin(c(FF, a), B, c(MM, a+100), D, mem, indent = indent + 2)
+  t4 = twoLocKin(c(MM, a), B, c(FF, a+100), D, mem, indent = indent + 2)
 
   0.25 * (t1 + t2 + t3 + t4)
 }
@@ -389,8 +392,8 @@ recurse_eq10 = function(A,B,C,D,mem,indent) {
   rho = mem$rho
   d = D[1]
 
-  t3 = twoLocKin(c(FF, a), c(MM, a), c(FF, a), D, mem, indent = indent + 2)
-  t4 = twoLocKin(c(FF, a), c(MM, a), c(MM, a), D, mem, indent = indent + 2)
+  t3 = twoLocKin(c(FF, a), c(MM, a), c(FF, a+100), D, mem, indent = indent + 2)
+  t4 = twoLocKin(c(FF, a), c(MM, a), c(MM, a+100), D, mem, indent = indent + 2)
 
   if(A[2] == C[2]) { # EAT eq 10
     s = 0.25 * (k1[[FF, d]] + k1[[MM, d]] + t3 + t4)
@@ -443,7 +446,7 @@ recurse_eq11a = function(A,B,C,D,mem,indent) { # Case k2(A1,A2; A1,A2): Eq. 11 i
   if(forceNonRec && forceRec) {
     res = rho*(1-rho)*k1[[MM, FF]] # without the factor two (either R-NR or NR-R)
   } else {
-    t4 = twoLocKin(c(MM, a), c(FF, a), c(MM, a), c(FF, a), mem, indent = indent + 2)
+    t4 = twoLocKin(c(MM, a), c(FF, a+100), c(MM, a), c(FF, a+100), mem, indent = indent + 2)
     if(forceNonRec)
       res = .5 * (1-rho)^2 * (1 + t4)
     else if(forceRec)
@@ -479,7 +482,7 @@ recurse_eq11b = function(A,B,C,D,mem,indent) { # k2(A1,A2; A1,A3) or k2(A1,A2; A
   MM = mem$MIDX[a]
   k1 = mem$k1
 
-  parents2L = twoLocKin(c(FF, a), c(MM, a), c(FF, a), c(MM, a), mem, indent = indent + 2)
+  parents2L = twoLocKin(c(FF, a), c(MM, a+100), c(FF, a), c(MM, a+100), mem, indent = indent + 2)
   res = 1/4 + 1/2 * k1[[FF, MM]] + 1/4 * parents2L
 
   if(nonrecomb) res = (1 - rho) * res
