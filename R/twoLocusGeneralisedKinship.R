@@ -94,15 +94,19 @@ genKin2L = function(kin, mem, indent = 0) {
   # Wrapper of genKin2L to save typing in the recursions
   recu = function(k) genKin2L(k, mem, indent = indent +2)
 
+  # Meiosis indicators used in recursions (separates f and m in case of selfing)
+  a.f = 100*a + 1
+  a.m = 100*a + 2
+
   # Recurse!
   if(s + t + u == 0) {
     res =
-      .5^r * recu(kinRepl(kin, id = a, par1 = f)) +
-      .5^r * recu(kinRepl(kin, id = a, par1 = m))
+      .5^r * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f))) +
+      .5^r * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m)))
 
     if(r > 1)
       res = res +
-        (1 - 2 * (.5)^r) * recu(kinRepl(kin, id = a, par1 = c(f,m)))
+        (1 - 2 * (.5)^r) * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = c(f,m), to1 = c(a.f, a.m))))
 
     return(printAndReturn(res, indent))
   }
@@ -110,8 +114,8 @@ genKin2L = function(kin, mem, indent = 0) {
   if(t + u == 0) {
     A.2 = .5^(r + s)
     res =
-      A.2 * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2)) +
-      A.2 * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2))
+      A.2 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m))) +
+      A.2 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f)))
 
     return(printAndReturn(res, indent))
 
@@ -120,10 +124,10 @@ genKin2L = function(kin, mem, indent = 0) {
     A1 = .5^un * (1-rho)^ev
     A2 = .5^un * rho^ev
     res =
-      A1 * recu(kinRepl(kin, id = a, par1 = f, par2 = f)) +
-      A2 * recu(kinRepl(kin, id = a, par1 = f, par2 = m)) +
-      A2 * recu(kinRepl(kin, id = a, par1 = m, par2 = f)) +
-      A1 * recu(kinRepl(kin, id = a, par1 = m, par2 = m))
+      A1 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f), loc2Rep = list(from1 = f, to1 = a.f))) +
+      A2 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f), loc2Rep = list(from1 = m, to1 = a.m))) +
+      A2 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m), loc2Rep = list(from1 = f, to1 = a.f))) +
+      A1 * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m), loc2Rep = list(from1 = m, to1 = a.m)))
 
     B = C = D = 0
     R.ev = (1-rho)^ev + rho^ev
@@ -131,19 +135,19 @@ genKin2L = function(kin, mem, indent = 0) {
     if(r > 1) {
       B = .5^t - .5^un * R.ev
       res = res +
-        B * recu(kinRepl(kin, id = a, par1 = c(f,m), par2 = f)) +
-        B * recu(kinRepl(kin, id = a, par1 = c(f,m), par2 = m))
+        B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = c(f,m), to1 = c(a.f,a.m)), loc2Rep = list(from1 = f, to1 = a.f))) +
+        B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = c(f,m), to1 = c(a.f,a.m)), loc2Rep = list(from1 = m, to1 = a.m)))
     }
     if(t > 1) {
       C = .5^r - .5^un * R.ev
       res = res +
-        C * recu(kinRepl(kin, id = a, par1 = f, par2 = c(f,m))) +
-        C * recu(kinRepl(kin, id = a, par1 = m, par2 = c(f,m)))
+        C * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f), loc2Rep = list(from1 = c(f,m), to1 = c(a.f,a.m)))) +
+        C * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m), loc2Rep = list(from1 = c(f,m), to1 = c(a.f,a.m))))
     }
     if(r > 1 && t > 1) {
       D = 1 - 2*.5^t - 2 * .5^r + 2*.5^un*R.ev
       res = res +
-        D * recu(kinRepl(kin, id = a, par1 = c(f,m), par2 = c(f,m)))
+        D * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = c(f,m), to1 = c(a.f,a.m)), loc2Rep = list(from1 = c(f,m), to1 = c(a.f,a.m))))
     }
 
     # Check that coeffs sum to 1
@@ -156,15 +160,15 @@ genKin2L = function(kin, mem, indent = 0) {
     A = .5^un * (1-rho)^ev * rho^od
     B = .5^un * (1-rho)^od * rho^ev
     res =
-      A * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2, par2 = f)) +
-      B * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2, par2 = f)) +
-      B * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2, par2 = m)) +
-      A * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2, par2 = m))
+      A * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m), loc2Rep = list(from1 = f, to1 = a.f))) +
+      B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f), loc2Rep = list(from1 = f, to1 = a.f))) +
+      B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m), loc2Rep = list(from1 = m, to1 = a.m))) +
+      A * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f), loc2Rep = list(from1 = m, to1 = a.m)))
     if(t > 1) {
       C = .5^(r+s) - .5^un * ((1-rho)^ev * rho^od + (1-rho)^od * rho^ev)
       res = res +
-        C * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2, par2 = c(f,m))) +
-        C * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2, par2 = c(f,m)))
+        C * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m), loc2Rep = list(from1 = c(f,m), to1 = c(a.f,a.m)))) +
+        C * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f), loc2Rep = list(from1 = c(f,m), to1 = c(a.f,a.m))))
     }
 
     return(printAndReturn(res, indent))
@@ -173,10 +177,10 @@ genKin2L = function(kin, mem, indent = 0) {
   A = .5^un * (1-rho)^ev * rho^od
   B = .5^un * (1-rho)^od * rho^ev
   res =
-    A * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2, par2 = c(f,m), gr2 = 1:2)) +
-    B * recu(kinRepl(kin, id = a, par1 = c(f,m), gr1 = 1:2, par2 = c(m,f), gr2 = 1:2)) +
-    B * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2, par2 = c(f,m), gr2 = 1:2)) +
-    A * recu(kinRepl(kin, id = a, par1 = c(m,f), gr1 = 1:2, par2 = c(m,f), gr2 = 1:2))
+    A * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m), loc2Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m))) +
+    B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m), loc2Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f))) +
+    B * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f), loc2Rep = list(from1 = f, to1 = a.f, from2 = m, to2 = a.m))) +
+    A * recu(kinRepl(kin, id = a, loc1Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f), loc2Rep = list(from1 = m, to1 = a.m, from2 = f, to2 = a.f)))
 
   return(printAndReturn(res, indent))
 }

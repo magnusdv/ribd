@@ -50,16 +50,17 @@ validateKin2L = function(x, ped = NULL) {
         printAndStop(g, "Allele group must have names 'from' and 'to'")
       if(!is.integer(g$from) || !is.integer(g$to) || length(g$from) != length(g$to))
         printAndStop(g, "Entries 'from' and 'to' must be numeric vectors (internal labels) of the same length")
-      # Check that meioses are compatible with pedigree
-      target.in.ped = g$to > 0
-      if(!is.null(ped) && length(target.in.ped) > 0) {
-        labs = labels(ped)
-        ch = g$to[target.in.ped]
-        par = g$from[target.in.ped]
-        par.ok = par == ped$FIDX[ch] | par == ped$MIDX[ch]
-        if(!all(par.ok))
-          printAndStop(x, toString(sprintf("%s is not a child of %s", labs[ch], labs[par])))
-      }
+
+      # # Check that meioses are compatible with pedigree
+      # target.in.ped = g$to > 0
+      # if(!is.null(ped) && length(target.in.ped) > 0) {
+      #   labs = labels(ped)
+      #   ch = g$to[target.in.ped]
+      #   par = g$from[target.in.ped]
+      #   par.ok = par == ped$FIDX[ch] | par == ped$MIDX[ch]
+      #   if(!all(par.ok))
+      #     printAndStop(x, toString(sprintf("%s is not a child of %s", labs[ch], labs[par])))
+      # }
     }
   }
   x
@@ -75,27 +76,6 @@ print.kin2L = function(x, ...,  indent = 0) {
   message(sprintf("%s[%s ::: %s]", strrep(" ", indent), mess1, mess2))
 }
 
-
-sort_kin2L_OLD = function(x) {
-  # Auxiliary function for sorting each group
-  sortGroup = function(g) {
-    ord = order(g$from, -g$to, decreasing = T)
-    list(from = g$from[ord], to = g$to[ord])
-  }
-
-  x1 = lapply(x$locus1, sortGroup)
-  x2 = lapply(x$locus2, sortGroup)
-
-  # Sort on first 'from' of each group
-  x1 = x1[order(vapply(x1, function(g) g$from[1], 1), decreasing = T)]
-  x2 = x2[order(vapply(x2, function(g) g$from[1], 1), decreasing = T)]
-
-  j1 = if (x1[[1]]$from[1] >= x2[[1]]$from[1]) 1 else 2
-  j2 = 3-j1
-  x[[j1]] = x1
-  x[[j2]] = x2
-  x
-}
 
 sort_kin2L = function(x) {
   # Auxiliary function for sorting a single group
@@ -140,61 +120,48 @@ kinReduce = function(kin) {
   kin
 }
 
-
 # Two locus kinship class
 # Locus 1, replace `id` with par1 in group(s) gr1
 # Locus 2, replace `id` with par2 in group(s) gr2
-kinRepl = function(kin, id, par1, gr1 = 1, par2 = NULL, gr2 = 1) {
-  y = kin
+kinRepl = function(kin, id, loc1Rep, loc2Rep = NULL) {#par1, gr1 = 1, par2 = NULL, gr2 = 1) {
+
+  kin$locus1 = kinRepl_1L(kin$locus1, id, loc1Rep$from1, loc1Rep$to1, loc1Rep$from2, loc1Rep$to2)
+
+  if(!is.null(loc2Rep))
+    kin$locus2 = kinRepl_1L(kin$locus2, id, loc2Rep$from1, loc2Rep$to1, loc2Rep$from2, loc2Rep$to2)
+
+  validateKin2L(kin) # TODO: remove validate (coded to be unneccessary)
+}
+
+# Replacement at 1 locus
+# G = list of kinship gorups ( = a pair of vectors (from, to) of same length)
+# `id` is assumed to be present only in the first (one or two) group(s) of G
+kinRepl_1L = function(G, id, from1, to1, from2 = NULL, to2 = NULL) {
   id = as.integer(id)
-  par1 = as.integer(par1)
-  par2 = as.integer(par2)
+  from1 = as.integer(from1)
+  to1 = as.integer(to1)
+  from2 = as.integer(from2)
+  to2 = as.integer(to2)
+  if(length(id) != 1) stop2("Argument `id` must have length 1: ", id)
+  if(length(from1) != length(to1)) stop2("Incompatible lengths of source vs indices: ", from1, " vs. ", to1)
+  if(length(from2) != length(to2)) stop2("Incompatible lengths of source vs indices: ", from2, " vs. ", to2)
+  if(anyNA(c(id, from1, to1, from2, to2))) stop2("NA's detected in recursion step: ", c(id, from1, to1, from2, to2))
 
-  p1 = length(par1)
-  p2 = length(par2)
+  # Group 1: Replace id with `from1`, and corresponding entries in `to` with `to1`
+  g = G[[1]]
+  idx = g$from == id
+  G[[1]] = list(from = c(from1, g$from[!idx]), to = c(to1, g$to[!idx]))
 
-  # Locus 1
-  if(length(gr1) == 1 && p1 %in% 1:2) {
-    G = y$locus1[[gr1]]
-    mch = G$from == id
-    id1 = rep_len(id, p1) # duplicate if par1 has length 2
-    y$locus1[[gr1]] = list(from = c(par1, G$from[!mch]),
-                           to = c(id1, G$to[!mch]))
+  # Group 2, if given
+  if(length(from2)) {
+    g = G[[2]]
+    idx = g$from == id
+    G[[2]] = list(from = c(from2, g$from[!idx]), to = c(to2, g$to[!idx]))
   }
-  else if(length(gr1) == 2 && p1 == 2) {
-    for(i in 1:2) {
-      G = y$locus1[[gr1[i]]]
-      mch = G$from == id
-      y$locus1[[gr1[i]]] = list(from = c(par1[i], G$from[!mch]),
-                                to = c(id, G$to[!mch]))
-    }
-  }
-  else stop2("Invalid input")
 
-  if(p2 == 0)
-    return(y)
-
-  # Locus 2
-  if(length(gr2) == 1 && p2 %in% 1:2) {
-    G = y$locus2[[gr2]]
-    mch = G$from == id
-    id2 = rep_len(id, p2) # duplicate if par1 has length 2
-    y$locus2[[gr2]] = list(from = c(par2, G$from[!mch]),
-                           to = c(id2, G$to[!mch]))
-  }
-  else if(length(gr2) == 2 && p2 == 2) {
-    for(i in 1:2) {
-      G = y$locus2[[gr2[i]]]
-      mch = G$from == id
-      y$locus2[[gr2[i]]] = list(from = c(par2[i], G$from[!mch]),
-                                to = c(id, G$to[!mch]))
-    }
-  }
-  else stop2("Invalid input")
-
-  validateKin2L(y)
+  # Return modified G
+  G
 }
-
 
 char2kinList = function(x) {
   # Example input: "5>9 = 7>10, 6>9, 8>10"
@@ -204,10 +171,26 @@ char2kinList = function(x) {
   kinList = lapply(strsplit(groups, "=", fixed = T), function(g) {
     g = gsub("^[ ]*|[ ]*$", "", g)
     glist = strsplit(g, ">", fixed = T)
-    if(!all(lengths(glist) == 2))
-      stop2("Something wrong with this kinship group: ", g)
-    list(from = sapply(glist, '[', 1), to = sapply(glist, '[', 2))
+
+    from = sapply(glist, '[', 1)
+    to = sapply(glist, '[', 2) # NA if no meiosis indicator
+
+    list(from = as.integer(from), to = as.integer(to))
   })
+
+  # Fix missing meiosis indicators
+  USED.IDX = list()
+  for(i in seq_along(kinList)) {
+    from = kinList[[i]]$from; to = kinList[[i]]$to
+    if(anyNA(to)) {
+      for(j in which(is.na(to))) {
+        a = as.character(from[j])
+        prev = USED.IDX[[a]]
+        val = if(is.null(prev)) 1 else prev + 1
+        USED.IDX[[a]] = kinList[[i]]$to[j] = val
+      }
+    }
+  }
 
   kinList
 }
@@ -223,8 +206,6 @@ kinList2char = function(x, labs = NULL) {
     grvec = vapply(x, function(g) {
       from = labs[g$from]
       to = as.character(g$to)
-      valid = g$to > 0
-      to[valid] = labs[g$to[valid]]
       paste(from, to, sep=">", collapse=" = ")
     }, FUN.VALUE = "")
   }
@@ -232,52 +213,18 @@ kinList2char = function(x, labs = NULL) {
   paste(grvec, collapse = ", ")
 }
 
-
-char2kinList = function(x) {
-  # Example input: "5>9 = 7>10, 6>9, 8>10"
-  # Output: list(from = c(5,7), to = c(9,10)), list(from = 6, to = 9), list(from = 8, to = 10)
-  groups = strsplit(x, ",", fixed = T)[[1]]
-
-  kinList = lapply(strsplit(groups, "=", fixed = T), function(g) {
-    g = gsub("^[ ]*|[ ]*$", "", g)
-    glist = strsplit(g, ">", fixed = T)
-    if(!all(lengths(glist) == 2))
-      stop2("Something wrong with this kinship group: ", g)
-    list(from = sapply(glist, '[', 1), to = sapply(glist, '[', 2))
-  })
-
-  kinList
-}
-
-# Convert (single-locus) kinship group list to a string
-kinList2char = function(x, labs = NULL) {
-  if(is.null(labs)) {
-    grvec = vapply(x, function(g) {
-      paste(g$from, g$to, sep = ">", collapse = " = ")
-    }, FUN.VALUE = "")
-  }
-  else {
-    grvec = vapply(x, function(g) {
-      from = labs[g$from]
-      to = as.character(g$to)
-      valid = g$to > 0
-      to[valid] = labs[g$to[valid]]
-      paste(from, to, sep=">", collapse=" = ")
-    }, FUN.VALUE = "")
-  }
-
-  paste(grvec, collapse = ", ")
-}
 
 # Convert single-locus list of kinship groups to internal labels
 kinList2internal = function(ped, kinList) {
   lapply(kinList, function(g) {
-    from = internalID(ped, g$from)
-    to = suppressWarnings(as.integer(g$to))
-    valid = is.na(to) | to > 0
-    to[valid] = internalID(ped, g$to[valid])
+    g$from = internalID(ped, g$from)
+    g$to = as.integer(g$to)
+    return(g)
 
-    list(from = from, to = to)
+    #to = suppressWarnings(as.integer(g$to))
+    #valid = is.na(to) | to > 0
+    #to[valid] = internalID(ped, g$to[valid])
+    #list(from = from, to = to)
   })
 }
 
