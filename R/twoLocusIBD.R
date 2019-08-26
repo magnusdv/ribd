@@ -249,6 +249,10 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, v
                                 detailed = detailed, verbose = verbose)
   }
 
+  ### Print summary
+  if(verbose)
+    printCounts2(mem)
+
   # Output
   if(outputMatrix) {
     dim(RES) = c(3, 3)
@@ -259,7 +263,7 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, v
 }
 
 
-twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed = F, uniMethod = 1, verbose = F) {
+twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, uniMethod = 1, verbose = F) {
 
   if(is.null(mem)) {
     # Enforce parents to precede their children
@@ -404,8 +408,8 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed
 }
 
 
-twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed = F, verbose = F) {
-  # NB: This function assumes both `ids` indivs to be non-founders
+twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, verbose = F) {
+
   if(any(ids %in% founders(x)))
     stop2("Both `ids` must be non-founders in order to use the bilinear method")
 
@@ -524,10 +528,6 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed 
   if("k00" %in% coefs) {
     k00 = genKin2L(KC(ibd0, ibd0), mem, indent = NA)
   }
-
-  ### Print summary
-  if(verbose)
-    printCounts2(mem)
 
   if(detailed) {
     coefList = list(
