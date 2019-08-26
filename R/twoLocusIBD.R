@@ -28,6 +28,7 @@
 #'   default, all coefficients are computed.
 #' @param detailed A logical, indicating whether the condensed (default) or
 #'   detailed coefficients should be returned.
+#' @param uniMethod Either 1 or 2 (for testing purposes)
 #' @param verbose A logical.
 #'
 #' @return By default, a symmetric 3*3 matrix containing the two-locus IBD
@@ -209,38 +210,170 @@
 #' }
 #'
 #' @export
-twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
+twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, verbose = F) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must have length exactly 2")
 
   # One-locus IBD coefficients (stop if anyone is inbred)
   kap = kappaIBD(x, ids, inbredAction = 2)
 
-  # If kappa2 > 0: Use elaborate method
-  if(kap[3] > 0) {
-    return(twoLocusIBD_bilinear(x, ids, rho, coefs = coefs,
-                                detailed = detailed, verbose = verbose))
-  }
-
-  ### Compute coefficients assuming kappa2 == 0 ###
-
-  ### Enforce parents to precede their children
+  # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
     x = parentsBeforeChildren(x)
 
-  ### k11
-  k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(F,F)) * 4/(1-rho)^2
-  if(rho > 0) {
-    k11.ct = twoLocusKinship(x, ids, rho, recombinants = c(F,T)) * 4/(rho*(1-rho))
-    k11.tc = twoLocusKinship(x, ids, rho, recombinants = c(T,F)) * 4/(rho*(1-rho))
-    k11.tt = twoLocusKinship(x, ids, rho, recombinants = c(T,T)) * 4/(rho^2)
-  }
-  else {
-    k11.ct = k11.tc = k11.tt = 0
+  x = foundersFirst(x)
+
+  # Setup memoisation
+  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b0", "b1", "b2", "b3"))
+  mem$kappa = kap
+
+  # Output format
+  outputMatrix = is.null(coefs) && !detailed
+
+  # Coefficient selection
+  allcoefs = c("k00", "k01", "k02", "k10", "k11", "k12", "k20", "k21", "k22")
+  if(any(!coefs %in% allcoefs))
+    stop2("Invalid coefficient specified: ", setdiff(coefs, allcoefs), "\nSee ?twoLocusIBD for valid choices.")
+  if(is.null(coefs))
+    coefs = allcoefs
+
+  # If kappa2 == 0: Use unilineal method
+  if(kap[3] == 0) {
+    RES = twoLocusIBD_unilineal(x, ids, rho, mem = mem, coefs = coefs,
+                               detailed = detailed, uniMethod = uniMethod, verbose = verbose)
   }
 
-  # Total
-  k11 = k11.cc + k11.ct + k11.tc + k11.tt
+  # If kappa2 > 0: Use bilineal method
+  if(kap[3] > 0) {
+    RES = twoLocusIBD_bilineal(x, ids, rho, mem = mem, coefs = coefs,
+                                detailed = detailed, verbose = verbose)
+  }
+
+  # Output
+  if(outputMatrix) {
+    dim(RES) = c(3, 3)
+    dimnames(RES) = list(paste0("ibd", 0:2), paste0("ibd", 0:2))
+  }
+
+  RES
+}
+
+
+twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed = F, uniMethod = 1, verbose = F) {
+
+  if(is.null(mem)) {
+    # Enforce parents to precede their children
+    if(!hasParentsBeforeChildren(x))
+      x = parentsBeforeChildren(x)
+
+    x = foundersFirst(x)
+
+    # Setup memoisation
+    mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
+  }
+
+  idsi = internalID(x, ids)
+  id1 = idsi[1]
+  id2 = idsi[2]
+  rb = 1 - rho
+
+  kap = if("kappa" %in% names(mem)) mem$kappa else kappaIBD(x, ids, inbredAction = 2)
+
+  k11.cc = k11.ct = k11.tc = k11.tt = 0  # (Useful to define "default" values here)
+
+  if(uniMethod == 1) {
+
+    if(rho == 0.5) {
+      k11 = kap[2]^2
+
+      if(detailed && k11 > 0) {
+        # Rectilineal?
+        if(id1 %in% ancestors(x, id2, internal = T)) {
+          k11.cc = k11.tc = 0.5 * k11
+        }
+        else if(id2 %in% ancestors(x, id1, internal = T)) {
+          k11.cc = k11.ct = 0.5 * k11
+        }
+        else {
+          RELATED = mem$k1 > 0
+
+          # Note that neither id1 nor id2 are founders at this point: k1 > 0 and not rectilineal
+          if(all(RELATED[parents(x, id1, internal = T), id2])) {
+            k11.cc = k11.tc = 0.5 * k11
+          }
+          else if(all(RELATED[parents(x, id1, internal = T), id2])) {
+            k11.cc = k11.ct = 0.5 * k11
+          }
+          else {
+            k11.cc = k11
+          }
+        }
+      }
+    }
+    else if(rho == 0) {
+      k11 = k11.cc = kap[2]
+    }
+    else {# rho strictly between 0 and 0.5
+
+      if(!detailed) {
+        H = kin2L(x, locus1 = sprintf("%s>1 = %s>1 = %s>2 = %s>2", id1, id2, id1, id2),
+                     locus2 = sprintf("%s>1 = %s>1,  %s>2,  %s>2", id1, id2, id1, id2), internal = T)
+        if(verbose)
+          cat("Computing `k11` via the generalised kinship pattern H = ", H, "\n")
+
+        # Compute k11 via H
+        h = genKin2L(H, mem, indent = NA)
+
+        k11 = 16/(rho^2 * rb^2) * h
+      }
+      else {
+        ## Compute 4 generalised coefs, solve for k11^cc etc.
+        kin1 = kin2L(x, locus1 = sprintf("%s>1 = %s>1", id1, id2),
+                        locus2 = sprintf("%s>1 = %s>1", id1, id2), internal = T)
+        h1 = genKin2L(kin1, mem, indent = NA)
+
+        kin2 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2", id1, id2, id2),
+                        locus2 = sprintf("%s>1 = %s>2, %s>1", id1, id2, id2), internal = T)
+        h2 = genKin2L(kin2, mem, indent = NA)
+
+        kin3 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2", id1, id2, id1),
+                        locus2 = sprintf("%s>2 = %s>1, %s>1", id1, id2, id1), internal = T)
+        h3 = genKin2L(kin3, mem, indent = NA)
+
+        kin4 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2, %s>2", id1, id2, id1, id2),
+                        locus2 = sprintf("%s>2 = %s>2, %s>1, %s>1", id1, id2, id1, id2), internal = T)
+        h4 = genKin2L(kin4, mem, indent = NA)
+
+        ### Solve for detailed k11
+        bvec = c(4*h1, 8*h2, 8*h3, 16*h4)
+
+        M = matrix(c(rb^2,     rb*rho,     rb*rho,      rho^2,
+                     rb*rho^2, rb^3,       rho^3,       rb^2*rho,
+                     rb*rho^2, rho^3,      rb^3,        rb^2*rho,
+                     rho^4,    rb^2*rho^2, rb^2*rho^2,  rb^4),
+                   byrow = T, nrow=4)
+
+        m = round(solve(M, bvec), 15) # ad hoc rounding to avoid tiny errors. Better alternatives?
+
+        k11.cc = m[1]; k11.ct = m[2]; k11.tc = m[3]; k11.tt = m[4]
+
+        # Total
+        k11 = k11.cc + k11.ct + k11.tc + k11.tt
+      }
+    }
+  } ### uniMethod 1 done
+  else if(uniMethod == 2) {
+    k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(F,F)) * 4/(rb^2)
+
+    if(rho > 0) {
+      k11.ct = twoLocusKinship(x, ids, rho, recombinants = c(F,T)) * 4/(rho*rb)
+      k11.tc = twoLocusKinship(x, ids, rho, recombinants = c(T,F)) * 4/(rho*rb)
+      k11.tt = twoLocusKinship(x, ids, rho, recombinants = c(T,T)) * 4/(rho^2)
+    }
+
+    # Total
+    k11 = k11.cc + k11.ct + k11.tc + k11.tt
+  }
 
   ### k10
   k10 = k01 = kap[2] - k11
@@ -252,18 +385,6 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
   k20 = k02 = k21 = k12 = k22 = 0
   k12.h = k12.r = k21.h = k21.r = k22.h = k22.r = 0
 
-  #######################
-
-  # Output format
-  outputMatrix = is.null(coefs) && !detailed
-  allcoefs = c("k00", "k01", "k02", "k10", "k11", "k12", "k20", "k21", "k22")
-  if(is.null(coefs))
-    coefs = allcoefs
-  else {
-    if(!all(coefs %in% allcoefs))
-      stop2("Invalid coefficient specified: ", setdiff(coefs, allcoefs),
-            "\nSee ?twoLocusIBD for valid choices.")
-  }
 
   if(detailed) {
     coefList = list(
@@ -278,44 +399,26 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
     coefs = unlist(coefList[coefs])
   }
 
-  # Collect the wanted coefficients (in the indicated order)
-  RES = unlist(mget(coefs))
-
-  if(outputMatrix) {
-    dim(RES) = c(3,3)
-    dimnames(RES) = list(paste0("ibd", 0:2), paste0("ibd", 0:2))
-  }
-
-  RES
+  # Return the wanted coefficients (in the indicated order)
+  unlist(mget(coefs))
 }
 
 
-
-
-twoLocusIBD_bilinear = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
+twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs = NULL, detailed = F, verbose = F) {
   # NB: This function assumes both `ids` indivs to be non-founders
   if(any(ids %in% founders(x)))
-    stop2("`ids` must be non-founders in this function")
+    stop2("Both `ids` must be non-founders in order to use the bilinear method")
 
-  # Enforce parents to precede their children
-  if(!hasParentsBeforeChildren(x))
-    x = parentsBeforeChildren(x)
+  if(is.null(mem)) {
+    # Enforce parents to precede their children
+    if(!hasParentsBeforeChildren(x))
+      x = parentsBeforeChildren(x)
 
-  x = foundersFirst(x)
+    x = foundersFirst(x)
 
-  # Output format
-  outputMatrix = is.null(coefs) && !detailed
-  allcoefs = c("k00", "k01", "k02", "k10", "k11", "k12", "k20", "k21", "k22")
-  if(is.null(coefs))
-    coefs = allcoefs
-  else {
-    if(!all(coefs %in% allcoefs))
-      stop2("Invalid coefficient specified: ", setdiff(coefs, allcoefs),
-            "\nSee ?twoLocusIBD for valid choices.")
+    # Setup memoisation
+    mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
   }
-
-  # Setup memoisation
-  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
 
   # Parents (assuming that ids are nonfounders!!)
   idsi = internalID(x, ids)
@@ -439,15 +542,8 @@ twoLocusIBD_bilinear = function(x, ids, rho, coefs = NULL, detailed = F, verbose
     coefs = unlist(coefList[coefs])
   }
 
-  # Collect the wanted coefficients (in the indicated order)
-  RES = unlist(mget(coefs))
-
-  if(outputMatrix) {
-    dim(RES) = c(3,3)
-    dimnames(RES) = list(paste0("ibd", 0:2), paste0("ibd", 0:2))
-  }
-
-  RES
+  # Return the wanted coefficients (in the indicated order)
+  unlist(mget(coefs))
 }
 
 

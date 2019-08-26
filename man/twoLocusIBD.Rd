@@ -4,7 +4,8 @@
 \alias{twoLocusIBD}
 \title{Two-locus IBD coefficients}
 \usage{
-twoLocusIBD(x, ids, rho, coefs = NULL, detailed = F, verbose = F)
+twoLocusIBD(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1,
+  verbose = F)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -21,6 +22,8 @@ default, all coefficients are computed.}
 
 \item{detailed}{A logical, indicating whether the condensed (default) or
 detailed coefficients should be returned.}
+
+\item{uniMethod}{Either 1 or 2 (for testing purposes)}
 
 \item{verbose}{A logical.}
 }
