@@ -424,109 +424,84 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
     mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
   }
 
-  # Parents (assuming that ids are nonfounders!!)
+  # Detailed single-locus identity states (only noninbred states 9 - 15 are needed)
   idsi = internalID(x, ids)
-  id1 = idsi[1]
-  id2 = idsi[2]
-  f1 = father(x, id1, internal = T)
-  f2 = father(x, id2, internal = T)
-  m1 = mother(x, id1, internal = T)
-  m2 = mother(x, id2, internal = T)
-  if(any(c(f1,f2,m1,m2) == 0))
-     stop2("Missing parent")
+  a = idsi[1]; b = idsi[2]
+  f = father(x, a, internal = T)
+  g = father(x, b, internal = T)
+  m = mother(x, a, internal = T)
+  n = mother(x, b, internal = T)
 
-  # Reusable (single-locus) kinship groups
-  ibd2_tmp = sprintf("%%s>%s = %%s>%s, %%s>%s = %%s>%s", id1, id2, id1, id2)
-  ibd2 = c(sprintf(ibd2_tmp, f1, f2, m1, m2),
-           sprintf(ibd2_tmp, f1, m2, m1, f2))
+  S9  = sprintf("%s>%s = %s>%s, %s>%s = %s>%s", f,a, g,b, m,a, n,b)
+  S10 = sprintf("%s>%s = %s>%s, %s>%s , %s>%s", f,a, g,b, m,a, n,b)
+  S11 = sprintf("%s>%s = %s>%s, %s>%s , %s>%s", m,a, n,b, f,a, g,b)
+  S12 = sprintf("%s>%s = %s>%s, %s>%s = %s>%s", f,a, n,b, m,a, g,b)
+  S13 = sprintf("%s>%s = %s>%s, %s>%s , %s>%s", f,a, n,b, m,a, g,b)
+  S14 = sprintf("%s>%s = %s>%s, %s>%s , %s>%s", m,a, g,b, f,a, n,b)
+  S15 = sprintf("%s>%s , %s>%s, %s>%s , %s>%s", f,a, g,b, m,a, n,b)
 
-  ibd1_tmp = sprintf("%%s>%s = %%s>%s, %%s>%s, %%s>%s", id1, id2, id1, id2)
-  ibd1 = c(sprintf(ibd1_tmp, f1, f2, m1, m2),
-           sprintf(ibd1_tmp, f1, m2, m1, f2),
-           sprintf(ibd1_tmp, m1, f2, f1, m2),
-           sprintf(ibd1_tmp, m1, m2, f1, f2))
+  # Helper function for computing generalised two-locus coefs
+  .Phi = function(loc1, loc2) {
+    kin = kin2L(x, loc1, loc2, internal = T)
+    genKin2L(kin, mem, indent = NA)
+  }
 
-  ibd0_tmp = sprintf("%%s>%s, %%s>%s, %%s>%s, %%s>%s", id1, id2, id1, id2)
-  ibd0 = sprintf(ibd0_tmp, f1, f2, m1, m2)
-
-  # Helper function to save some typing in creating kinship class objects
   KC = function(locus1, locus2)
     kin2L(x, locus1, locus2, internal = T)
 
   ### Here starts the actual work! ###
 
-  ### k22
   if("k22" %in% coefs) {
-    # k22.h
-    k22.h = genKin2L(KC(ibd2[1], ibd2[1]), mem, indent = NA) +
-            genKin2L(KC(ibd2[2], ibd2[2]), mem, indent = NA)
-
-    # k22.r # NB: Symmetry!
-    k22.r = 2 * genKin2L(KC(ibd2[1], ibd2[2]), mem, indent = NA)
+    k22.h = .Phi(S9, S9) + .Phi(S12, S12)
+    k22.r = .Phi(S9, S12) * 2
 
     # Total
     k22 = k22.h + k22.r
   }
 
-  ### k21
   if("k21" %in% coefs || "k12" %in% coefs) {
     # k21.h
-    k21.h = k12.h = genKin2L(KC(ibd2[1], ibd1[1]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[1], ibd1[4]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[2], ibd1[2]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[2], ibd1[3]), mem, indent = NA)
+    k21.h = k12.h = .Phi(S9, S10) + .Phi(S9, S11) +
+                    .Phi(S12, S13) + .Phi(S12, S14)
 
     # k21.r
-    k21.r = k12.r = genKin2L(KC(ibd2[1], ibd1[2]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[1], ibd1[3]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[2], ibd1[1]), mem, indent = NA) +
-                    genKin2L(KC(ibd2[2], ibd1[4]), mem, indent = NA)
+    k21.r = k12.r = .Phi(S9, S13) + .Phi(S9, S14) +
+                    .Phi(S12, S10) + .Phi(S12, S11)
 
     # Total
     k21 = k12 = k21.h + k21.r
   }
 
-  ### k11
   if("k11" %in% coefs) {
     # cis/cis
-    k11.cc = genKin2L(KC(ibd1[1], ibd1[1]), mem, indent = NA) +
-             genKin2L(KC(ibd1[2], ibd1[2]), mem, indent = NA) +
-             genKin2L(KC(ibd1[3], ibd1[3]), mem, indent = NA) +
-             genKin2L(KC(ibd1[4], ibd1[4]), mem, indent = NA)
+    k11.cc = .Phi(S10, S10) + .Phi(S11, S11) +
+             .Phi(S13, S13) + .Phi(S14, S14)
 
     # cis/trans
-    k11.ct = 2 * (genKin2L(KC(ibd1[1], ibd1[2]), mem, indent = NA) +
-                  genKin2L(KC(ibd1[3], ibd1[4]), mem, indent = NA))
+    k11.ct = 2 * (.Phi(S10, S13) + .Phi(S11, S14))
 
     # trans/cis
-    k11.tc = 2 * (genKin2L(KC(ibd1[1], ibd1[3]), mem, indent = NA) +
-                  genKin2L(KC(ibd1[2], ibd1[4]), mem, indent = NA))
+    k11.tc = 2 * (.Phi(S10, S14) + .Phi(S11, S13))
 
     # trans/trans
-    k11.tt = 2 * (genKin2L(KC(ibd1[1], ibd1[4]), mem, indent = NA) +
-                  genKin2L(KC(ibd1[2], ibd1[3]), mem, indent = NA))
+    k11.tt = 2 * (.Phi(S10, S11) + .Phi(S13, S14))
 
     # Total
     k11 = k11.cc + k11.ct + k11.tc + k11.tt
   }
 
-  ### k20
   if("k20" %in% coefs || "k02" %in% coefs) {
-    k20 = k02 = genKin2L(KC(ibd2[1], ibd0), mem, indent = NA) +
-                genKin2L(KC(ibd2[2], ibd0), mem, indent = NA)
+    k20 = k02 = .Phi(S9, S15) + .Phi(S12, S15)
   }
 
-  ### k10
   if("k10" %in% coefs || "k01" %in% coefs) {
-    k10 = k01 = genKin2L(KC(ibd1[1], ibd0), mem, indent = NA) +
-                genKin2L(KC(ibd1[2], ibd0), mem, indent = NA) +
-                genKin2L(KC(ibd1[3], ibd0), mem, indent = NA) +
-                genKin2L(KC(ibd1[4], ibd0), mem, indent = NA)
+    k10 = k01 = .Phi(S10, S15) + .Phi(S11, S15) +
+                .Phi(S13, S15) + .Phi(S14, S15)
+
   }
 
-  ### k00
   if("k00" %in% coefs) {
-    k00 = genKin2L(KC(ibd0, ibd0), mem, indent = NA)
+    k00 = .Phi(S15, S15)
   }
 
   if(detailed) {
