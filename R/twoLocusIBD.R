@@ -446,9 +446,6 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
     genKin2L(kin, mem, indent = NA)
   }
 
-  KC = function(locus1, locus2)
-    kin2L(x, locus1, locus2, internal = T)
-
   ### Here starts the actual work! ###
 
   if("k22" %in% coefs) {
@@ -461,12 +458,10 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
   if("k21" %in% coefs || "k12" %in% coefs) {
     # k21.h
-    k21.h = k12.h = .Phi(S9, S10) + .Phi(S9, S11) +
-                    .Phi(S12, S13) + .Phi(S12, S14)
+    k21.h = k12.h = .Phi(S9, S10) + .Phi(S9, S11) + .Phi(S12, S13) + .Phi(S12, S14)
 
     # k21.r
-    k21.r = k12.r = .Phi(S9, S13) + .Phi(S9, S14) +
-                    .Phi(S12, S10) + .Phi(S12, S11)
+    k21.r = k12.r = .Phi(S9, S13) + .Phi(S9, S14) + .Phi(S12, S10) + .Phi(S12, S11)
 
     # Total
     k21 = k12 = k21.h + k21.r
@@ -474,8 +469,7 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
   if("k11" %in% coefs) {
     # cis/cis
-    k11.cc = .Phi(S10, S10) + .Phi(S11, S11) +
-             .Phi(S13, S13) + .Phi(S14, S14)
+    k11.cc = .Phi(S10, S10) + .Phi(S11, S11) + .Phi(S13, S13) + .Phi(S14, S14)
 
     # cis/trans
     k11.ct = 2 * (.Phi(S10, S13) + .Phi(S11, S14))
@@ -495,8 +489,7 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
   }
 
   if("k10" %in% coefs || "k01" %in% coefs) {
-    k10 = k01 = .Phi(S10, S15) + .Phi(S11, S15) +
-                .Phi(S13, S15) + .Phi(S14, S15)
+    k10 = k01 = .Phi(S10, S15) + .Phi(S11, S15) + .Phi(S13, S15) + .Phi(S14, S15)
 
   }
 
