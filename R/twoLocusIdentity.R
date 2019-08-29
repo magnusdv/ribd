@@ -108,9 +108,6 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
 
 twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F, verbose = F) {
 
-  if(any(ids %in% founders(x)))
-    stop2("Both `ids` must be non-founders in order to use the lateral method")
-
   if(is.null(mem)) {
     # Enforce parents to precede their children
     if(!hasParentsBeforeChildren(x))
@@ -124,29 +121,58 @@ twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F
 
   idsi = internalID(x, ids)
   a = idsi[1]; b = idsi[2]
+
+  # If unrelated, return 0 matrix
+  if(mem$k1[a, b] == 0) {
+    RES = matrix(0, ncol = 9, nrow = 9, dimnames = list(paste0("D", 1:9), paste0("D", 1:9)))
+    if(mem$isCompletelyInbred[a] && mem$isCompletelyInbred[b])
+      RES[2,2] = 1
+    else if(mem$isCompletelyInbred[a])
+      RES[4,4] = 1
+    else if(mem$isCompletelyInbred[b])
+      RES[6,6] = 1
+    else
+      RES[9,9] = 1
+
+    return(RES)
+  }
+
+  # By now, none should be founders
+  if(any(ids %in% founders(x)))
+    stop2("The lateral method cannot be used for these individuals. Rectilineal relationship?")
+
+  # Parents (internal indices)
   f = father(x, a, internal = T)
   g = father(x, b, internal = T)
   m = mother(x, a, internal = T)
   n = mother(x, b, internal = T)
 
-  # Detailed single-locus identity states, described as generalised kinship patterns
-  S = c(
-    sprintf("%s>%s = %s>%s = %s>%s = %s>%s", f,a, g,b, m,a, n,b), # 1
-    sprintf("%s>%s = %s>%s = %s>%s , %s>%s", f,a, g,b, m,a, n,b), # 2
-    sprintf("%s>%s = %s>%s = %s>%s , %s>%s", f,a, n,b, m,a, g,b), # 3
-    sprintf("%s>%s = %s>%s = %s>%s , %s>%s", f,a, g,b, n,b, m,a), # 4
-    sprintf("%s>%s = %s>%s = %s>%s , %s>%s", m,a, g,b, n,b, f,a), # 5
-    sprintf("%s>%s = %s>%s , %s>%s = %s>%s", f,a, m,a, g,b, n,b), # 6
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", f,a, m,a, g,b, n,b), # 7
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", g,b, n,b, f,a, m,a), # 8
+  # Meiosis indicators
+  # Parental meioses must be separated in case of selfing
+  f.mei = sprintf("%s>%s", f, 100*a + 1)
+  m.mei = sprintf("%s>%s", m, 100*a + 2)
 
-    sprintf("%s>%s = %s>%s , %s>%s = %s>%s", f,a, g,b, m,a, n,b), # 9
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", f,a, g,b, m,a, n,b), # 10
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", m,a, n,b, f,a, g,b), # 11
-    sprintf("%s>%s = %s>%s , %s>%s = %s>%s", f,a, n,b, m,a, g,b), # 12
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", f,a, n,b, m,a, g,b), # 13
-    sprintf("%s>%s = %s>%s , %s>%s , %s>%s", m,a, g,b, f,a, n,b), # 14
-    sprintf("%s>%s , %s>%s , %s>%s , %s>%s", f,a, g,b, m,a, n,b)  # 15
+  g.mei = sprintf("%s>%s", g, 100*b + 1)
+  n.mei = sprintf("%s>%s", n, 100*b + 2)
+
+    # Detailed single-locus identity states, described as generalised kinship patterns
+  S = c(
+    sprintf("%s = %s = %s = %s", f.mei, g.mei, m.mei, n.mei), # 1
+    sprintf("%s = %s = %s , %s", f.mei, g.mei, m.mei, n.mei), # 2
+    sprintf("%s = %s = %s , %s", f.mei, n.mei, m.mei, g.mei), # 3
+    sprintf("%s = %s = %s , %s", f.mei, g.mei, n.mei, m.mei), # 4
+    sprintf("%s = %s = %s , %s", m.mei, g.mei, n.mei, f.mei), # 5
+    sprintf("%s = %s , %s = %s", f.mei, m.mei, g.mei, n.mei), # 6
+    sprintf("%s = %s , %s , %s", f.mei, m.mei, g.mei, n.mei), # 7
+    sprintf("%s = %s , %s , %s", g.mei, n.mei, f.mei, m.mei), # 8
+
+    sprintf("%s = %s , %s = %s", f.mei, g.mei, m.mei, n.mei), # 9
+    sprintf("%s = %s , %s , %s", f.mei, g.mei, m.mei, n.mei), # 10
+    sprintf("%s = %s , %s , %s", m.mei, n.mei, f.mei, g.mei), # 11
+    sprintf("%s = %s , %s = %s", f.mei, n.mei, m.mei, g.mei), # 12
+    sprintf("%s = %s , %s , %s", f.mei, n.mei, m.mei, g.mei), # 13
+    sprintf("%s = %s , %s , %s", m.mei, g.mei, f.mei, n.mei), # 14
+    sprintf("%s , %s , %s , %s", f.mei, g.mei, m.mei, n.mei)  # 15
   )
 
   # Which detailed states belong to each condensed state (Jacquard ordering!)
