@@ -15,7 +15,7 @@ The main functions in ribd are:
 
 -   `kinship()`, `kinshipX()` : Computes kinship matrices
 -   `inbreeding()`, `inbreedingX()` : Computes inbreeding coefficients
--   `kappaIbd()`, `kappaIbdX()` : Computes IBD coefficients
+-   `kappaIBD()`, `kappaIBDX()` : Computes IBD coefficients
     (*κ*<sub>0</sub>, *κ*<sub>1</sub>, *κ*<sub>2</sub>) of non-inbred
     pedigree members
 -   `condensedIdentity()`, `condensedIdentityX()` : Computes Jacquard’s
@@ -24,13 +24,16 @@ The main functions in ribd are:
 A novel feature of `ribd` is the ability to handle pedigrees with inbred
 founders. More about this below!
 
-The package also computes some more esoteric coefficients:
+The package also computes some more specialised pedigree coefficients:
 
 -   `generalisedKinship()` : Generalised kinship coefficients, as
     defined by Karigl (1981)
 -   `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
     Thompson (1988)
--   `twoLocusIBD()` : Two-locus IBD coefficients
+-   `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
+    individuals)
+-   `twoLocusIdentity()` : Two-locus condensed identity coefficients
+    (any pair of individuals)
 -   `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
     coefficients (*not exported*)
 
