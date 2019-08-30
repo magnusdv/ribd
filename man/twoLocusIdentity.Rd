@@ -43,9 +43,7 @@ defined as the probability that the identity state of the alleles of A and B
 are \eqn{\Sigma_i} at L1 and \eqn{\Sigma_j} at L2 simultaneously. (The
 ordering of the 9 states follows Jacquard (1974).)
 
-The method of computation depends on whether the relationship between A and B
-is rectilineal or not. Only non-rectilineal relationships are implemented for
-now.
+For details about the algorithm, see Vigeland (2019).
 }
 \examples{
 ### Full sibs ###
@@ -54,6 +52,11 @@ kapp = twoLocusIBD(x, ids = 3:4, rho = 0.25)
 jacq = twoLocusIdentity(x, ids = 3:4, rho = 0.25)
 stopifnot(all.equal(jacq[9:7,9:7], kapp, check.attributes = FALSE))
 
+#' ### Parent-child ###
+x = nuclearPed(1)
+jacq = twoLocusIdentity(x, ids = c(1,3), rho = 0.25)
+stopifnot(jacq[8,8] == 1)
+
 ### Full sib mating ###
 x = fullSibMating(1)
 j = condensedIdentity(x, ids = 5:6)
@@ -61,6 +64,9 @@ j2 = twoLocusIdentity(x, ids = 5:6, rho = 0.25)
 stopifnot(identical(unname(rowSums(j2)), j))
 
 
+}
+\references{
+M. D. Vigeland (2019) \emph{A recursive algorithm for two-locus identity coefficients} (In progress)
 }
 \seealso{
 \code{\link[=twoLocusIBD]{twoLocusIBD()}}

@@ -10,9 +10,7 @@
 #' are \eqn{\Sigma_i} at L1 and \eqn{\Sigma_j} at L2 simultaneously. (The
 #' ordering of the 9 states follows Jacquard (1974).)
 #'
-#' The method of computation depends on whether the relationship between A and B
-#' is rectilineal or not. Only non-rectilineal relationships are implemented for
-#' now.
+#' For details about the algorithm, see Vigeland (2019).
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
@@ -34,12 +32,19 @@
 #'
 #' @seealso [twoLocusIBD()]
 #'
+#' @references M. D. Vigeland (2019) _A recursive algorithm for two-locus identity coefficients_ (In progress)
+#'
 #' @examples
 #' ### Full sibs ###
 #' x = nuclearPed(2)
 #' kapp = twoLocusIBD(x, ids = 3:4, rho = 0.25)
 #' jacq = twoLocusIdentity(x, ids = 3:4, rho = 0.25)
 #' stopifnot(all.equal(jacq[9:7,9:7], kapp, check.attributes = FALSE))
+#'
+#' #' ### Parent-child ###
+#' x = nuclearPed(1)
+#' jacq = twoLocusIdentity(x, ids = c(1,3), rho = 0.25)
+#' stopifnot(jacq[8,8] == 1)
 #'
 #' ### Full sib mating ###
 #' x = fullSibMating(1)
@@ -56,18 +61,14 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
   if(!is.null(coefs)) stop2("Argument `coefs` is not implemented yet")
   if(detailed) stop2("Argument `detailed` is not implemented yet")
 
-  # One-locus identity coefficients
-  # j1 = condensedIdentity(x, ids)
+  if(any(ids %in% founders(x)))
+    x = addFounderParents(x, ids)
 
   # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
     x = parentsBeforeChildren(x)
 
   x = foundersFirst(x)
-
-  ids = internalID(x, ids)
-  a = ids[1]
-  b = ids[2]
 
   # Setup memoisation
   mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b0", "b1", "b2", "b3"))
@@ -82,47 +83,11 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
   #if(is.null(coefs))
   #  coefs = allcoefs
 
-  # Rectilineal
-  rect_a = a %in% ancestors(x, b, internal = T)
-  rect_b = b %in% ancestors(x, a, internal = T)
-  if(rect_a || rect_b)
-    stop2("Rectilineal relationships are not implemented yet")
-
-  if(!rect_a && !rect_b) {
-    RES = twoLocusIdentity_lateral(x, ids, rho, mem = mem, coefs = coefs, detailed = detailed, verbose = verbose)
-  }
-
-  ### Print summary
-  if(verbose)
-    printCounts2(mem)
-
-  # Output
-  if(outputMatrix) {
-    dim(RES) = c(9, 9)
-    dimnames(RES) = list(paste0("D", 1:9), paste0("D", 1:9))
-  }
-
-  RES
-}
-
-
-twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F, verbose = F) {
-
-  if(is.null(mem)) {
-    # Enforce parents to precede their children
-    if(!hasParentsBeforeChildren(x))
-      x = parentsBeforeChildren(x)
-
-    x = foundersFirst(x)
-
-    # Setup memoisation
-    mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
-  }
-
   idsi = internalID(x, ids)
-  a = idsi[1]; b = idsi[2]
+  a = idsi[1]
+  b = idsi[2]
 
-  # If unrelated, return 0 matrix
+  # If unrelated, return early
   if(mem$k1[a, b] == 0) {
     RES = matrix(0, ncol = 9, nrow = 9, dimnames = list(paste0("D", 1:9), paste0("D", 1:9)))
     if(mem$isCompletelyInbred[a] && mem$isCompletelyInbred[b])
@@ -136,10 +101,6 @@ twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F
 
     return(RES)
   }
-
-  # By now, none should be founders
-  if(any(ids %in% founders(x)))
-    stop2("The lateral method cannot be used for these individuals. Rectilineal relationship?")
 
   # Parents (internal indices)
   f = father(x, a, internal = T)
@@ -155,7 +116,7 @@ twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F
   g.mei = sprintf("%s>%s", g, 100*b + 1)
   n.mei = sprintf("%s>%s", n, 100*b + 2)
 
-    # Detailed single-locus identity states, described as generalised kinship patterns
+  # Detailed single-locus identity states, described as generalised kinship patterns
   S = c(
     sprintf("%s = %s = %s = %s", f.mei, g.mei, m.mei, n.mei), # 1
     sprintf("%s = %s = %s , %s", f.mei, g.mei, m.mei, n.mei), # 2
@@ -194,16 +155,45 @@ twoLocusIdentity_lateral = function(x, ids, rho, mem = NULL, coefs, detailed = F
     genKin2L(kin, mem, indent = NA)
   }
 
-  ### Here starts the actual work! ###
+  ### The actual work! ###
 
-  res = matrix(0, nrow = 9, ncol = 9)
+  RES = matrix(0, nrow = 9, ncol = 9)
   for(i in 1:9) for(j in i:9) {
     for(u in I[[i]]) for(v in I[[j]])
-      res[i,j] = res[i,j] + .Phi(S[u], S[v])
+      RES[i,j] = RES[i,j] + .Phi(S[u], S[v])
 
-    res[j,i] = res[i,j]
+    RES[j,i] = RES[i,j]
   }
 
-  res
+
+  ### Print summary
+  if(verbose)
+    printCounts2(mem)
+
+  ### Output
+  if(outputMatrix) {
+    dim(RES) = c(9, 9)
+    dimnames(RES) = list(paste0("D", 1:9), paste0("D", 1:9))
+  }
+
+  RES
 }
 
+# TODO: Fix for selfing
+addFounderParents = function(x, ids) {
+  id1 = ids[1]
+  id2 = ids[2]
+  fou = founders(x)
+
+  if(id1 %in% fou) {
+    if(founderInbreeding(x, id1) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
+    x = addParents(x, id1, verbose = F)
+  }
+
+  if(id2 %in% fou) {
+    if(founderInbreeding(x, id2) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
+    x = addParents(x, id2, verbose = F)
+  }
+
+  x
+}

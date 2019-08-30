@@ -4,6 +4,27 @@ tlid = function(x, ids, rho = 0.25, ...) {
   twoLocusIdentity(x, ids, rho = rho, ...)
 }
 
+test_that("two-loc-identity agrees with theory in simple selfing ped", {
+  x = selfingPed(1)
+  J = condensedIdentity(x, 1:2)
+
+  J2 = tlid(x, 1:2, rho = 0.25)
+  expect_equal(rowSums(J2), J, check.attributes = F)
+  expect_equal(colSums(J2), J, check.attributes = F)
+
+  # Theory
+  POs = function(r) {
+    rb = 1-r
+    M = matrix(0, nrow = 9, ncol = 9, dimnames = rep(list(paste0("D", 1:9)), 2))
+    M[5,5] = M[7,7] = 1/2*(r^2 + rb^2)
+    M[5,7] = M[7,5] = rb*r
+    M
+  }
+
+  expect_identical(J2, POs(0.25))
+})
+
+
 test_that("two-loc-identity agrees with theory in FS with selfing", {
   x = ped(1:3, fid = c(0,1,1), mid = c(0,1,1), sex = c(0,1,1))
   J = condensedIdentity(x, 2:3)
