@@ -190,8 +190,8 @@ genKin2L = function(kin, mem, indent = 0) {
 
 
 printCounts2 = function(mem) {
-  initsecs = sprintf("%.2f", mem$initTime)
-  totsecs = sprintf("%.1f", Sys.time()-mem$st)
+  init_time = format(mem$initTime, digits = 4)
+  tot_time = format(Sys.time()-mem$st, digits = 4)
 
   msg = glue::glue("
                    Function calls: {mem$i}
@@ -202,8 +202,7 @@ printCounts2 = function(mem) {
                      B1: {mem$b1}
                      B2: {mem$b2}
                      B3: {mem$b3}
-                   Initialization: {initsecs} seconds
-                   Total time:     {totsecs} seconds")
+                   Total time:     {tot_time}")
   print(msg)
 }
 

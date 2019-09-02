@@ -107,8 +107,8 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
 
     # Print info
     if(verbose) {
-      initsecs = sprintf("%.2f", mem$initTime)
-      totsecs = sprintf("%.1f", Sys.time() - mem$st)
+      init_time = format(mem$initTime, digits = 4)
+      tot_time = format(Sys.time()-mem$st, digits = 4)
       print(glue::glue("
         Calls = {mem$i}
         Lookups = {mem$ilook}
@@ -120,7 +120,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
           eq. 10 : {mem$eq10}
           eq. 11a: {mem$eq11a}
           eq. 11b: {mem$eq11b}
-        Total time used: {totsecs} seconds"))
+        Total time used: {tot_time}"))
     }
   }
 

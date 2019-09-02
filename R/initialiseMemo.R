@@ -79,8 +79,8 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
 }
 
 printCounts = function(mem) {
-  initsecs = sprintf("%.2f", mem$initTime)
-  totsecs = sprintf("%.1f", Sys.time()-mem$st)
+  init_time = format(mem$initTime, digits = 4)
+  tot_time = format(Sys.time()-mem$st, digits = 4)
 
   msg = glue::glue("
                    Function calls:
@@ -88,7 +88,6 @@ printCounts = function(mem) {
                    phi3  = {mem$i3} (recursions: {mem$i3r})
                    phi4  = {mem$i4} (recursions: {mem$i4r})
                    phi22 = {mem$i22} (recursions: {mem$i22r})
-                   Initialization: {initsecs} seconds
-                   Total time used: {totsecs} seconds")
+                   Total time used: {tot_time}")
   print(msg)
 }
