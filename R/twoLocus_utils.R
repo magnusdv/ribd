@@ -80,7 +80,7 @@ print.kin2L = function(x, ...,  indent = 0) {
 sort_kin2L = function(x) {
   # Auxiliary function for sorting a single group
   sortGroup = function(g) {
-    ord = order(g$from, -g$to, decreasing = T)
+    ord = order(g$from, -g$to, decreasing = T, method = "shell")
     list(from = g$from[ord], to = g$to[ord])
   }
 
@@ -95,10 +95,10 @@ sort_kin2L = function(x) {
 
   # Sort pivot groups and put them first
   x1[piv1] = lapply(x1[piv1], sortGroup)
-  x1 = x1[order(piv1, decreasing = T)]
+  x1 = x1[order(piv1, decreasing = T, method = "shell")]
 
   x2[piv2] = lapply(x2[piv2], sortGroup)
-  x2 = x2[order(piv2, decreasing = T)]
+  x2 = x2[order(piv2, decreasing = T, method = "shell")]
 
   # Ensure locus 1 has max number of pivot groups (either 1 or 2)
   if(sum(piv1) < sum(piv2))
@@ -111,19 +111,31 @@ sort_kin2L = function(x) {
 
 
 kinReduce = function(kin) {
+  # Do a quick test first; usually this will pass
+  hasDup = vapply(c(kin[[1]], kin[[2]]),
+                function(g) anyDuplicated.default(1000*g$to + g$from),
+                FUN.VALUE = 0L)
+
+  if(sum(hasDup) == 0)
+    return(kin)
+
+  # If any dups: do it the old, slow way.
   for(i in 1:2) for(j in seq_along(kin[[i]])) {
     g = kin[[i]][[j]]
-    dups = duplicated(paste(g$from, g$to))
-    if(any(dups))
+    concat = 1000*g$to + g$from
+    if(anyDuplicated.default(concat)) { # usually no dups
+      dups = duplicated.default(concat)
       kin[[i]][[j]] = list(from = g$from[!dups], to = g$to[!dups])
+    }
   }
   kin
 }
 
+
 # Two locus kinship class
 # Locus 1, replace `id` with par1 in group(s) gr1
 # Locus 2, replace `id` with par2 in group(s) gr2
-kinRepl = function(kin, id, loc1Rep, loc2Rep = NULL) {#par1, gr1 = 1, par2 = NULL, gr2 = 1) {
+kinReplace = function(kin, id, loc1Rep, loc2Rep = NULL) {#par1, gr1 = 1, par2 = NULL, gr2 = 1) {
 
   kin$locus1 = kinRepl_1L(kin$locus1, id, loc1Rep$from1, loc1Rep$to1, loc1Rep$from2, loc1Rep$to2)
 

@@ -71,7 +71,7 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
   x = foundersFirst(x)
 
   # Setup memoisation
-  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b0", "b1", "b2", "b3"))
+  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
 
   # Output format
   outputMatrix = is.null(coefs) && !detailed

@@ -1,61 +1,60 @@
-# Boundary condition 0: Any identical from>to in different groups?
-boundary0_test = function(kin, mem) {
-  for(i in 1:2) {
-    meioses = lapply(kin[[i]], function(g) paste(g$from, g$to, sep=">"))
-    if(anyDuplicated(unlist(meioses))) {
-      mem$b0 = mem$b0 + 1
-      return(T)
-    }
-  }
-  return(F)
-}
 
-# Boundary condition 1: Anyone in >2 groups?
-boundary1_test = function(kin, mem) {
+kinImpossible = function(kin, mem) {
+
+  # Loop over the two loci
   for(i in 1:2) {
-    uniq.ids = lapply(kin[[i]], function(g) unique.default(g$from))
-    if(length(uniq.ids) == 0)
+
+    locusGroups = kin[[i]]
+    if(length(locusGroups) == 0)
       next
-    tab = tabulate(unlist(uniq.ids))
+
+    # List unique source indivs in each group
+    uniq_sources = lapply(locusGroups, function(g) unique.default(g$from))
+
+    # Boundary condition 2: Any group with 2 unrelated indivs?
+    k1 = mem$k1
+    for(s in uniq_sources[lengths(uniq_sources) > 1]) {
+      pairs_mat = comb2(s, vec = T)
+      if(any(k1[pairs_mat] == 0)) {
+        mem$iimp = mem$iimp + 1
+        return(T)
+      }
+    }
+
+    # Boundary condition 1: Anyone in >2 groups?
+    tab = tabulate(unlist(uniq_sources))
     if(any(tab > 2)) {
-      mem$b1 = mem$b1 + 1
+      mem$iimp = mem$iimp + 1
+      return(T)
+    }
+
+    # Boundary condition 0: Any identical from>to in different groups?
+    meioses = lapply(locusGroups, function(g) 1000*g$to + g$from)
+    if(anyDuplicated.default(unlist(meioses))) {
+      mem$iimp = mem$iimp + 1
       return(T)
     }
   }
+
+  # If none of the boundary conditions are met, return FALSE
   return(F)
 }
 
 
-# Boundary condition 2: Any group with 2 unrelated indivs?
-boundary2_test = function(kin, mem) {
-  k1 = mem$k1
-  for(g in c(kin[[1]], kin[[2]])) {
-    ids = unique.default(g$from)
-    if(length(ids) < 2)
-      next
-    pairs_mat = comb2(ids, vec = T)
-    if(any(k1[pairs_mat] == 0)) {
-      mem$b2 = mem$b2 + 1
-      return(T)
-    }
-  }
-  return(F)
-}
-
-# Boundary condition 3: Are all sources founders?
-boundary3_test = function(kin, mem) {
+# Boundary condition: Are all sources founders?
+boundary_test = function(kin, mem) {
   loc1 = unlist(lapply(kin$locus1, function(g) g$from))
   loc2 = unlist(lapply(kin$locus2, function(g) g$from))
   if(all(mem$isFounder[c(loc1, loc2)])) {
-    mem$b3 = mem$b3 + 1
+    mem$ifound = mem$ifound + 1
     return(T)
   }
   return(F)
 }
 
-# Return value in boundary case 3
-# Assuming B0, B1, B2 don't apply!
-boundary3_value = function(kin, mem) {
+# Return value in boundary case
+# Assuming `kinImpossible(kin)` is FALSE!
+boundary_value = function(kin, mem) {
 
   L1 = kin$locus1
   L2 = kin$locus2
