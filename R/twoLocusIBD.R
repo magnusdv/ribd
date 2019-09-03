@@ -224,7 +224,7 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, v
   x = foundersFirst(x)
 
   # Setup memoisation
-  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b0", "b1", "b2", "b3"))
+  mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
   mem$kappa = kap
 
   # Output format
@@ -421,7 +421,7 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
     x = foundersFirst(x)
 
     # Setup memoisation
-    mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "ilook", "ir", "b1", "b2", "b3"))
+    mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
   }
 
   # Detailed single-locus identity states (only noninbred states 9 - 15 are needed)
@@ -448,12 +448,31 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
   ### Here starts the actual work! ###
 
+  # If the condensed coefficients are wanted, use row sums to reduce work load!
+  if(!detailed) {
+    kap = mem$kappa
+
+    # Compute corner entries (require fewest computations)
+    k00 = .Phi(S15, S15)
+    k20 = k02 = .Phi(S9, S15) + .Phi(S12, S15)
+    k22.h = .Phi(S9, S9) + .Phi(S12, S12)
+    k22.r = .Phi(S9, S12) * 2
+    k22 = k22.h + k22.r
+
+    # Remaining
+    k01 = k10 = kap[1] - k00 - k02
+    k21 = k12 = kap[3] - k20 - k22
+    k11 = kap[2] - k10 - k12
+
+    # Return the wanted coefficients (in the indicated order)
+    return(unlist(mget(coefs)))
+  }
+
+  ### Detailed coefficients ###
+
   if("k22" %in% coefs) {
     k22.h = .Phi(S9, S9) + .Phi(S12, S12)
     k22.r = .Phi(S9, S12) * 2
-
-    # Total
-    k22 = k22.h + k22.r
   }
 
   if("k21" %in% coefs || "k12" %in% coefs) {
@@ -462,9 +481,10 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
     # k21.r
     k21.r = k12.r = .Phi(S9, S13) + .Phi(S9, S14) + .Phi(S12, S10) + .Phi(S12, S11)
+  }
 
-    # Total
-    k21 = k12 = k21.h + k21.r
+  if("k20" %in% coefs || "k02" %in% coefs) {
+    k20 = k02 = .Phi(S9, S15) + .Phi(S12, S15)
   }
 
   if("k11" %in% coefs) {
@@ -479,36 +499,27 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
     # trans/trans
     k11.tt = 2 * (.Phi(S10, S11) + .Phi(S13, S14))
-
-    # Total
-    k11 = k11.cc + k11.ct + k11.tc + k11.tt
-  }
-
-  if("k20" %in% coefs || "k02" %in% coefs) {
-    k20 = k02 = .Phi(S9, S15) + .Phi(S12, S15)
   }
 
   if("k10" %in% coefs || "k01" %in% coefs) {
     k10 = k01 = .Phi(S10, S15) + .Phi(S11, S15) + .Phi(S13, S15) + .Phi(S14, S15)
-
   }
 
   if("k00" %in% coefs) {
     k00 = .Phi(S15, S15)
   }
 
-  if(detailed) {
-    coefList = list(
-      k00 = "k00", k01 = "k01", k02 = "k02",
-      k10 = "k10",
-      k11 = c("k11.cc", "k11.ct", "k11.tc", "k11.tt"),
-      k12 = c("k12.h", "k12.r"),
-      k20 = "k20",
-      k21 = c("k21.h", "k21.r"),
-      k22 = c("k22.h", "k22.r"))
 
-    coefs = unlist(coefList[coefs])
-  }
+  coefList = list(
+    k00 = "k00", k01 = "k01", k02 = "k02",
+    k10 = "k10",
+    k11 = c("k11.cc", "k11.ct", "k11.tc", "k11.tt"),
+    k12 = c("k12.h", "k12.r"),
+    k20 = "k20",
+    k21 = c("k21.h", "k21.r"),
+    k22 = c("k22.h", "k22.r"))
+
+  coefs = unlist(coefList[coefs])
 
   # Return the wanted coefficients (in the indicated order)
   unlist(mget(coefs))
