@@ -200,7 +200,17 @@ stopifnot(all.equal(k2_mat_0.5, k1 \%o\% k1, check.attributes = FALSE))
 
 
 ########################################################
-# Example 6: Using simulation (from the ibdsim2 package)
+# Example 6: By Donnelly (1983) these relationships are
+# genetically indistinguishable
+########################################################
+x1 = halfCousinPed(1)
+x2 = halfCousinPed(0, removal = 2)
+stopifnot(identical(
+  twoLocusIBD(x1, ids = leaves(x1), rho = 0.25),
+  twoLocusIBD(x2, ids = leaves(x2), rho = 0.25)))
+
+########################################################
+# Example 7: Using simulation (from the ibdsim2 package)
 # to validate two-locus IBD coefs
 ########################################################
 
