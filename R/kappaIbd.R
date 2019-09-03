@@ -92,7 +92,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
     stop2("Unknown ID label: ", setdiff(ids, labs))
   if(length(ids) < 2)
     stop2("At least two ID labels must be indicated")
-  if(dup <- anyDuplicated(ids))
+  if(dup <- anyDuplicated.default(ids))
     stop2("Duplicated ID label: ", ids[dup])
 
   KIN = kinship(x)
