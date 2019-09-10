@@ -28,16 +28,22 @@ Each entry of \code{peds} must be a list with the following (named) entries:
 \item ids: A pair of labels identifying two members of \code{ped}
 }
 
-The \code{coeff} parameter must be one of the following:
+The \code{coeff} parameter must be either a character naming the coefficient to
+compute, or a function. If a character, it must be one of the following
+names: "kinship", "phi", "phi11", "k00", "k01", "k02", "k10", "k11", "k12",
+"k20", "k21" or "k22".
 
-"kinship", "phi", "phi11", "k00", "k01", "k02", "k10", "k11", "k12", "k20",
-"k21" or "k22".
+If \code{coeff} is a function, it must take three arguments named \code{ped}, \code{ids} and
+\code{rho}, and produce a single number for each set of input data. See Examples.
 
 The first three are synonymous and indicate the two-locus kinship
 coefficient. The remaining choices are two-locus IBD coefficients. (See
 \code{\link[=twoLocusIBD]{twoLocusIBD()}}.)
 }
 \examples{
+
+###############################
+# Classic example of three relationships with equal one-locus coeffs
 peds = list(
     GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
     HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
@@ -56,6 +62,7 @@ twoLocusPlot(peds, coeff = "kinship")
 twoLocusPlot(peds, coeff = "k11")
 
 ###############################
+
 peds = list(
    `H-sibs` = list(ped = addChildren(halfSibPed(sex2 = 2), 4, 5, nch = 2),
                  ids = 6:7),
@@ -65,6 +72,28 @@ peds = list(
                  ids = 7:8)
 )
 suppressWarnings(plotPedList(peds))
-twoLocusPlot(peds, coeff="kinship")
+twoLocusPlot(peds, coeff = "kinship")
+
+################################
+
+### Example where `coeff` is a function.
+### Reproducing Fig 2 of Bishop & Williamson (1990)
+
+# The coefficient d11(rho) is the conditional probability of IBD = 1
+# in the first locus, given IBD = 1 in the second.
+
+peds = list(
+    GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
+    HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
+    Uncle       = list(ped = cousinPed(0, 1), ids = c(3, 6)),
+    FirstCous   = list(ped = cousinPed(1),    ids = c(5, 8)),
+    FirstCous1R = list(ped = cousinPed(1, 1), ids = c(5, 10)),
+    SecondCous  = list(ped = cousinPed(2),    ids = c(7, 12)))
+
+d11 = function(ped, ids, rho) {
+  twoLocusIBD(ped, ids, rho, coefs = "k11")/kappaIBD(ped, ids)[2]
+}
+
+twoLocusPlot(peds, coeff = d11)
 
 }

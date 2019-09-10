@@ -175,7 +175,7 @@ stopifnot(all.equal(k2_mat, IBDSibs(0.25)))
 #####################################################
 # Example 5: Two-locus IBD of quad half first cousins
 #
-# We use this to exemplilfy two simple properties of
+# We use this to exemplify two simple properties of
 # the two-locus IBD matrix.
 #####################################################
 
