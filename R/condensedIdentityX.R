@@ -23,9 +23,6 @@
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
 #' @param verbose A Logical
-#' @param checkAnswer If TRUE, the result is checked against the output of the
-#'   XIBD package, if this is installed. (Ignored if any of the founders are
-#'   inbred.)
 #' @param sparse A positive integer, indicating the pedigree size limit for
 #'   using sparse arrays (as implemented by the
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
@@ -54,7 +51,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose) {
+condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
@@ -105,9 +102,6 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer 
     if(verbose)
       printCounts(mem)
 
-    if(checkAnswer)
-      compare_with_XIBD(x, ids, j)
-
     return(j)
   }
 
@@ -152,63 +146,4 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer 
 
   res
 }
-
-compare_with_XIBD = function(x, ids, j) {
-  cat("Comparison with `XIBD` package: ")
-
-  if(hasInbredFounders(x)) {
-    message("skipped. (Pedigree has inbred founders.)")
-    return()
-  }
-
-  jj = xibd(x, ids)
-  if(is.null(jj)) {
-    message("Install `XIBD` or use `checkAnswer = FALSE` to avoid this message.")
-    return()
-  }
-
-  if(identical(j, jj))
-    message("OK!")
-  else if(isTRUE(all.equal(j,jj)))
-    message("all.equal() OK, but not identical()")
-  else {
-    message("*** MISMATCH! ***")
-    cat("IDS:", ids, "\n")
-    print(rbind(`XIBD:` = jj, `ribd:` = j))
-  }
-}
-
-#' @importFrom utils capture.output
-xibd = function(x, ids) {
-  if(!requireNamespace("XIBD", quietly = TRUE)){
-    message("Package `XIBD` is not installed.")
-    return()
-  }
-
-  sex1 = getSex(x, ids[1])
-  sex2 = getSex(x, ids[2])
-  ids_int = internalID(x, ids)
-
-  pedm = as.matrix(x)[, 1:4]
-  colnames(pedm) = c("iid","pid", "mid","sex")
-
-  capture.output(
-    deltas <- lapply(1:9, function(i) XIBD:::delta(pedm, i, ids_int[1], ids_int[2]))
-  )
-
-  # If any of ids are male, the `deltas` list contains NULL entries
-  jx = rep(NA_real_, 9)
-
-  if(sex1 == 1 && sex2 == 1)
-    jx[1:2] = unlist(deltas)
-  else if (sex1 == 1 && sex2 == 2)
-    jx[1:4] = unlist(deltas)
-  else if (sex1 == 2 && sex2 == 1)
-    jx[c(1,2,5,6)] = unlist(deltas)
-  else
-    jx[] = unlist(deltas)
-
-  jx
-}
-
 

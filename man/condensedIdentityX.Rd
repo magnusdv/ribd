@@ -4,8 +4,7 @@
 \alias{condensedIdentityX}
 \title{Identity coefficients on X}
 \usage{
-condensedIdentityX(x, ids, sparse = NA, verbose = FALSE,
-  checkAnswer = verbose)
+condensedIdentityX(x, ids, sparse = NA, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
@@ -19,10 +18,6 @@ using sparse arrays (as implemented by the
 ordinary arrays.}
 
 \item{verbose}{A Logical}
-
-\item{checkAnswer}{If TRUE, the result is checked against the output of the
-XIBD package, if this is installed. (Ignored if any of the founders are
-inbred.)}
 }
 \value{
 If \code{ids} has length 2: A vector of length 9, containing the condensed
