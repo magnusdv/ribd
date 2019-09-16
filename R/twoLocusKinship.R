@@ -122,6 +122,8 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
           eq. 11b: {mem$eq11b}
         Total time used: {tot_time}"))
     }
+
+    return(phi11)
   }
 
   # Storage template: Reset for each rho
@@ -161,8 +163,9 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
   labs = labels(x)
   idcols = do.call(rbind, pairs)
   idcols[] = labs[idcols]
-  res = data.frame(id1 = idcols[,1], id2 = idcols[,2],
-                   rho = rep(rho, each=length(pairs)),
+  res = data.frame(id1 = idcols[,1],
+                   id2 = idcols[,2],
+                   rho = rep(rho, each = length(pairs)),
                    phi2 = unlist(coefs),
                    stringsAsFactors = F)
 
