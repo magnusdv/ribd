@@ -1,11 +1,10 @@
-#' Generalised kinship coefficients
+#' Karigl's generalised kinship coefficients
 #'
-#' Compute generalised kinship coefficients (as defined by Karigl, 1981)
-#' involving up to 4 pedigree members. The founders may be inbred; see
-#' [pedtools::founderInbreeding()] for how to set this up.
+#' Compute generalised kinship coefficients, as defined by Karigl (1981),
+#' involving up to 4 pedigree members. The founders may be inbred; see Examples.
 #'
 #' The function `generalisedKinship3()` computes the generalised kinship
-#' coefficient of three (not neccessarily distinct) members $A$, $B$ and  $C$,
+#' coefficient of three (not neccessarily distinct) members `a`, `b` and `c`,
 #' defined as the probability that if a random allele is chosen from each of
 #' them, they are all identical by descent.
 #'
@@ -38,10 +37,10 @@
 #'
 #' stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
 #'
-#' @name generalisedKinship
+#' @name generalised_karigl
 NULL
 
-#' @rdname generalisedKinship
+#' @rdname generalised_karigl
 #' @export
 generalisedKinship3 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
@@ -63,7 +62,7 @@ generalisedKinship3 = function(x, ids, sparse = NA, chromType = "autosomal", ver
   res
 }
 
-#' @rdname generalisedKinship
+#' @rdname generalised_karigl
 #' @export
 generalisedKinship4 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
 
@@ -83,8 +82,7 @@ generalisedKinship4 = function(x, ids, sparse = NA, chromType = "autosomal", ver
   res
 }
 
-
-#' @rdname generalisedKinship
+#' @rdname generalised_karigl
 #' @export
 generalisedKinship22 = function(x, ids, sparse = NA, chromType = "autosomal", verbose = FALSE) {
   # Enforce parents to precede their children
