@@ -2,66 +2,65 @@
 % Please edit documentation in R/generalisedKinship.R
 \name{generalisedKinship}
 \alias{generalisedKinship}
-\alias{generalisedKinship3}
-\alias{generalisedKinship4}
-\alias{generalisedKinship22}
 \title{Generalised kinship coefficients}
 \usage{
-generalisedKinship3(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
-
-generalisedKinship4(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
-
-generalisedKinship22(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
+generalisedKinship(x, pattern, mem = NULL, verbose = F, debug = F)
 }
 \arguments{
-\item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+\item{x}{A \code{ped} object.}
 
-\item{ids}{A vector of ID labels, of length 3 for \code{generalisedKinship3()} and
-4 for \code{generalisedKinship4()} and \code{generalisedKinship22()}.}
+\item{pattern}{A \code{kinPattern} object.}
 
-\item{sparse}{A positive integer, indicating the pedigree size limit for using
-sparse arrays. If NA, a default limit of 50 is used.}
-
-\item{chromType}{Either "autosomal" or "x".}
+\item{mem}{An \code{environment} (for internal use).}
 
 \item{verbose}{A logical.}
+
+\item{debug}{A logical.}
 }
 \value{
-A numeric of length 1.
+A single probability.
 }
 \description{
-Compute generalised kinship coefficients (as defined by Karigl, 1981)
-involving up to 4 pedigree members. The founders may be inbred; see
-\code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
-}
-\details{
-The function \code{generalisedKinship3()} computes the generalised kinship
-coefficient of three (not neccessarily distinct) members $A$, $B$ and  $C$,
-defined as the probability that if a random allele is chosen from each of
-them, they are all identical by descent.
-
-The function \code{generalisedKinship4()} computes the generalised kinship
-coefficient of four individuals, defined similarly to the above.
-
-The function \code{generalisedKinship22()} computes the generalised kinship
-coefficient of two pairs of members, defined as the probability that in both
-pairs simultenously, random alleles chosen from the two individuals are IBD.
+Compute generalised single-locus kinship coefficients, using the algorithm by
+Weeks & Lange (1992).
 }
 \examples{
-# Generalised kinship between three siblings
 x = nuclearPed(3)
-phi3 = generalisedKinship3(x, ids = 3:5)
+kp = kinPattern(x, list(c(1,1,1)))
+generalisedKinship(x, kp)
 
-# Recalculate if the father is 100\% inbred
-founderInbreeding(x, 1) = 1
-phi3_inbred = generalisedKinship3(x, ids = 3:5)
 
-stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
+##### IBD coefficients via generalised kinship ###
+#(Clearly not the simplest way; serves as a check)
+IBD_from_gk = function(x, ids) {
+  fa1 = father(x, ids[1])
+  fa2 = father(x, ids[2])
+  mo1 = mother(x, ids[1])
+  mo2 = mother(x, ids[2])
+  GK = function(...) generalisedKinship(x, list(...))
+
+  k0 = GK(fa1, fa2, mo1, mo2)
+  k1 = GK(c(fa1, fa2), mo1, mo2) + GK(c(fa1, mo2), fa2, mo1) +
+       GK(c(mo1, fa2), fa1, mo2) + GK(c(mo1, mo2), fa1, fa2)
+  k2 = GK(c(fa1, fa2), c(mo1, mo2)) + GK(c(fa1, mo2), c(mo1, fa2))
+  c(k0, k1, k2)
+}
+
+y = quadHalfFirstCousins()
+ids = 9:10
+stopifnot(IBD_from_gk(y, ids) == kappaIBD(y, ids))
+
+y = nuclearPed(2); ids = 3:4
+stopifnot(IBD_from_gk(y, ids) == kappaIBD(y, ids))
+
+#### Triple/quad kinship (compare with karigl)
+x = fullSibMating(1)
+ids = c(1,5,6)
+stopifnot(generalisedKinship(x, list(ids)) == generalisedKinship3(x, ids))
+ids = c(1,5,6,5)
+stopifnot(generalisedKinship(x, list(ids)) == generalisedKinship4(x, ids))
 
 }
-\seealso{
-\code{\link[=kinship]{kinship()}}, \code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}
+\references{
+Weeks and Lange (1992):
 }
