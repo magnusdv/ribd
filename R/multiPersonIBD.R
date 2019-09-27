@@ -2,11 +2,12 @@
 #'
 #' Computes the probabilities (coefficients) of all possible patterns of
 #' identity by descent (IBD) sharing at a single locus, among N>1 non-inbred
-#' members of a pedigree. For now, only N = 2 and 3, and only autosomal loci are
-#' implemented. The reported coefficients are "condensed" in the sense that
-#' allele ordering within each individual is ignored. For N = 2, the result
+#' members of a pedigree. The reported coefficients are "condensed" in the sense
+#' that allele ordering within each individual is ignored. For N = 2, the result
 #' should agree with the traditional "kappa" coefficients, as computed by
-#' [kappaIBD()].
+#' [kappaIBD()]. This function is under development, and should be regarded as
+#' experimental. For now, the only cases handled are those with: N = 2 or 3,
+#' autosomal locus, lateral relationships only.
 #'
 #' Consider N members of a pedigree, i1, i2, ... iN.  A pattern of IBD sharing
 #' between these individuals is a sequence of N ordered pairs of labels, (a1_1,
@@ -74,10 +75,17 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
 
   # Stop if any of `ids` are inbred
   inb = inbreeding(x)[ids]
-  if(any(isInbred <- inb > .Machine$double.eps))
-    stop2(paste0(c(sprintf(" Individual '%s' is inbred (f = %g)",
-                           ids[isInbred], inb[isInbred]),
-                   "This function requires non-inbred individuals."), collapse = "\n"))
+  if(any(isInbred <- inb > .Machine$double.eps)) {
+    message(paste0(sprintf(" Individual '%s' is inbred (f = %g)",
+                           ids[isInbred], inb[isInbred]), collapse = "\n"))
+    stop2("This function requires non-inbred individuals")
+  }
+
+  # Stop if any of `ids` are an ancestor of any of the others
+  for(i in ids) for(j in ids[ids %in% ancestors(x, i)]) {
+    message("  ", j, " is an ancestor of ", i)
+    stop2("Rectilineal relationships are not implemented yet")
+  }
 
   # If founders: add parents
   for(i in intersect(ids, founders(x)))
@@ -128,9 +136,14 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
 
   coefs = apply(allPatterns, 1, function(r) {
     kps = expandSwaps(r, makeUnique = T)
-    sum(apply(kps, 1, function(kp)
-      generalisedKinship(x, split(famo, kp), mem = mem)))
-    })
+    #sum(apply(kps, 1, function(kp) generalisedKinship(x, split(famo, kp), mem = mem)))
+    S = 0
+    for(i in 1:nrow(kps)) {
+      kp = kps[i, ]
+      prob = generalisedKinship(x, split(famo, kp), mem = mem)
+      S = S + prob
+    }
+    S})
 
   # Print computational summary
   if(verbose)
