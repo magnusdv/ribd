@@ -199,7 +199,7 @@ print.kinPattern = function(x, ...,  indent = 0) {
     return()
   labs = attr(x, "labels")
 
-  grps = vapply(x, function(g) sprintf("(%s)", paste0(g, collapse = ",")), FUN.VALUE = "")
+  grps = vapply(x, function(g) sprintf("(%s)", paste0(labs[g], collapse = ",")), FUN.VALUE = "")
   str = paste0(grps, collapse = ",")
 
   cat(strrep(" ", indent), str, "\n", sep = "")
