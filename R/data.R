@@ -14,3 +14,14 @@
 #'   Centrale: les Indiens Jicaques de Honduras. In Genetique et Population.
 #'   Paris: Presses Universitaires de France.
 "jicaque"
+
+
+#' Multi-person IBD patterns
+#'
+#' A list of length 6. Each list entry is a matrix of IBD patterns with some
+#' extra information in additional columns. The N'th entry contains all
+#' condensed patterns of N individuals.
+#'
+#' @format A list of 6 matrices. The numbers of rows are respectively 1, 3, 16, 139,
+#'   1750 and 29388.
+"MULTIPATTERNS_NONINBRED"

@@ -7,7 +7,7 @@
 #' should agree with the traditional "kappa" coefficients, as computed by
 #' [kappaIBD()]. This function is under development, and should be regarded as
 #' experimental. For now, the only cases handled are those with: N = 2 or 3,
-#' autosomal locus, lateral relationships only.
+#' autosomal locus.
 #'
 #' Consider N members of a pedigree, i1, i2, ... iN.  A pattern of IBD sharing
 #' between these individuals is a sequence of N ordered pairs of labels, (a1_1,
@@ -40,6 +40,11 @@
 #' @export
 #'
 #' @examples
+#' ### Trivial example: Trio ###
+#' x = nuclearPed(1)
+#' ids = 1:3
+#' multiPersonIBD(x, ids, complete = TRUE)
+#'
 #' ### Example due to Peter Green ###
 #' # Three (pariwise) cousins arranged in two different ways,
 #' # with different 3-way IBD coefficients.
@@ -65,34 +70,20 @@
 #' ids = c('c1','c2','c3')
 #' multiPersonIBD(threeCousins1, ids)
 #' multiPersonIBD(threeCousins2, ids)
-#'
 multiPersonIBD = function(x, ids, complete = F, verbose = F) {
   N = length(ids)
   if(N < 2)
     stop2("`length(ids)` must be at least 2")
-  if(N > 3)
-    stop2("length(ids) > 3: Not implemented yet")
+  if(N > 6)
+    stop2("length(ids) > 6: Not implemented yet")
 
   # Stop if any of `ids` are inbred
   inb = inbreeding(x)[ids]
   if(any(isInbred <- inb > .Machine$double.eps)) {
     message(paste0(sprintf(" Individual '%s' is inbred (f = %g)",
                            ids[isInbred], inb[isInbred]), collapse = "\n"))
-    stop2("This function requires non-inbred individuals")
+    stop2("This function requires all `ids` individuals to be non-inbred")
   }
-
-  # Stop if any of `ids` are an ancestor of any of the others
-  for(i in ids) for(j in ids[ids %in% ancestors(x, i)]) {
-    message("  ", j, " is an ancestor of ", i)
-    stop2("Rectilineal relationships are not implemented yet")
-  }
-
-  # If founders: add parents
-  for(i in intersect(ids, founders(x)))
-    x = addParents(x, i, verbose = F)
-
-  # Pedigree order: force founders first (TODO: is this needed here?)
-  x = foundersFirst(x)
 
   # Pedigree order: Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
@@ -101,67 +92,34 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
   # Setup memoisation
   mem = initialiseGKMemo(x, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
 
-  #
-  if(N == 2) {
-    allPatterns = matrix(c(
-      1,2,1,2, #(2)
-      1,2,1,3, #(1)
-      1,2,3,4),#(0)
-      byrow = T, ncol = 4)
-  }
-  else if(N == 3) {
-    # All 16 patterns of 3 indivs, in standard form
-    allPatterns = matrix(c(
-      1,2,1,2,1,2, #(2,2,2)
-      1,2,1,2,1,3, #(2,1,1)
-      1,2,1,3,1,2, #(1,2,1)
-      1,2,1,3,1,3, #(1,1,2)
-      1,2,1,3,1,4, #(1,1,1)
-      1,2,1,3,2,3, #(1,1,1)
-      1,2,1,2,3,4, #(2,0,0)
-      1,2,3,4,1,2, #(0,2,0)
-      1,2,3,4,3,4, #(0,0,2)
-      1,2,1,3,2,4, #(1,1,0)
-      1,2,1,3,3,4, #(1,0,1)
-      1,2,3,4,1,3, #(0,1,1)
-      1,2,1,3,4,5, #(1,0,0)
-      1,2,3,4,1,5, #(0,1,0)
-      1,2,3,4,3,5, #(0,0,1)
-      1,2,3,4,5,6),#(0,0,0)
-      byrow = T, ncol = 6)
-  }
+  allPatterns = MULTIPATTERNS_NONINBRED[[N]]
+  usePatterns = removeImpossiblePatterns(allPatterns, x, ids, verbose = verbose)
 
-  # Vector of father,mother for the `ids` individuals
-  famo = unlist(lapply(ids, parents, x=x))
+  # Vector of `ids` repeated twice (needed in the generalised below)
+  ids2 = rep(ids, each = 2)
 
-  coefs = apply(allPatterns, 1, function(r) {
-    kps = expandSwaps(r, makeUnique = T)
-    #sum(apply(kps, 1, function(kp) generalisedKinship(x, split(famo, kp), mem = mem)))
-    S = 0
-    for(i in 1:nrow(kps)) {
-      kp = kps[i, ]
-      prob = generalisedKinship(x, split(famo, kp), mem = mem)
-      S = S + prob
-    }
-    S})
+  coefs = apply(usePatterns, 1, function(r) {
+    kp = r[1:(2*N)]
+    weight = r[2*N + 1]
+    g = generalisedKinship(x, split(ids2, kp), mem = mem)
+    2^N * weight * g
+  })
 
   # Print computational summary
   if(verbose)
     printCounts2(mem)
 
   # Collect into data frame
-  glist = lapply(seq(1, ncol(allPatterns), by = 2), function(i)
-    paste(allPatterns[, i], allPatterns[, i+1], sep=" "))
+  glist = lapply(seq(1, 2*N, by = 2), function(i)
+    paste(usePatterns[, i], usePatterns[, i+1], sep=" "))
 
-  res = as.data.frame(glist, col.names = as.character(ids), stringsAsFactors = F)
+  res = as.data.frame(glist, col.names = as.character(ids), optional = T,
+                      stringsAsFactors = F)
   res = cbind(Prob = coefs, res)
 
   # Keep only nonzero rows
   if(!complete)
     res = res[res$Prob > 0, , drop = F]
-
-  # Remove row names
-  row.names(res) = NULL
 
   # Return
   res
@@ -173,6 +131,7 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
 # Reduce a sequence of alleles to "standard" form
 # a,c,a,d     -> 1,2,1,3
 # 2,1,4,3,1,1 -> 1,2,3,4,2,2
+# NB: simpler but slower: as.integer(factor(x, levels = unique.default(x)))
 standardAlleleSeq = function(x) { # x a vector of even length
   res = integer(length(x))
   a = x[1]
@@ -208,3 +167,48 @@ expandSwaps = function(x, makeUnique = T) { # x a vector of even length
   t.default(res)
 }
 
+# Write input pattern in standard form:
+# The minimal pattern equivalent to the input.
+# x = a multi-pattern (a positive integer vector of even length),
+# or matrix where each row is a pattern.
+#' @export
+standardPattern = function(x, asString = F, collapse = " ") {
+  if(is.matrix(x)) {
+    res = apply(x, 1, standardPattern, asString = asString, collapse = collapse)
+    return(res)
+  }
+
+  n = length(x)
+  swaps = expandSwaps(x)
+  s = apply(swaps, 1, function(v) sum(n^((n-1):0) * (v-1)))
+  res = swaps[which.min(s), ]
+
+  if(asString)
+    res = paste(res, collapse = collapse)
+
+  res
+}
+
+# Remove impossible patterns based on pairwise kappa
+removeImpossiblePatterns = function(patterns, x, ids, verbose = T) {
+  N = length(ids)
+  if(length(ids) < 3) return(patterns[, 1:(2*N + 1)])
+
+  # Original number of patterns
+  nr = nrow(patterns)
+
+  kappas = kappaIBD(x, ids)
+
+  nonz = lapply(1:nrow(kappas), function(i) (0:2)[kappas[i, 3:5] > 0])
+  names(nonz) = sapply(combn(N, 2, simplify = F), paste, collapse = "-")
+  for(p in names(nonz)) {
+    goodrows = patterns[, p] %in% nonz[[p]]
+    patterns = patterns[goodrows, , drop = F]
+  }
+
+  # Report change
+  if(verbose)
+    cat("State space reduction:", nr, "-->", nrow(patterns), "\n")
+
+  patterns
+}

@@ -30,7 +30,7 @@ that allele ordering within each individual is ignored. For N = 2, the result
 should agree with the traditional "kappa" coefficients, as computed by
 \code{\link[=kappaIBD]{kappaIBD()}}. This function is under development, and should be regarded as
 experimental. For now, the only cases handled are those with: N = 2 or 3,
-autosomal locus, lateral relationships only.
+autosomal locus.
 }
 \details{
 Consider N members of a pedigree, i1, i2, ... iN.  A pattern of IBD sharing
@@ -51,6 +51,11 @@ being minimal with respect to standard sorting. For example, the minimal
 element equivalent to \code{(a,c),(d,c),(b,b)} is \code{(1,2),(2,3),(4,4)}.
 }
 \examples{
+### Trivial example: Trio ###
+x = nuclearPed(1)
+ids = 1:3
+multiPersonIBD(x, ids, complete = TRUE)
+
 ### Example due to Peter Green ###
 # Three (pariwise) cousins arranged in two different ways,
 # with different 3-way IBD coefficients.
@@ -76,5 +81,4 @@ threeCousins2 = ped(
 ids = c('c1','c2','c3')
 multiPersonIBD(threeCousins1, ids)
 multiPersonIBD(threeCousins2, ids)
-
 }
