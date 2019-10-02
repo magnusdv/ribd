@@ -51,18 +51,21 @@
 #' @export
 generalisedKinship = function(x, pattern, mem = NULL, verbose = F, debug = F) {
 
+  # TODO: bake x into `mem`; avoid checking x every time.
+
   # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
     x = parentsBeforeChildren(x)
 
   x = foundersFirst(x)
 
+  # Setup memoisation
+  if(is.null(mem)) {
+    mem = initialiseGKMemo(x, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
+  }
+
   if(!inherits(pattern, "kinPattern") && is.list(pattern))
     pattern = kinPattern(x, pattern)
-
-  # Setup memoisation
-  if(is.null(mem))
-    mem = initialiseGKMemo(x, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
 
   res = genKin(pattern, mem, indent = ifelse(debug, 0, NA))
 
@@ -92,7 +95,6 @@ genKin = function(kp, mem, indent = 0) {
     mem$iimp = mem$iimp + 1
     return(printAndReturn(0, indent, comment = " (B1)"))
   }
-
 
   # Boundary 2: Any group with 2 unrelated indivs?
   k1 = mem$k1

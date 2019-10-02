@@ -89,6 +89,8 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
   if(!hasParentsBeforeChildren(x))
     x = parentsBeforeChildren(x)
 
+  x = foundersFirst(x)
+
   # Setup memoisation
   mem = initialiseGKMemo(x, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
 
