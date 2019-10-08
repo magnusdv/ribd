@@ -5,10 +5,16 @@ Version: 1.0.0
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
 Description: Recursive algorithms for computing various relatedness coefficients, 
-    including identity coefficients. The standard algorithms are extended to 
-    allow inbred founders. Both autosomal and X-linked coeffiecients are computed.
+    including pairwise kinship, kappa and identity coefficients. Both autosomal 
+    and X-linked coefficients are computed. Founders are allowed to be inbred. 
+    More specialised coefficients include generalised kinship coefficients and 
+    two-locus identity coefficients. This package is part of the 'ped-suite' 
+    collection of packages for pedigree analysis, with 'pedtools' as the core 
+    package for creating and handling pedigree objects.
 License: GPL-3
+URL: https://github.com/magnusdv/ribd
 Encoding: UTF-8
+Language: en-GB
 LazyData: true
 Depends: R (>= 3.5.0),
     pedtools
