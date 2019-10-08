@@ -79,7 +79,7 @@ NA)}
 \examples{
 # Siblings
 x = nuclearPed(2)
-k = kappa(x, 3:4)
+k = kappaIBD(x, 3:4)
 stopifnot(identical(k, c(.25, .5, .25)))
 
 # Quad half first cousins

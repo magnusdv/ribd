@@ -2,8 +2,7 @@
 #'
 #'Computes the three IBD coefficients summarising the relationship between two
 #'non-inbred individuals. Both autosomal and X chromosomal versions are
-#'implemented. `kappa()` and `kappaIbd()` are synonyms for `kappaIBD()` and will
-#'be removed at some point.
+#'implemented.
 #'
 #'For non-inbred individuals a and b, their autosomal IBD coefficients
 #'\eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i = P(a
@@ -65,7 +64,7 @@
 #' @examples
 #' # Siblings
 #' x = nuclearPed(2)
-#' k = kappa(x, 3:4)
+#' k = kappaIBD(x, 3:4)
 #' stopifnot(identical(k, c(.25, .5, .25)))
 #'
 #' # Quad half first cousins
@@ -131,7 +130,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
     M2 = mother(x, id2.nn)
 
     k2 = KIN[cbind(F1, F2)]*KIN[cbind(M1, M2)] + KIN[cbind(F1, M2)]*KIN[cbind(M1, F2)]
-    k1 = 4*KIN[pairs[nn_rows, , drop=F]] - 2*k2
+    k1 = 4*KIN[pairs[nn_rows, , drop = F]] - 2*k2
     k0 = 1 - k1 - k2
     res[nn_rows, 3:5] = cbind(k0, k1, k2)
   }
@@ -142,20 +141,6 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
   res
 }
 
-#' @rdname kappaIBD
-#' @export
-kappa = function(x, ids, ...) {
-  warning("The function `kappa()` is renamed to `kappaIBD()` in order to avoid conflict with `base::kappa()`",
-          call. = FALSE)
-  kappaIBD(x, ids, ...)
-}
-
-#' @rdname kappaIBD
-#' @export
-kappaIbd = function(x, ids, ...) {
-  warning("The function `kappaIbd()` has been renamed to `kappaIBD()`", call. = FALSE)
-  kappaIBD(x, ids, ...)
-}
 
 #' @rdname kappaIBD
 #' @export
