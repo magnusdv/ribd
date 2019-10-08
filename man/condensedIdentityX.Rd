@@ -17,7 +17,7 @@ using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
 
-\item{verbose}{A Logical}
+\item{verbose}{A logical}
 }
 \value{
 If \code{ids} has length 2: A vector of length 9, containing the condensed
@@ -41,13 +41,13 @@ individuals. If both are female, the states are the same as in the autosomal
 case. When males are involved, the two individuals have less than 4 alleles,
 hence the states differ from the autosomal ones. However, to avoid drawing
 (and learning) new pictures we re-use the autosomal states by using the
-following simple rule: \strong{Replace the single allele of any male, with a pair
+following simple rule: \strong{Replace any hemizygous male allele with a pair
 of autozygous alleles}. In this way each X state corresponds to a unique
 autosomal state.
 
-For simplicity the output always contain 9 coefficients, but with NA's in the
+For simplicity the output always contains 9 coefficients, but with NA's in the
 positions of undefined states (depending on the sex combination). The README
-file on the github home page of ribd has a table making all of this clear.
+file on the github home page of ribd has a table illustrating this.
 }
 \examples{
 library(pedtools)

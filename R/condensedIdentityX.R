@@ -11,22 +11,15 @@
 #' case. When males are involved, the two individuals have less than 4 alleles,
 #' hence the states differ from the autosomal ones. However, to avoid drawing
 #' (and learning) new pictures we re-use the autosomal states by using the
-#' following simple rule: **Replace the single allele of any male, with a pair
+#' following simple rule: **Replace any hemizygous male allele with a pair
 #' of autozygous alleles**. In this way each X state corresponds to a unique
 #' autosomal state.
 #'
-#' For simplicity the output always contain 9 coefficients, but with NA's in the
+#' For simplicity the output always contains 9 coefficients, but with NA's in the
 #' positions of undefined states (depending on the sex combination). The README
-#' file on the github home page of ribd has a table making all of this clear.
+#' file on the github home page of ribd has a table illustrating this.
 #'
-#' @param x A pedigree in the form of a [`pedtools::ped`] object
-#' @param ids A character (or coercible to character) containing ID labels of
-#'   two or more pedigree members.
-#' @param verbose A Logical
-#' @param sparse A positive integer, indicating the pedigree size limit for
-#'   using sparse arrays (as implemented by the
-#'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
-#'   ordinary arrays.
+#' @inheritParams condensedIdentity
 #'
 #' @return If `ids` has length 2: A vector of length 9, containing the condensed
 #'   identity coefficients. If any of the individuals are male, certain states
@@ -106,7 +99,7 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.
-  pairs = combn(ids_int, 2, simplify=F)
+  pairs = combn(ids_int, 2, simplify = F)
 
   RHS = vapply(pairs, function(p) {
     id1 = p[1]; id2 = p[2]

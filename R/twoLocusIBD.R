@@ -207,10 +207,10 @@
 #'
 #' # Exact two-locus k11
 #' k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r, coefs = "k11"))
-#' plot(rseq, k11, type="l", xlab = xlab, main = main, ylim = c(0, 0.6))
+#' plot(rseq, k11, type = "l", xlab = xlab, main = main, ylim = c(0, 0.6))
 #'
 #' # Check by simulation (requires ibdsim2)
-#' \dontrun{
+#' \donttest{
 #' library(ibdsim2)
 #' Nsim = 100  # increase to get better fit!
 #'
@@ -365,7 +365,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
                      rb*rho^2, rb^3,       rho^3,       rb^2*rho,
                      rb*rho^2, rho^3,      rb^3,        rb^2*rho,
                      rho^4,    rb^2*rho^2, rb^2*rho^2,  rb^4),
-                   byrow = T, nrow=4)
+                   byrow = T, nrow = 4)
 
         m = round(solve(M, bvec), 15) # ad hoc rounding to avoid tiny errors. Better alternatives?
 
@@ -567,7 +567,7 @@ twoLocusIBD_simple = function(x, ids, rho) {
   k11.cc = phi11[fa1, fa2] * phi00[mo1, mo2] + phi11[fa1, mo2] * phi00[mo1, fa2] +
     phi11[mo1, fa2] * phi00[fa1, mo2] + phi11[mo1, mo2] * phi00[fa1, fa2]
 
-  phi11.rr = twoLocusKinship(x, ids=ids, rho, recombinants = c(T,T))
+  phi11.rr = twoLocusKinship(x, ids = ids, rho, recombinants = c(T,T))
   k11.tt = phi11.rr * 4/rho^2 - 2*k22.h - 2*k21.h
 
   k00 = phi00[fa1, fa2] * phi00[fa1, mo2] * phi00[mo1, fa2] * phi00[mo1, mo2]

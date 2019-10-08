@@ -1,5 +1,5 @@
 # Constructor for S3 class "kin2L"
-newKin2L= function(locus1, locus2, labels) {
+newKin2L = function(locus1, locus2, labels) {
   if(!is.list(locus1) || !is.list(locus2) || !is.character(labels))
     stop2("Invalid input to `newKinshipClass()`")
 
@@ -142,7 +142,7 @@ kinReplace = function(kin, id, loc1Rep, loc2Rep = NULL) {#par1, gr1 = 1, par2 = 
   if(!is.null(loc2Rep))
     kin$locus2 = kinRepl_1L(kin$locus2, id, loc2Rep$from1, loc2Rep$to1, loc2Rep$from2, loc2Rep$to2)
 
-  validateKin2L(kin) # TODO: remove validate (coded to be unneccessary)
+  validateKin2L(kin) # TODO: remove validate (coded to be unnecessary)
 }
 
 # Replacement at 1 locus
@@ -218,7 +218,7 @@ kinList2char = function(x, labs = NULL) {
     grvec = vapply(x, function(g) {
       from = labs[g$from]
       to = as.character(g$to)
-      paste(from, to, sep=">", collapse=" = ")
+      paste(from, to, sep = ">", collapse = " = ")
     }, FUN.VALUE = "")
   }
 
@@ -231,12 +231,7 @@ kinList2internal = function(ped, kinList) {
   lapply(kinList, function(g) {
     g$from = internalID(ped, g$from)
     g$to = as.integer(g$to)
-    return(g)
-
-    #to = suppressWarnings(as.integer(g$to))
-    #valid = is.na(to) | to > 0
-    #to[valid] = internalID(ped, g$to[valid])
-    #list(from = from, to = to)
+    g
   })
 }
 
@@ -264,7 +259,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   }
 
   # Logical matrix showing who has a common ancestor within the pedigree.
-  # TODO: is this neccessary? (since we also include k1 below)
+  # TODO: is this necessary? (since we also include k1 below)
   mem$anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly

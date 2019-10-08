@@ -147,7 +147,7 @@ genKin2L = function(kin, mem, indent = 0) {
 
     # Check that coeffs sum to 1
     if((SM <- 2*A3 + 2*B3 + 2*C3 + 2*D3 + E3) != 1)
-      stop2("Something wrong in case 's=u=0; coefs sum to: ", SM)
+      stop2("Something wrong in case 's = u = 0; coefs sum to: ", SM)
   }
   else if(u == 0) {
     A4 = .5^un * (1-rho)^ev * rho^od

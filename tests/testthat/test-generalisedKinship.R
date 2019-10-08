@@ -1,16 +1,16 @@
 context("Generalised kinships")
 
-gk3 = function(x, ids, ...) generalisedKinship3(x, ids, verbose=F, ...)
-gk4 = function(x, ids, ...) generalisedKinship4(x, ids, verbose=F, ...)
-gk22 = function(x, ids, ...) generalisedKinship22(x, ids, verbose=F, ...)
+gk3 = function(x, ids, ...) generalisedKinship3(x, ids, verbose = F, ...)
+gk4 = function(x, ids, ...) generalisedKinship4(x, ids, verbose = F, ...)
+gk22 = function(x, ids, ...) generalisedKinship22(x, ids, verbose = F, ...)
 
-gk3_X = function(x, ids, ...) generalisedKinship3(x, ids, chromType = "x", verbose=F, ...)
-gk4_X = function(x, ids, ...) generalisedKinship4(x, ids, chromType = "x", verbose=F, ...)
-gk22_X = function(x, ids, ...) generalisedKinship22(x, ids, chromType = "x", verbose=F, ...)
+gk3_X = function(x, ids, ...) generalisedKinship3(x, ids, chromType = "x", verbose = F, ...)
+gk4_X = function(x, ids, ...) generalisedKinship4(x, ids, chromType = "x", verbose = F, ...)
+gk22_X = function(x, ids, ...) generalisedKinship22(x, ids, chromType = "x", verbose = F, ...)
 
 test_that("generalised kinship coefs of a singleton are correct", {
-  sm = singleton(1, sex=1)
-  sf = singleton(1, sex=2)
+  sm = singleton(1, sex = 1)
+  sf = singleton(1, sex = 2)
 
   # non-inbred, autosomal
   expect_equal(gk3(sm, c(1,1,1)), 0.25)

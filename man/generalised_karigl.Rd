@@ -22,8 +22,8 @@ generalisedKinship22(x, ids, sparse = NA, chromType = "autosomal",
 \item{ids}{A vector of ID labels, of length 3 for \code{generalisedKinship3()} and
 4 for \code{generalisedKinship4()} and \code{generalisedKinship22()}.}
 
-\item{sparse}{A positive integer, indicating the pedigree size limit for using
-sparse arrays. If NA, a default limit of 50 is used.}
+\item{sparse}{A positive integer, indicating the pedigree size limit for
+using sparse arrays. If NA, a default limit of 50 is used.}
 
 \item{chromType}{Either "autosomal" or "x".}
 
@@ -47,7 +47,7 @@ coefficient of four individuals, defined similarly to the above.
 
 The function \code{generalisedKinship22()} computes the generalised kinship
 coefficient of two pairs of members, defined as the probability that in both
-pairs simultenously, random alleles chosen from the two individuals are IBD.
+pairs simultaneously, random alleles chosen from the two individuals are IBD.
 }
 \examples{
 # Generalised kinship between three siblings
@@ -62,5 +62,6 @@ stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}, \code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}
+\code{\link[=kinship]{kinship()}}, \code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}},
+\code{\link[=condensedIdentityX]{condensedIdentityX()}}
 }

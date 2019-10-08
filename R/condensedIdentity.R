@@ -94,7 +94,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.
-  pairs = combn(ids_int, 2, simplify=F)
+  pairs = combn(ids_int, 2, simplify = F)
 
   RHS = vapply(pairs, function(p) {
     id1 = p[1]; id2 = p[2]

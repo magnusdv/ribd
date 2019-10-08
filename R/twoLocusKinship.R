@@ -16,7 +16,7 @@
 #'   two or more pedigree members.
 #' @param rho A numeric vector of recombination rates; all entries must be in
 #'   the interval \eqn{[0, 0.5]}.
-#' @param recombinants A logical of length 2, applicaple only when `ids` has
+#' @param recombinants A logical of length 2, applicable only when `ids` has
 #'   length 2. When given, it indicates whether each of the two gametes is a
 #'   recombinant or non-recombinant. This parameter is mainly used by
 #'   [twoLocusIBD()].
@@ -62,7 +62,7 @@
 #' kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 #'
 #' # Plot
-#' matplot(rseq, kvals, type="l", lwd=2)
+#' matplot(rseq, kvals, type = "l", lwd = 2)
 #' legend("topright", names(peds), col = 1:4, lty = 1:4)
 #'
 #' @importFrom utils combn
@@ -145,7 +145,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
 
   # If length(ids) > 2: Do all unordered pairs; return data.frame
 
-  pairs = combn(ids_int, 2, simplify=F)
+  pairs = combn(ids_int, 2, simplify = F)
   pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
 
   coefs = lapply(rho, function(r) {
@@ -227,7 +227,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
   # If any founders -> 0
   if(A[1]*B[1]*C[1]*D[1] == 0) {print("Outside of pedigree! Can this happen?"); return(0)}
 
-  # Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
+  # Sort: a >= b,c,d; c >= d; if(a == c) then b >= d
   plist = sortPairs(A,B,C,D)
   printMess(plist, indent)
 
@@ -290,7 +290,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
 
 printMess = function(plist, indent) {
   if(is.na(indent)) return()
-  pp = sapply(plist, function(p) paste(p, collapse=":"))
+  pp = sapply(plist, function(p) paste(p, collapse = ":"))
   message(sprintf("%sJ(%s, %s), L(%s, %s)",
                   strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
@@ -498,7 +498,7 @@ recurse_eq11b = function(A,B,C,D,mem,indent) { # k2(A1,A2; A1,A3) or k2(A1,A2; A
 sortPairs = function(A,B,C,D) {
   plist = list(A,B,C,D)
 
-  ### Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
+  ### Sort: a >= b,c,d; c >= d; if(a == c) then b >= d
   if (plist[[1]][1] < plist[[2]][1])
     plist[1:2] = plist[2:1]
   if (plist[[3]][1] < plist[[4]][1])

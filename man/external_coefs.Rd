@@ -67,7 +67,7 @@ calling \code{IdCoefs} via \code{\link[=system]{system()}}.
 }
 \examples{
 # A random pedigree with 2 founders and 5 matings
-p = pedtools::randomPed(g = 5, founders=2, seed=111)
+p = pedtools::randomPed(g = 5, founders = 2, seed = 111)
 
 # Check that ribd agrees with kinship2 package
 kinship_k2 = kinship2_kinship(p)

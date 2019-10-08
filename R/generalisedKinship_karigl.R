@@ -13,19 +13,20 @@
 #'
 #' The function `generalisedKinship22()` computes the generalised kinship
 #' coefficient of two pairs of members, defined as the probability that in both
-#' pairs simultenously, random alleles chosen from the two individuals are IBD.
+#' pairs simultaneously, random alleles chosen from the two individuals are IBD.
 #'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
 #' @param ids A vector of ID labels, of length 3 for `generalisedKinship3()` and
 #'   4 for `generalisedKinship4()` and `generalisedKinship22()`.
-#' @param sparse A positive integer, indicating the pedigree size limit for using
-#'   sparse arrays. If NA, a default limit of 50 is used.
+#' @param sparse A positive integer, indicating the pedigree size limit for
+#'   using sparse arrays. If NA, a default limit of 50 is used.
 #' @param chromType Either "autosomal" or "x".
 #' @param verbose A logical.
 #'
 #' @return A numeric of length 1.
 #'
-#' @seealso [kinship()], [kinshipX()], [condensedIdentity()], [condensedIdentityX()]
+#' @seealso [kinship()], [kinshipX()], [condensedIdentity()],
+#'   [condensedIdentityX()]
 #' @examples
 #' # Generalised kinship between three siblings
 #' x = nuclearPed(3)
@@ -119,10 +120,10 @@ phi3 = function(a, b, c, chromType, mem) {
 
   if(!all(ANC[a,b],ANC[b,c],ANC[a,c])) return(0)
 
-  # Sort: a>=b>=c
-  if(a < b) {tmp=a; a=b; b=tmp}
-  if(b < c) {tmp=b; b=c; c=tmp}
-  if(a < b) {tmp=a; a=b; b=tmp}
+  # Sort: a >= b >= c
+  if(a < b) {tmp = a; a = b; b = tmp}
+  if(b < c) {tmp = b; b = c; c = tmp}
+  if(a < b) {tmp = a; a = b; b = tmp}
 
   # Recursion function (called only if necessary)
   # Assumes a,b,c sorted
@@ -168,12 +169,12 @@ phi4 = function(a, b, c, d, chromType, mem) {
   if(!all(ANC[a,b],ANC[b,c],ANC[c,d],ANC[b,d],ANC[a,c],ANC[a,d])) return(0)
 
   # Sort: a >= b >= c >= d
-  if(a < b) {tmp=a; a=b; b=tmp}
-  if(a < c) {tmp=a; a=c; c=tmp}
-  if(a < d) {tmp=a; a=d; d=tmp}
-  if(b < c) {tmp=b; b=c; c=tmp}
-  if(b < d) {tmp=b; b=d; d=tmp}
-  if(c < d) {tmp=c; c=d; d=tmp}
+  if(a < b) {tmp = a; a = b; b = tmp}
+  if(a < c) {tmp = a; a = c; c = tmp}
+  if(a < d) {tmp = a; a = d; d = tmp}
+  if(b < c) {tmp = b; b = c; c = tmp}
+  if(b < d) {tmp = b; b = d; d = tmp}
+  if(c < d) {tmp = c; c = d; d = tmp}
 
   # Recursion function (called only if necessary)
   # Assumes a,b,c,d sorted
@@ -222,7 +223,7 @@ phi22 = function(a, b, c, d, chromType, mem = NULL) {
   MIDX = mem$MIDX
   if(!(ANC[a,b] && ANC[c,d])) return(0)
 
-  # Sort: a >= b,c,d; c >= d; if(a==c) then b>=d
+  # Sort: a >= b,c,d; c >= d; if(a == c) then b >= d
   s = c(min(a,b), max(a,b), min(c,d), max(c,d)) # d,c,b,a
   if(s[4] < s[2] || (s[4] == s[2] && s[3] < s[1]))
     s[] = s[c(3,4,1,2)]

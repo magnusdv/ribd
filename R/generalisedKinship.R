@@ -189,7 +189,7 @@ kinPattern = function(x, pattern, internal = F) {
     if(!is.numeric(v))
       stop2("Non-numeric entries found in `pattern`; this is illegal when `internal = T`")
     if(length(err <- setdiff(v, 1:pedsize(x))) > 0)
-      stop2("Illegal entry in kinPattern() when `internal=T`: ", err)
+      stop2("Illegal entry in kinPattern() when `internal = TRUE`: ", err)
   }
 
   newKinPattern(pattern, labels(x))
@@ -262,7 +262,7 @@ initialiseGKMemo = function(ped, chromType = "autosomal", counters = NULL) {
   mem$SEX = ped$SEX
 
   # Logical matrix showing who has a common ancestor within the pedigree.
-  # TODO: is this neccessary? (since we also include k1 below)
+  # TODO: is this necessary? (since we also include k1 below)
   mem$anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly

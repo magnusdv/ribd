@@ -221,10 +221,10 @@ plot(y, shaded = ids) # note that neither is inbred
 
 # Exact two-locus k11
 k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r, coefs = "k11"))
-plot(rseq, k11, type="l", xlab = xlab, main = main, ylim = c(0, 0.6))
+plot(rseq, k11, type = "l", xlab = xlab, main = main, ylim = c(0, 0.6))
 
 # Check by simulation (requires ibdsim2)
-\dontrun{
+\donttest{
 library(ibdsim2)
 Nsim = 100  # increase to get better fit!
 

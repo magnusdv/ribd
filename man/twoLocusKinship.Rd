@@ -16,7 +16,7 @@ two or more pedigree members.}
 \item{rho}{A numeric vector of recombination rates; all entries must be in
 the interval \eqn{[0, 0.5]}.}
 
-\item{recombinants}{A logical of length 2, applicaple only when \code{ids} has
+\item{recombinants}{A logical of length 2, applicable only when \code{ids} has
 length 2. When given, it indicates whether each of the two gametes is a
 recombinant or non-recombinant. This parameter is mainly used by
 \code{\link[=twoLocusIBD]{twoLocusIBD()}}.}
@@ -72,7 +72,7 @@ rseq = seq(0, 0.5, length = 20)
 kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 
 # Plot
-matplot(rseq, kvals, type="l", lwd=2)
+matplot(rseq, kvals, type = "l", lwd = 2)
 legend("topright", names(peds), col = 1:4, lty = 1:4)
 
 }

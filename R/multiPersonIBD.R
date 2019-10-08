@@ -113,7 +113,7 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
 
   # Collect into data frame
   glist = lapply(seq(1, 2*N, by = 2), function(i)
-    paste(usePatterns[, i], usePatterns[, i+1], sep=" "))
+    paste(usePatterns[, i], usePatterns[, i+1], sep = " "))
 
   res = as.data.frame(glist, col.names = as.character(ids), optional = T,
                       stringsAsFactors = F)

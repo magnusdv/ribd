@@ -41,8 +41,8 @@ kinship = function(x) {
 
   FIDX = x$FIDX
   MIDX = x$MIDX
-  FOU = founders(x, internal=TRUE)
-  NONFOU = nonfounders(x, internal=TRUE)
+  FOU = founders(x, internal = TRUE)
+  NONFOU = nonfounders(x, internal = TRUE)
   N = pedsize(x)
 
   # Vector of inb coeffs for all founders (including those with 0)

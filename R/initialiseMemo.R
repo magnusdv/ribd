@@ -44,7 +44,7 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   # A vector of length pedsize(ped), with inb.coeffs at all founder idx,
   # and NA entries everywhere else. Enables quick look-up e.g. founderInb[a].
   founderInb = rep(NA_real_, pedsize(ped))
-  founderInb[FOU] = founderInbreeding(ped, ids=founders(ped), chromType = chromType)
+  founderInb[FOU] = founderInbreeding(ped, ids = founders(ped), chromType = chromType)
 
   for(i in FOU) {
     if(i > maxId) break # otherwise out of range!

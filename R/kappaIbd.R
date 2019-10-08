@@ -35,22 +35,22 @@
 #'
 #'* Two females: As in the autosomal case.
 #'
-#'@param x A pedigree in the form of a [`pedtools::ped`] object
+#'@param x A pedigree in the form of a [`pedtools::ped`] object.
 #'@param ids A character (or coercible to character) containing ID labels of two
 #'  or more pedigree members.
 #'@param inbredAction An integer telling the program what to do if either of the
-#'  `ids` individuals are inbred. Possible valuees are 0 = do nothing; 1 = print
+#'  `ids` individuals are inbred. Possible values are: 0 = do nothing; 1 = print
 #'  a warning message (default); 2 = raise an error. In the first two cases
 #'  the coefficients are reported as `NA`.
 #'@param sparse A positive integer, indicating the pedigree size limit for using
 #'  sparse arrays (as implemented by the
 #'  [slam](https://CRAN.R-project.org/package=slam) package) instead of ordinary
 #'  arrays.
-#'@param verbose A logical
-#'@param ... Further arguments
+#'@param verbose A logical.
+#'@param ... Further arguments.
 #'
 #'@return If `ids` has length 2: A numeric vector of length 3: \eqn{(\kappa0,
-#'  \kappa1, \kappa2)}
+#'  \kappa1, \kappa2)}.
 #'
 #'  If `ids` has length > 2: A data frame with one row for each pair of
 #'  individuals, and 5 columns. The first two columns contain the ID labels, and
@@ -61,8 +61,7 @@
 #'  Furthermore, the X chromosomal \eqn{\kappa2} is NA whenever at least one of
 #'  the two individuals is male.
 #'
-#'
-#'@seealso [kinship()], [condensedIdentity()]
+#' @seealso [kinship()], [condensedIdentity()]
 #' @examples
 #' # Siblings
 #' x = nuclearPed(2)
@@ -118,7 +117,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
 
   # Noninbred pairs involving founder(s)
   if(any(noninb_fou_rows <- noninbred_rows & founder_rows)) {
-    k1_fou = 4*KIN[pairs[noninb_fou_rows, , drop=F]]
+    k1_fou = 4*KIN[pairs[noninb_fou_rows, , drop = F]]
     res[noninb_fou_rows, 3:5] = cbind(1 - k1_fou, k1_fou, 0)
   }
 
@@ -185,7 +184,7 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   }
 
   # All unordered pairs
-  pairs = combn(ids_int, 2, simplify=F)
+  pairs = combn(ids_int, 2, simplify = F)
 
   # System of equations:
   # k0 + k1 +   k2 = 1
