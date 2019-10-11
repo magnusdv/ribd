@@ -148,6 +148,79 @@ standardAlleleSeq = function(x) { # x a vector of even length
   res
 }
 
+# Faster alternative to standardPattern
+minimalPattern = function(x, asString = F, collapse = " ") {
+  if(is.matrix(x)) {
+    res = apply(x, 1, minimalPattern, asString = asString, collapse = collapse)
+    return(res)
+  }
+
+  if(!is.numeric(x) || any(as.integer(x) != x))
+    stop("The input must be a vector of integers:", toString(x))
+
+  n = length(x)
+  if(n %% 2 != 0)
+    stop("Input vector must have even length, not ", toString(x))
+
+  # Utility for inserting a certain value at given positions.
+  # If "value" already exist in the vector, these are replaced with a larger dummy
+  insertAt = function(y, pos, value) {
+    y[y == value] = max(y) + 1 # dummy
+    y[pos] = value
+    y
+  }
+
+  nPairs = n/2
+  even = 2 * seq_len(nPairs)
+  odd = even - 1
+  i = 0
+
+  # Loop through pairs of alleles (i.e. genotypes)
+  for(k in seq_len(nPairs)) {
+    a = x[2*k - 1]
+    b = x[2*k]
+
+    if(a == b) {
+      if(a > i) {
+        x = insertAt(x, x == a, i + 1)
+        i = i + 1
+      }
+      next
+    }
+
+    # How many alleles are not seen before?
+    n.new = sum(a > i, b > i)
+
+    if(n.new == 2) { # both new!
+      idx.a = x == a
+      idx.b = x == b
+      grps.a = idx.a[odd] | idx.a[even]
+      grps.b = idx.b[odd] | idx.b[even]
+
+      # Swap labels if the first genotype with exactly one of a,b has b.
+      diffs = grps.a != grps.b
+      swap = any(diffs) && grps.b[match(TRUE, diffs)]
+
+      x = insertAt(x, idx.a, value = if(swap) i+2 else i+1)
+      x = insertAt(x, idx.b, value = if(swap) i+1 else i+2)
+      i = i + 2
+    }
+    else if (n.new == 1) { # only one new
+      x = insertAt(x, x == max(a,b), i + 1)
+      i = i + 1
+    }
+
+    # Always ensure the resulting pair is sorted
+    if((g1 <- x[2*k - 1]) > (g2 <- x[2*k])) {
+      x[2*k - 1] = g2
+      x[2*k] = g1
+    }
+  }
+
+  # Return modified vector
+  x
+}
+
 # Produce all permutations made by swapping the two alleles within (not between) individuals
 expandSwaps = function(x, makeUnique = T) { # x a vector of even length
   n = length(x)/2
