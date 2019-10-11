@@ -110,4 +110,4 @@ L6 = generateNext(L5)
 
 MULTIPATTERNS_NONINBRED = lapply(list(L1, L2, L3, L4, L5, L6), addExtraInfo)
 
-usethis::use_data(MULTIPATTERNS_NONINBRED, overwrite = TRUE)
+usethis::use_data(MULTIPATTERNS_NONINBRED, overwrite = TRUE, internal = TRUE)
