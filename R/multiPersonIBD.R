@@ -149,6 +149,7 @@ standardAlleleSeq = function(x) { # x a vector of even length
 }
 
 # Faster alternative to standardPattern
+#' @export
 minimalPattern = function(x, asString = F, collapse = " ") {
   if(is.matrix(x)) {
     res = apply(x, 1, minimalPattern, asString = asString, collapse = collapse)
