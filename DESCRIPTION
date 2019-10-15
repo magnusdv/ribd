@@ -7,9 +7,13 @@ Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.
 Description: Recursive algorithms for computing various relatedness coefficients, 
     including pairwise kinship, kappa and identity coefficients. Both autosomal 
     and X-linked coefficients are computed. Founders are allowed to be inbred. 
-    More specialised coefficients include generalised kinship coefficients and 
-    two-locus identity coefficients. This package is part of the 'ped-suite' 
-    collection of packages for pedigree analysis, with 'pedtools' as the core 
+    In addition to the standard pairwise coefficients, ribd also computes a range
+    of lesser-known coefficients, including generalised kinship coefficients 
+    (Karigl (1981) <doi:10.1111/j.1469-1809.1981.tb00341.x>; Weeks and 
+    Lange (1988) <https:www.ncbi.nlm.nih.gov/pmc/articles/PMC1715269>),  
+    two-locus coefficients (Thompson (1988) <doi:10.1093/imammb/5.4.261>) and 
+    multi-person coefficients. This package is part of the ped suite, 
+    a collection of packages for pedigree analysis with 'pedtools' as the core 
     package for creating and handling pedigree objects.
 License: GPL-3
 URL: https://github.com/magnusdv/ribd
