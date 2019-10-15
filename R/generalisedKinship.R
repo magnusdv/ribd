@@ -175,7 +175,18 @@ newKinPattern = function(pattern, labels) {
 }
 
 
-# Helper function for creating kinPattern objects
+
+#' Generalised kinship pattern
+#'
+#' @param x A `ped` object
+#' @param pattern A list of vectors of ID labels.
+#' @param internal A logical
+#'
+#' @return An object of class `kinPattern`.
+#'
+#' @examples
+#' kinPattern(nuclearPed(2), list(1, 3:4))
+#'
 #' @export
 kinPattern = function(x, pattern, internal = F) {
   if(!is.ped(x))
