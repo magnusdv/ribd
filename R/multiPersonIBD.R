@@ -148,11 +148,22 @@ standardAlleleSeq = function(x) { # x a vector of even length
   res
 }
 
-# Faster alternative to standardPattern
+#' Minimal IBD pattern
+#'
+#' Compute the minimal form of given multiperson IBD pattern.
+#'
+#' @param x An integer vector of even length.
+#'
+#' @return An integer vector of the same length as `x`.
+#'
+#' @examples
+#' v = c(1,2,2,3)
+#' stopifnot(identical(minimalPattern(v), c(1,2,1,3)))
+#'
 #' @export
-minimalPattern = function(x, asString = F, collapse = " ") {
+minimalPattern = function(x) {
   if(is.matrix(x)) {
-    res = apply(x, 1, minimalPattern, asString = asString, collapse = collapse)
+    res = apply(x, 1, minimalPattern)
     return(res)
   }
 
@@ -243,27 +254,6 @@ expandSwaps = function(x, makeUnique = T) { # x a vector of even length
   t.default(res)
 }
 
-# Write input pattern in standard form:
-# The minimal pattern equivalent to the input.
-# x = a multi-pattern (a positive integer vector of even length),
-# or matrix where each row is a pattern.
-#' @export
-standardPattern = function(x, asString = F, collapse = " ") {
-  if(is.matrix(x)) {
-    res = apply(x, 1, standardPattern, asString = asString, collapse = collapse)
-    return(res)
-  }
-
-  n = length(x)
-  swaps = expandSwaps(x)
-  s = apply(swaps, 1, function(v) sum(n^((n-1):0) * (v-1)))
-  res = swaps[which.min(s), ]
-
-  if(asString)
-    res = paste(res, collapse = collapse)
-
-  res
-}
 
 # Remove impossible patterns based on pairwise kappa
 removeImpossiblePatterns = function(patterns, x, ids, verbose = T) {
