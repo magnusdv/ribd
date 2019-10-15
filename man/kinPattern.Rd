@@ -2,7 +2,7 @@
 % Please edit documentation in R/generalisedKinship.R
 \name{kinPattern}
 \alias{kinPattern}
-\title{Kinship pattern}
+\title{Generalised kinship pattern}
 \usage{
 kinPattern(x, pattern, internal = F)
 }
@@ -17,7 +17,7 @@ kinPattern(x, pattern, internal = F)
 An object of class \code{kinPattern}.
 }
 \description{
-Kinship pattern
+Generalised kinship pattern
 }
 \examples{
 kinPattern(nuclearPed(2), list(1, 3:4))

@@ -1,7 +1,7 @@
 #' Generalised kinship coefficients
 #'
 #' Compute generalised single-locus kinship coefficients, using the algorithm by
-#' Weeks & Lange (1992).
+#' Weeks & Lange (1988).
 #' @param x A `ped` object.
 #' @param pattern A `kinPattern` object.
 #' @param mem An `environment` (for internal use).
@@ -10,7 +10,8 @@
 #'
 #' @return A single probability.
 #'
-#' @references Weeks and Lange (1992):
+#' @references Weeks and Lange. _The Affected-Pedigree-Member Method of Linkage
+#' Analysis_. Am. J. Hum. Genet. 42:315-326, 1988.
 #'
 #' @examples
 #' x = nuclearPed(3)

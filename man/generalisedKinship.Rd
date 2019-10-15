@@ -22,7 +22,7 @@ A single probability.
 }
 \description{
 Compute generalised single-locus kinship coefficients, using the algorithm by
-Weeks & Lange (1992).
+Weeks & Lange (1988).
 }
 \examples{
 x = nuclearPed(3)
@@ -62,5 +62,6 @@ stopifnot(generalisedKinship(x, list(ids)) == generalisedKinship4(x, ids))
 
 }
 \references{
-Weeks and Lange (1992):
+Weeks and Lange. \emph{The Affected-Pedigree-Member Method of Linkage
+Analysis}. Am. J. Hum. Genet. 42:315-326, 1988.
 }
