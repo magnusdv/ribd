@@ -6,28 +6,31 @@ ribd <img src="man/figures/logo.png" align="right" height=140/>
 Overview
 --------
 
-The goal of `ribd` is to compute various coefficients of relatedness
-between pedigree members. It extends the `pedtools` package which
-provides many useful utilities for pedigree construction and
-manipulation.
+The goal of `ribd` is to compute various coefficients of relatedness and
+identity-by-descent (IBD) between pedigree members. It extends the
+`pedtools` package which provides useful utilities for pedigree
+construction and manipulation.
 
-The main functions in ribd are:
+The main functions in ribd compute the following pairwise coefficients:
 
--   `kinship()`, `kinshipX()` : Computes kinship matrices
--   `inbreeding()`, `inbreedingX()` : Computes inbreeding coefficients
--   `kappaIBD()`, `kappaIBDX()` : Computes IBD coefficients
-    (*κ*<sub>0</sub>, *κ*<sub>1</sub>, *κ*<sub>2</sub>) of non-inbred
-    pedigree members
--   `condensedIdentity()`, `condensedIdentityX()` : Computes Jacquard’s
-    condensed identity coefficients of any pedigree members
+-   `kinship()`, `kinshipX()` : Kinship coefficients
+-   `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
+-   `kappaIBD()`, `kappaIBDX()` : IBD coefficients
+    (*κ*<sub>0</sub>, *κ*<sub>1</sub>, *κ*<sub>2</sub>) (noninbred
+    individuals only)
+-   `condensedIdentity()`, `condensedIdentityX()` : Jacquard’s condensed
+    identity coefficients
 
-A novel feature of `ribd` is the ability to handle pedigrees with inbred
-founders. More about this below!
+A unique feature of `ribd` is the ability to handle pedigrees with
+inbred founders in all of the above calculations. More about this below!
 
-The package also computes some more specialised pedigree coefficients:
+The package also computes a variety of lesser-known pedigree
+coefficients:
 
 -   `generalisedKinship()` : Generalised kinship coefficients, as
-    defined by Karigl (1981)
+    defined by Weeks and Lange (1988)
+-   `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
+    individuals only)
 -   `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
     Thompson (1988)
 -   `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
@@ -83,10 +86,11 @@ Inbred founders
 ---------------
 
 How would the above result would change if individual 1 was himself
-inbred? The “normal” approach to answer this question would be to
-*expand* the pedigree to include the complete family history. For
-example, if he was the child of half siblings, we could perform this
-expansion by merging `x` with a suitably labeled half-sib pedigree:
+inbred, say, as a child of half siblings? A possible, but cumbersome,
+approach to answer this question would be to *expand* the pedigree to
+include the complete family history. Here is one way to do this, using
+`pedtools::mergePed()` to merge `x` with a suitably labelled half-sib
+pedigree:
 
 ``` r
 y = halfSibPed(sex1 = 1, sex2 = 2)
@@ -127,7 +131,7 @@ founderInbreeding(x, ids = 1) = 1/8
 ```
 
 When we now run `condensedIdentity()` on `x`, this inbreeding is taken
-into account, giving the same answer as above.
+into account, giving the same answer as for `z` above.
 
 ``` r
 condensedIdentity(x, ids = 5:6)
@@ -135,8 +139,8 @@ condensedIdentity(x, ids = 5:6)
 #> [7] 0.21875000 0.29687500 0.05468750
 ```
 
-The condensed identity states
------------------------------
+The pairwise condensed identity states
+--------------------------------------
 
 The following figure shows the 9 *condensed identity states* of two
 individuals *a* and *b*. Each state shows the pattern of IBD between the
