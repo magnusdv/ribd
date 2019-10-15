@@ -209,29 +209,27 @@ stopifnot(identical(
   twoLocusIBD(x1, ids = leaves(x1), rho = 0.25),
   twoLocusIBD(x2, ids = leaves(x2), rho = 0.25)))
 
-########################################################
-# Example 7: Using simulation (from the ibdsim2 package)
-# to validate two-locus IBD coefs
-########################################################
-
-# Create a non-trivial relationship
-y = addSon(cousinPed(0, child = TRUE), 5)
-ids = c(1, 7)
-plot(y, shaded = ids) # note that neither is inbred
-
-# Exact two-locus k11
-k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r, coefs = "k11"))
-plot(rseq, k11, type = "l", xlab = xlab, main = main, ylim = c(0, 0.6))
-
-# Check by simulation (requires ibdsim2)
-\donttest{
-library(ibdsim2)
-Nsim = 100  # increase to get better fit!
-
-k11.sim = sapply(rseq, function(r)
-                 estimateTwoLocusIBD(y, ids, r, Nsim = Nsim)['ibd1', 'ibd1'])
-points(rseq, k11.sim, col = 2)
-}
+# ########################################################
+# # Example 7: Using simulation (from the ibdsim2 package)
+# # to validate two-locus IBD coefs
+# ########################################################
+#
+# # Create a non-trivial relationship
+# y = addSon(cousinPed(0, child = TRUE), 5)
+# ids = c(1, 7)
+# plot(y, shaded = ids) # note that neither is inbred
+#
+# # Exact two-locus k11
+# k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r, coefs = "k11"))
+# plot(rseq, k11, type = "l", xlab = xlab, main = main, ylim = c(0, 0.6))
+#
+# # Check by simulation (requires ibdsim2)
+# library(ibdsim2)
+# Nsim = 100  # increase to get better fit!
+#
+# k11.sim = sapply(rseq, function(r)
+#                estimateTwoLocusIBD(y, ids, r, Nsim = Nsim)['ibd1', 'ibd1'])
+# points(rseq, k11.sim, col = 2)
 
 }
 \seealso{
