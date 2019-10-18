@@ -4,7 +4,7 @@
 #' involving up to 4 pedigree members. The founders may be inbred; see Examples.
 #'
 #' The function `generalisedKinship3()` computes the generalised kinship
-#' coefficient of three (not neccessarily distinct) members `a`, `b` and `c`,
+#' coefficient of three (not necessarily distinct) members `a`, `b` and `c`,
 #' defined as the probability that if a random allele is chosen from each of
 #' them, they are all identical by descent.
 #'
