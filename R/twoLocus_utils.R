@@ -39,7 +39,7 @@ kin2L = function(x, locus1, locus2, internal = F) {
 # Validate kin2L objects
 validateKin2L = function(x, ped = NULL) {
 
-  printAndStop = function(g, err) {print(g); stop2(err)}
+  printAndStop = function(g, err) {message(g); stop2(err)}
 
   for(i in 1:2) {
     loc = x[[i]]

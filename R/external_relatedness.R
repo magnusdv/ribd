@@ -163,7 +163,7 @@ idcoefs2 = function(x, ids, verbose = FALSE, cleanup = TRUE) {
   run = suppressWarnings(system(command, intern = T))
 
   if (verbose)
-    print(run)
+    message(run)
   res = read.table("__paramlink2idcoefs__.output", as.is = T)
 
   if (cleanup)

@@ -23,7 +23,7 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   if(is.numeric(sparse)) sparse = maxId > sparse
 
   if(sparse) {
-    if(verbose) cat("Using sparse lookup tables\n")
+    if(verbose) message("Using sparse lookup tables")
     sparsarr0 = slam::simple_sparse_zero_array
     KIN3 = sparsarr0(dim = rep(maxId, 3), mode = "double")
     KIN4 = sparsarr0(dim = rep(maxId, 4), mode = "double")
@@ -84,10 +84,10 @@ printCounts = function(mem) {
 
   msg = glue::glue("
                    Function calls:
-                   phi2  = {mem$i2}
-                   phi3  = {mem$i3} (recursions: {mem$i3r})
-                   phi4  = {mem$i4} (recursions: {mem$i4r})
-                   phi22 = {mem$i22} (recursions: {mem$i22r})
+                      phi2: {mem$i2}
+                      phi3: {mem$i3} (recursions: {mem$i3r})
+                      phi4: {mem$i4} (recursions: {mem$i4r})
+                     phi22: {mem$i22} (recursions: {mem$i22r})
                    Total time used: {tot_time}")
-  print(msg)
+  message(msg)
 }

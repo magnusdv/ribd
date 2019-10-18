@@ -15,9 +15,10 @@
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
 #' @param verbose A logical
-#' @param checkAnswer If TRUE, and the `identity` package is installed, the
-#'   result is checked against the output of [identity::identity.coefs()].
-#'   (Ignored if any of the founders are inbred.)
+#' @param checkAnswer A logical. If TRUE, and the `identity` package is
+#'   installed, the result is checked against the output of
+#'   [identity::identity.coefs()]. This option is ignored if any of the founders
+#'   are inbred, or if `ids` has length greater than 2.
 #'
 #' @return If `ids` has length 2: A vector of length 9, containing the condensed
 #'   identity coefficients.
@@ -87,13 +88,20 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
     if(verbose)
       printCounts(mem)
 
-    if(checkAnswer)
-      compare_with_identity(x, ids, j)
+    if(checkAnswer) {
+      chk = compare_with_identity(x, ids, j)
+      if(!is.null(chk))
+        return(chk)
+    }
 
     return(j)
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.
+  if(checkAnswer) {
+    warning("`checkAnswer = TRUE` is ignored when `length(ids) > 2`")
+  }
+
   pairs = combn(ids_int, 2, simplify = F)
 
   RHS = vapply(pairs, function(p) {
@@ -129,7 +137,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
 }
 
 compare_with_identity = function(x, ids, j) {
-  cat("Comparison with `identity` package: ")
+  message("Comparison with `identity` package: ", appendLF = F)
 
   if(hasInbredFounders(x)) {
     message("NA (pedigree has inbred founders)")
@@ -146,8 +154,7 @@ compare_with_identity = function(x, ids, j) {
     message("OK!")
   else {
     message("*** MISMATCH! ***")
-    cat("IDS:", ids, "\n")
-    print(rbind(`identity:` = jj, `ribd:` = j))
+    rbind(`identity:` = jj, `ribd:` = j)
   }
 }
 

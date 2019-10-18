@@ -86,8 +86,8 @@ genKin2L = function(kin, mem, indent = 0) {
          intersect(pivTargets[[2]], pivTargets[[3]])))
 
   if(!is.na(indent)) {
-    #cat(sprintf("%sr,s,t,u = %d,%d,%d,%d; uniq = %d; even = %d; odd = %d\n", strrep(" ", indent), r,s,t,u,un,ev,od))
-    message(sprintf("%sRecurse: a = %d; father = %d; mother = %d", strrep(" ", indent), a,f,m))
+    message(sprintf("%sRecurse: a = %d; father = %d; mother = %d",
+                    strrep(" ", indent), a,f,m))
   }
   # Wrapper of genKin2L to save typing in the recursions
   recu = function(k) genKin2L(k, mem, indent = indent +2)
@@ -191,7 +191,7 @@ printCounts2 = function(mem) {
                      Lookups:      {mem$ilook}
                      Recursions:   {mem$irec}
                    Total time: {tot_time}")
-  print(msg)
+  message(msg)
 }
 
 

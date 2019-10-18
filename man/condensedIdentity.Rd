@@ -20,9 +20,10 @@ ordinary arrays.}
 
 \item{verbose}{A logical}
 
-\item{checkAnswer}{If TRUE, and the \code{identity} package is installed, the
-result is checked against the output of \code{\link[identity:identity.coefs]{identity::identity.coefs()}}.
-(Ignored if any of the founders are inbred.)}
+\item{checkAnswer}{A logical. If TRUE, and the \code{identity} package is
+installed, the result is checked against the output of
+\code{\link[identity:identity.coefs]{identity::identity.coefs()}}. This option is ignored if any of the founders
+are inbred, or if \code{ids} has length greater than 2.}
 }
 \value{
 If \code{ids} has length 2: A vector of length 9, containing the condensed

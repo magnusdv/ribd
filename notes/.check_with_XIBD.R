@@ -4,7 +4,7 @@
 
 
 compare_with_XIBD = function(x, ids, j) {
-  cat("Comparison with `XIBD` package: ")
+  message("Comparison with `XIBD` package: ", appendLF = F)
 
   if(hasInbredFounders(x)) {
     message("skipped. (Pedigree has inbred founders.)")
@@ -23,8 +23,8 @@ compare_with_XIBD = function(x, ids, j) {
     message("all.equal() OK, but not identical()")
   else {
     message("*** MISMATCH! ***")
-    cat("IDS:", ids, "\n")
-    print(rbind(`XIBD:` = jj, `ribd:` = j))
+    message("IDS: ", toString(ids))
+    rbind(`XIBD:` = jj, `ribd:` = j)
   }
 }
 

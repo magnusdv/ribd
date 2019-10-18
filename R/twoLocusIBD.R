@@ -311,7 +311,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
         H = kin2L(x, locus1 = sprintf("%s>1 = %s>1 = %s>2 = %s>2", id1, id2, id1, id2),
                      locus2 = sprintf("%s>1 = %s>1,  %s>2,  %s>2", id1, id2, id1, id2), internal = T)
         if(verbose)
-          cat("Computing `k11` via the generalised kinship pattern H = ", H, "\n")
+          message("Computing `k11` via the generalised kinship pattern H = ", H)
 
         # Compute k11 via H
         h = genKin2L(H, mem, indent = NA)

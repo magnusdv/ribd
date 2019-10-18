@@ -109,7 +109,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
     if(verbose) {
       init_time = format(mem$initTime, digits = 4)
       tot_time = format(Sys.time()-mem$st, digits = 4)
-      print(glue::glue("
+      message(glue::glue("
         Calls = {mem$i}
         Lookups = {mem$ilook}
         Recursions: {mem$irec}
@@ -225,7 +225,7 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
   # Each A, B, C, D is a parent-child pair
 
   # If any founders -> 0
-  if(A[1]*B[1]*C[1]*D[1] == 0) {print("Outside of pedigree! Can this happen?"); return(0)}
+  if(A[1]*B[1]*C[1]*D[1] == 0) {message("Outside of pedigree! Can this happen?"); return(0)}
 
   # Sort: a >= b,c,d; c >= d; if(a == c) then b >= d
   plist = sortPairs(A,B,C,D)

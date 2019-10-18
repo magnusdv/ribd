@@ -275,7 +275,7 @@ removeImpossiblePatterns = function(patterns, x, ids, verbose = T) {
 
   # Report change
   if(verbose)
-    cat("State space reduction:", nr, "-->", nrow(patterns), "\n")
+    message(sprintf("State space reduction: %d --> %d", nr, nrow(patterns)))
 
   patterns
 }

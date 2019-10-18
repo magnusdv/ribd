@@ -165,7 +165,7 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
     inbred = females(x)[INB[SEX == 2] > .Machine$double.eps]
     for(id in inbred)
       message(sprintf("  %s: f = %f", id, INB[id]))
-    cat("\n")
+    message("")
   }
 
   # All unordered pairs
