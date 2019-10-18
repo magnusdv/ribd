@@ -7,13 +7,11 @@ This is a resubmission. In this version I have:
 
 * As requested, replaced cat()/print() with message() several places
 
-* Renamed functions 
-jacquard() --> idcoefs() 
-jacquard() --> idcoefs2()
+* Renamed functions jacquard() --> idcoefs() and jacquard2() --> idcoefs2()
 
 I was asked by CRAN volunteer to explain the phrase "written by Abney (2009)" in the docs of these functions, since Abney is not a package author. 
 
-These are wrapper functions. The first calls a function in the 'identity' package; the second attempts to call an external C program called "IdCoefs", if this happens to be installed on the users computer. This C program is written by Abney, which I've tried to make clear in the documentation. I'm the author of every line of code in the package.
+These are wrapper functions. The first calls a function in the 'identity' package; the second attempts to call an external C program called "IdCoefs", if this happens to be installed on the users computer. This C program is written by Abney, and is not shipped with the submitted package. I've tried to make this clear in the documentation. I'm the author of every line of code in the submitted package.
 
 
 ## Resubmission
