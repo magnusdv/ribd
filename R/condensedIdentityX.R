@@ -32,7 +32,6 @@
 #' @seealso [kinshipX()], [condensedIdentity()], [pedtools::founderInbreeding()]
 #'
 #' @examples
-#' library(pedtools)
 #'
 #' x = fullSibMating(1)
 #' x_sisters = swapSex(x, 5)

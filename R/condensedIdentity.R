@@ -33,7 +33,7 @@
 #'
 #' @examples
 #' # One generation of full sib mating.
-#' # (This is the simplest example with all 9 coefficients nonzero.)
+#' # (One of the simplest examples with all 9 coefficients nonzero.)
 #' x = fullSibMating(1)
 #' j1 = condensedIdentity(x, ids = 5:6)
 #'

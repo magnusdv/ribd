@@ -81,4 +81,5 @@ threeCousins2 = ped(
 ids = c('c1','c2','c3')
 multiPersonIBD(threeCousins1, ids)
 multiPersonIBD(threeCousins2, ids)
+
 }

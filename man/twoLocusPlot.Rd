@@ -71,7 +71,7 @@ peds = list(
    `U-sibs` = list(ped = addChildren(addDaughter(nuclearPed(2), 4), 3, 6, nch = 2),
                  ids = 7:8)
 )
-suppressWarnings(plotPedList(peds))
+# plotPedList(peds)
 twoLocusPlot(peds, coeff = "kinship")
 
 ################################

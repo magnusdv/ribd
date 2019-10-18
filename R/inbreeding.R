@@ -30,12 +30,16 @@
 #' founderInbreeding(x, 1) = 1
 #' inbreeding(x)
 #'
-#' # The X inbreeding coefficients depend on the gender distribution
-#' x.pat = halfCousinPed(0, child = TRUE) # child of paternal half sibs
-#' inbreedingX(x.pat) # all zero
+#' # The X inbreeding coefficients depend on the genders in the pedigree.
+#' # To exemplify this, we look at a child of half siblings.
 #'
-#' x.mat = swapSex(x.pat, 1) # change to maternal half sibs
-#' inbreedingX(x.mat) # child now has f_X = 1/4
+#' x.pat = halfSibPed(sex2 = 2) # paternal half sibs
+#' x.pat = addChildren(x.pat, father = 4, mother = 5, nch = 1, sex = 2)
+#' stopifnot(inbreedingX(x.pat)[6] == 0)
+#'
+#' # Change to maternal half sibs => coeff becomes 1/4.
+#' x.mat = swapSex(x.pat, 1)
+#' stopifnot(inbreedingX(x.mat)[6] == 0.25)
 #'
 #' @export
 inbreeding = function(x) {

@@ -127,10 +127,10 @@
 #' # Check against exact formula
 #' r = rseq
 #' k11_PO = 1/8*(-4*r^5 + 12*r^4 - 16*r^3 + 16*r^2 - 9*r + 5)
-#' all.equal(kvals[, "PO"], k11_PO, check.names = FALSE)
+#' stopifnot(all.equal(kvals[, "PO"], k11_PO, check.names = FALSE))
 #'
 #' k11_S = 1/16*(8*r^6 - 32*r^5 + 58*r^4 - 58*r^3 + 43*r^2 - 20*r + 10)
-#' all.equal(kvals[, "SIB"], k11_S, check.names = FALSE)
+#' stopifnot(all.equal(kvals[, "SIB"], k11_S, check.names = FALSE))
 #'
 #'
 #' ################################################
@@ -189,33 +189,13 @@
 #' # Example 6: By Donnelly (1983) these relationships are
 #' # genetically indistinguishable
 #' ########################################################
+#'
 #' x1 = halfCousinPed(1)
 #' x2 = halfCousinPed(0, removal = 2)
 #' stopifnot(identical(
 #'   twoLocusIBD(x1, ids = leaves(x1), rho = 0.25),
 #'   twoLocusIBD(x2, ids = leaves(x2), rho = 0.25)))
 #'
-#' # ########################################################
-#' # # Example 7: Using simulation (from the ibdsim2 package)
-#' # # to validate two-locus IBD coefs
-#' # ########################################################
-#' #
-#' # # Create a non-trivial relationship
-#' # y = addSon(cousinPed(0, child = TRUE), 5)
-#' # ids = c(1, 7)
-#' # plot(y, shaded = ids) # note that neither is inbred
-#' #
-#' # # Exact two-locus k11
-#' # k11 = sapply(rseq, function(r) twoLocusIBD(y, ids, r, coefs = "k11"))
-#' # plot(rseq, k11, type = "l", xlab = xlab, main = main, ylim = c(0, 0.6))
-#' #
-#' # # Check by simulation (requires ibdsim2)
-#' # library(ibdsim2)
-#' # Nsim = 100  # increase to get better fit!
-#' #
-#' # k11.sim = sapply(rseq, function(r)
-#' #                estimateTwoLocusIBD(y, ids, r, Nsim = Nsim)['ibd1', 'ibd1'])
-#' # points(rseq, k11.sim, col = 2)
 #'
 #' @export
 twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, verbose = F) {

@@ -46,12 +46,12 @@ IBD_from_gk = function(x, ids) {
   c(k0, k1, k2)
 }
 
-y = quadHalfFirstCousins()
-ids = 9:10
-stopifnot(IBD_from_gk(y, ids) == kappaIBD(y, ids))
+y1 = nuclearPed(2); ids = 3:4
+stopifnot(IBD_from_gk(y1, ids) == kappaIBD(y1, ids))
 
-y = nuclearPed(2); ids = 3:4
-stopifnot(IBD_from_gk(y, ids) == kappaIBD(y, ids))
+y2 = quadHalfFirstCousins()
+ids = 9:10
+stopifnot(IBD_from_gk(y2, ids) == kappaIBD(y2, ids))
 
 #### Triple/quad kinship (compare with karigl)
 x = fullSibMating(1)

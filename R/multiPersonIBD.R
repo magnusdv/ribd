@@ -37,7 +37,6 @@
 #'   probability, followed by one column for each `ids` individual, describing
 #'   the minimal element of the equivalence class. (See Details.) If `complete =
 #'   FALSE` (the default) rows with probability 0 are removed.
-#' @export
 #'
 #' @examples
 #' ### Trivial example: Trio ###
@@ -70,6 +69,8 @@
 #' ids = c('c1','c2','c3')
 #' multiPersonIBD(threeCousins1, ids)
 #' multiPersonIBD(threeCousins2, ids)
+#'
+#' @export
 multiPersonIBD = function(x, ids, complete = F, verbose = F) {
   N = length(ids)
   if(N < 2)

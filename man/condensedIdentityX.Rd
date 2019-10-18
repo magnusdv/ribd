@@ -50,7 +50,6 @@ positions of undefined states (depending on the sex combination). The README
 file on the github home page of ribd has a table illustrating this.
 }
 \examples{
-library(pedtools)
 
 x = fullSibMating(1)
 x_sisters = swapSex(x, 5)
