@@ -6,8 +6,8 @@
 \alias{kinship2_kinshipX}
 \alias{kinship2_inbreeding}
 \alias{kinship2_inbreedingX}
-\alias{jacquard}
-\alias{jacquard2}
+\alias{idcoefs}
+\alias{idcoefs2}
 \title{Relatedness coefficients by other programs}
 \usage{
 kinship2_kinship(x, ids = NULL)
@@ -18,9 +18,9 @@ kinship2_inbreeding(x)
 
 kinship2_inbreedingX(x)
 
-jacquard(x, ids)
+idcoefs(x, ids)
 
-jacquard2(x, ids, verbose = FALSE, cleanup = TRUE)
+idcoefs2(x, ids, verbose = FALSE, cleanup = TRUE)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -55,14 +55,14 @@ various relatedness coefficients.
 Similarly ,\code{kinship2_inbreedingX()} and \code{kinship2_kinshipX()} wrap
 \code{\link[kinship2:kinship]{kinship2::kinship()}} using \code{chrtype = "x"}.
 
-\code{jacquard()} wraps \code{\link[identity:identity.coefs]{identity::identity.coefs()}}, which is an R interface for
+\code{idcoefs()} wraps \code{\link[identity:identity.coefs]{identity::identity.coefs()}}, which is an R interface for
 the C program \code{IdCoefs} written by Mark Abney (2009). The \code{identity.coefs()}
 function sometimes causes R to crash, hence I have provided an alternative
-wrapper, \code{jacquard2}, which executes an external call to the original C
+wrapper, \code{idcoefs2}, which executes an external call to the original C
 program \code{IdCoefs} (version 2.1.1). For this to work, \code{IdCoefs} must be
 installed on the computer (see link in the References section below) and the
 executable placed in a folder included in the PATH variable. The
-\code{jacquard2()} wrapper works by writing the necessary files to disk and
+\code{idcoefs2()} wrapper works by writing the necessary files to disk and
 calling \code{IdCoefs} via \code{\link[=system]{system()}}.
 }
 \examples{
@@ -72,12 +72,12 @@ p = pedtools::randomPed(g = 5, founders = 2, seed = 111)
 # Check that ribd agrees with kinship2 package
 kinship_k2 = kinship2_kinship(p)
 kinship_ribd = kinship(p)
-identical(kinship_k2, kinship_ribd)
+stopifnot(identical(kinship_k2, kinship_ribd))
 
 # Check on X also
 kinshipX_k2 = kinship2_kinshipX(p)
 kinshipX_ribd = kinshipX(p)
-identical(kinshipX_k2, kinshipX_ribd)
+stopifnot(identical(kinshipX_k2, kinshipX_ribd))
 
 }
 \references{

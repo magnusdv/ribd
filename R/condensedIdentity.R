@@ -141,7 +141,7 @@ compare_with_identity = function(x, ids, j) {
     return()
   }
 
-  jj = jacquard(x, ids)
+  jj = idcoefs(x, ids)
   if(isTRUE(all.equal(j, jj)))
     message("OK!")
   else {

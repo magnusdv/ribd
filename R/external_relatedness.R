@@ -9,14 +9,14 @@
 #' Similarly ,`kinship2_inbreedingX()` and `kinship2_kinshipX()` wrap
 #' [kinship2::kinship()] using `chrtype = "x"`.
 #'
-#' `jacquard()` wraps [identity::identity.coefs()], which is an R interface for
+#' `idcoefs()` wraps [identity::identity.coefs()], which is an R interface for
 #' the C program `IdCoefs` written by Mark Abney (2009). The `identity.coefs()`
 #' function sometimes causes R to crash, hence I have provided an alternative
-#' wrapper, `jacquard2`, which executes an external call to the original C
+#' wrapper, `idcoefs2`, which executes an external call to the original C
 #' program `IdCoefs` (version 2.1.1). For this to work, `IdCoefs` must be
 #' installed on the computer (see link in the References section below) and the
 #' executable placed in a folder included in the PATH variable. The
-#' `jacquard2()` wrapper works by writing the necessary files to disk and
+#' `idcoefs2()` wrapper works by writing the necessary files to disk and
 #' calling `IdCoefs` via [system()].
 #'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
@@ -48,12 +48,12 @@
 #' # Check that ribd agrees with kinship2 package
 #' kinship_k2 = kinship2_kinship(p)
 #' kinship_ribd = kinship(p)
-#' identical(kinship_k2, kinship_ribd)
+#' stopifnot(identical(kinship_k2, kinship_ribd))
 #'
 #' # Check on X also
 #' kinshipX_k2 = kinship2_kinshipX(p)
 #' kinshipX_ribd = kinshipX(p)
-#' identical(kinshipX_k2, kinshipX_ribd)
+#' stopifnot(identical(kinshipX_k2, kinshipX_ribd))
 #'
 #' @name external_coefs
 NULL
@@ -129,7 +129,7 @@ kinship2_inbreedingX = function(x) {
 
 #' @rdname external_coefs
 #' @export
-jacquard = function(x, ids) {
+idcoefs = function(x, ids) {
   if (!requireNamespace("identity", quietly = TRUE))
       stop2("Package `identity` must be installed for this function to work")
   if(!is.ped(x)) stop2("Input is not a `ped` object")
@@ -150,7 +150,7 @@ jacquard = function(x, ids) {
 #' @rdname external_coefs
 #' @importFrom utils read.table write.table
 #' @export
-jacquard2 = function(x, ids, verbose = FALSE, cleanup = TRUE) {
+idcoefs2 = function(x, ids, verbose = FALSE, cleanup = TRUE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must be a vector of length 2")
 
