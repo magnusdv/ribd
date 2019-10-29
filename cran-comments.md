@@ -1,6 +1,12 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+* As requested, replaced all T/F with TRUE/FALSE
+
+
+## Resubmission
+This is a resubmission. In this version I have:
+
 * As requested, removed code in examples that was commented out.
 
 * Some additional very minor cleanups of examples
