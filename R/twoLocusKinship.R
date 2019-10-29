@@ -145,7 +145,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
 
   # If length(ids) > 2: Do all unordered pairs; return data.frame
 
-  pairs = combn(ids_int, 2, simplify = F)
+  pairs = combn(ids_int, 2, simplify = FALSE)
   pairs = c(pairs, lapply(seq_along(ids_int), function(i) c(i,i)))
 
   coefs = lapply(rho, function(r) {
@@ -167,7 +167,7 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
                    id2 = idcols[,2],
                    rho = rep(rho, each = length(pairs)),
                    phi2 = unlist(coefs),
-                   stringsAsFactors = F)
+                   stringsAsFactors = FALSE)
 
   res
 }

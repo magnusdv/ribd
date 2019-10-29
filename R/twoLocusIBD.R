@@ -198,7 +198,7 @@
 #'
 #'
 #' @export
-twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, verbose = F) {
+twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = FALSE, uniMethod = 1, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must have length exactly 2")
 
@@ -251,7 +251,7 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1, v
 }
 
 
-twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, uniMethod = 1, verbose = F) {
+twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALSE, uniMethod = 1, verbose = FALSE) {
 
   if(is.null(mem)) {
     # Enforce parents to precede their children
@@ -280,20 +280,20 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
 
       if(detailed && k11 > 0) {
         # Rectilineal?
-        if(id1 %in% ancestors(x, id2, internal = T)) {
+        if(id1 %in% ancestors(x, id2, internal = TRUE)) {
           k11.cc = k11.tc = 0.5 * k11
         }
-        else if(id2 %in% ancestors(x, id1, internal = T)) {
+        else if(id2 %in% ancestors(x, id1, internal = TRUE)) {
           k11.cc = k11.ct = 0.5 * k11
         }
         else {
           RELATED = mem$k1 > 0
 
           # Note that neither id1 nor id2 are founders at this point: k1 > 0 and not rectilineal
-          if(all(RELATED[parents(x, id1, internal = T), id2])) {
+          if(all(RELATED[parents(x, id1, internal = TRUE), id2])) {
             k11.cc = k11.tc = 0.5 * k11
           }
-          else if(all(RELATED[parents(x, id1, internal = T), id2])) {
+          else if(all(RELATED[parents(x, id1, internal = TRUE), id2])) {
             k11.cc = k11.ct = 0.5 * k11
           }
           else {
@@ -309,7 +309,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
 
       if(!detailed) {
         H = kin2L(x, locus1 = sprintf("%s>1 = %s>1 = %s>2 = %s>2", id1, id2, id1, id2),
-                     locus2 = sprintf("%s>1 = %s>1,  %s>2,  %s>2", id1, id2, id1, id2), internal = T)
+                     locus2 = sprintf("%s>1 = %s>1,  %s>2,  %s>2", id1, id2, id1, id2), internal = TRUE)
         if(verbose)
           message("Computing `k11` via the generalised kinship pattern H = ", H)
 
@@ -321,19 +321,19 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
       else {
         ## Compute 4 generalised coefs, solve for k11^cc etc.
         kin1 = kin2L(x, locus1 = sprintf("%s>1 = %s>1", id1, id2),
-                        locus2 = sprintf("%s>1 = %s>1", id1, id2), internal = T)
+                        locus2 = sprintf("%s>1 = %s>1", id1, id2), internal = TRUE)
         h1 = genKin2L(kin1, mem, indent = NA)
 
         kin2 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2", id1, id2, id2),
-                        locus2 = sprintf("%s>1 = %s>2, %s>1", id1, id2, id2), internal = T)
+                        locus2 = sprintf("%s>1 = %s>2, %s>1", id1, id2, id2), internal = TRUE)
         h2 = genKin2L(kin2, mem, indent = NA)
 
         kin3 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2", id1, id2, id1),
-                        locus2 = sprintf("%s>2 = %s>1, %s>1", id1, id2, id1), internal = T)
+                        locus2 = sprintf("%s>2 = %s>1, %s>1", id1, id2, id1), internal = TRUE)
         h3 = genKin2L(kin3, mem, indent = NA)
 
         kin4 = kin2L(x, locus1 = sprintf("%s>1 = %s>1, %s>2, %s>2", id1, id2, id1, id2),
-                        locus2 = sprintf("%s>2 = %s>2, %s>1, %s>1", id1, id2, id1, id2), internal = T)
+                        locus2 = sprintf("%s>2 = %s>2, %s>1, %s>1", id1, id2, id1, id2), internal = TRUE)
         h4 = genKin2L(kin4, mem, indent = NA)
 
         ### Solve for detailed k11
@@ -343,7 +343,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
                      rb*rho^2, rb^3,       rho^3,       rb^2*rho,
                      rb*rho^2, rho^3,      rb^3,        rb^2*rho,
                      rho^4,    rb^2*rho^2, rb^2*rho^2,  rb^4),
-                   byrow = T, nrow = 4)
+                   byrow = TRUE, nrow = 4)
 
         m = round(solve(M, bvec), 15) # ad hoc rounding to avoid tiny errors. Better alternatives?
 
@@ -355,12 +355,12 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
     }
   } ### uniMethod 1 done
   else if(uniMethod == 2) {
-    k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(F,F)) * 4/(rb^2)
+    k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(FALSE,FALSE)) * 4/(rb^2)
 
     if(rho > 0) {
-      k11.ct = twoLocusKinship(x, ids, rho, recombinants = c(F,T)) * 4/(rho*rb)
-      k11.tc = twoLocusKinship(x, ids, rho, recombinants = c(T,F)) * 4/(rho*rb)
-      k11.tt = twoLocusKinship(x, ids, rho, recombinants = c(T,T)) * 4/(rho^2)
+      k11.ct = twoLocusKinship(x, ids, rho, recombinants = c(FALSE,TRUE)) * 4/(rho*rb)
+      k11.tc = twoLocusKinship(x, ids, rho, recombinants = c(TRUE,FALSE)) * 4/(rho*rb)
+      k11.tt = twoLocusKinship(x, ids, rho, recombinants = c(TRUE,TRUE)) * 4/(rho^2)
     }
 
     # Total
@@ -396,7 +396,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, u
 }
 
 
-twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, verbose = F) {
+twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALSE, verbose = FALSE) {
 
   if(any(ids %in% founders(x)))
     stop2("Both `ids` must be non-founders in order to use the bilinear method")
@@ -415,10 +415,10 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
   # Detailed single-locus identity states (only noninbred states 9 - 15 are needed)
   idsi = internalID(x, ids)
   a = idsi[1]; b = idsi[2]
-  f = father(x, a, internal = T)
-  g = father(x, b, internal = T)
-  m = mother(x, a, internal = T)
-  n = mother(x, b, internal = T)
+  f = father(x, a, internal = TRUE)
+  g = father(x, b, internal = TRUE)
+  m = mother(x, a, internal = TRUE)
+  n = mother(x, b, internal = TRUE)
 
   S9  = sprintf("%s>%s = %s>%s, %s>%s = %s>%s", f,a, g,b, m,a, n,b)
   S10 = sprintf("%s>%s = %s>%s, %s>%s , %s>%s", f,a, g,b, m,a, n,b)
@@ -430,7 +430,7 @@ twoLocusIBD_bilineal = function(x, ids, rho, mem = NULL, coefs, detailed = F, ve
 
   # Helper function for computing generalised two-locus coefs
   .Phi = function(loc1, loc2) {
-    kin = kin2L(x, loc1, loc2, internal = T)
+    kin = kin2L(x, loc1, loc2, internal = TRUE)
     genKin2L(kin, mem, indent = NA)
   }
 
@@ -545,7 +545,7 @@ twoLocusIBD_simple = function(x, ids, rho) {
   k11.cc = phi11[fa1, fa2] * phi00[mo1, mo2] + phi11[fa1, mo2] * phi00[mo1, fa2] +
     phi11[mo1, fa2] * phi00[fa1, mo2] + phi11[mo1, mo2] * phi00[fa1, fa2]
 
-  phi11.rr = twoLocusKinship(x, ids = ids, rho, recombinants = c(T,T))
+  phi11.rr = twoLocusKinship(x, ids = ids, rho, recombinants = c(TRUE, TRUE))
   k11.tt = phi11.rr * 4/rho^2 - 2*k22.h - 2*k21.h
 
   k00 = phi00[fa1, fa2] * phi00[fa1, mo2] * phi00[mo1, fa2] * phi00[mo1, mo2]

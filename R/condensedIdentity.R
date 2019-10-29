@@ -67,7 +67,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
     8,0,2,0,4,0,2,1,0,
     16,0,4,0,4,0,2,1,0,
     4,4,2,2,2,2,1,1,1,
-    16,0,4,0,4,0,4,1,0), byrow = T, ncol = 9)
+    16,0,4,0,4,0,4,1,0), byrow = TRUE, ncol = 9)
 
   # If input is a pair of indivs, return the 9 coeffs as a numeric vector
   if(length(ids) == 2) {
@@ -102,7 +102,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
     warning("`checkAnswer = TRUE` is ignored when `length(ids) > 2`")
   }
 
-  pairs = combn(ids_int, 2, simplify = F)
+  pairs = combn(ids_int, 2, simplify = FALSE)
 
   RHS = vapply(pairs, function(p) {
     id1 = p[1]; id2 = p[2]
@@ -127,7 +127,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
   res = data.frame(id1 = labs[idcols[, 1]],
                    id2 = labs[idcols[, 2]],
                    t.default(j),
-                   stringsAsFactors = F)
+                   stringsAsFactors = FALSE)
   names(res)[3:11] = paste0("D", 1:9)
 
   if(verbose)
@@ -137,7 +137,7 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
 }
 
 compare_with_identity = function(x, ids, j) {
-  message("Comparison with `identity` package: ", appendLF = F)
+  message("Comparison with `identity` package: ", appendLF = FALSE)
 
   if(hasInbredFounders(x)) {
     message("NA (pedigree has inbred founders)")

@@ -61,7 +61,7 @@ kinshipX = function(x) {
 
   # Back to original order if needed
   if(!standardOrder)
-    kins = kins[origOrder, origOrder, drop = F]
+    kins = kins[origOrder, origOrder, drop = FALSE]
 
   kins
 }

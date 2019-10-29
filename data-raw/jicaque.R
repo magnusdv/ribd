@@ -25,7 +25,7 @@ jicaqueMatrix = matrix(c(
   "Julio", 15, 17, 1,
   "Mencha", 16, 18, 2,
   "Son1", "Julio", "Mencha", 1,
-  "Son2", "Julio", "Mencha", 1), byrow = T, ncol = 4)
+  "Son2", "Julio", "Mencha", 1), byrow = TRUE, ncol = 4)
 
 jicaque = as.data.frame(jicaqueMatrix)
 names(jicaque) = c("id", "fid", "mid", "sex")

@@ -50,7 +50,7 @@
 #' stopifnot(generalisedKinship(x, list(ids)) == generalisedKinship4(x, ids))
 #'
 #' @export
-generalisedKinship = function(x, pattern, mem = NULL, verbose = F, debug = F) {
+generalisedKinship = function(x, pattern, mem = NULL, verbose = FALSE, debug = FALSE) {
 
   # TODO: bake x into `mem`; avoid checking x every time.
 
@@ -89,7 +89,7 @@ genKin = function(kp, mem, indent = 0) {
   }
 
   uniqList = lapply(kp, unique.default)
-  uniqVec = unlist(uniqList, use.names = F)
+  uniqVec = unlist(uniqList, use.names = FALSE)
 
     # Boundary 1: Anyone in >2 groups?
   if(any(tabulate(uniqVec) > 2)) {
@@ -100,7 +100,7 @@ genKin = function(kp, mem, indent = 0) {
   # Boundary 2: Any group with 2 unrelated indivs?
   k1 = mem$k1
   for(s in uniqList[lengths(uniqList) > 1]) {
-    pairs_mat = comb2(s, vec = T)
+    pairs_mat = comb2(s, vec = TRUE)
     if(any(k1[pairs_mat] == 0)) {
       mem$iimp = mem$iimp + 1
       return(printAndReturn(0, indent, comment = " (B2)"))
@@ -189,7 +189,7 @@ newKinPattern = function(pattern, labels) {
 #' kinPattern(nuclearPed(2), list(1, 3:4))
 #'
 #' @export
-kinPattern = function(x, pattern, internal = F) {
+kinPattern = function(x, pattern, internal = FALSE) {
   if(!is.ped(x))
     stop2("First argument must be a `ped` object")
 
@@ -199,7 +199,7 @@ kinPattern = function(x, pattern, internal = F) {
   else {
     v = unlist(pattern)
     if(!is.numeric(v))
-      stop2("Non-numeric entries found in `pattern`; this is illegal when `internal = T`")
+      stop2("Non-numeric entries found in `pattern`; this is illegal when `internal = TRUE`")
     if(length(err <- setdiff(v, 1:pedsize(x))) > 0)
       stop2("Illegal entry in kinPattern() when `internal = TRUE`: ", err)
   }
@@ -223,18 +223,18 @@ print.kinPattern = function(x, ...,  indent = 0) {
 sort_kinPattern = function(x) {
 
   # Sort each group
-  x[] = lapply(x, function(g) sort.int(g, decreasing = T, method = "shell"))
+  x[] = lapply(x, function(g) sort.int(g, decreasing = TRUE, method = "shell"))
 
   # Max number of elements
   L = max(lengths(x))
 
   # Max ID
-  M = max(unlist(x, use.names = F))
+  M = max(unlist(x, use.names = FALSE))
 
   # Convert to number, used for sorting
   b = vapply(x, function(g) sum(g * ((M+1)^(seq(L, by = -1, length = length(g))))), FUN.VALUE = 1)
 
-  x[] = x[order(b, decreasing = T, method = "shell")]
+  x[] = x[order(b, decreasing = TRUE, method = "shell")]
   x
 }
 
@@ -284,7 +284,7 @@ initialiseGKMemo = function(ped, chromType = "autosomal", counters = NULL) {
   mem$PHI = list()
 
   # For quick look-up:
-  FOU = founders(ped, internal = T)
+  FOU = founders(ped, internal = TRUE)
   isFounder = rep(FALSE, pedsize(ped))
   isFounder[FOU] = TRUE
   mem$isFounder = isFounder

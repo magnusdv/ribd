@@ -5,7 +5,7 @@ stop2 = function(...) {
 }
 
 # Quick version of combn(., 2)
-comb2 = function(n, vec = F){
+comb2 = function(n, vec = FALSE){
   if(vec) {
     v = n
     n = length(v)
@@ -36,13 +36,13 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 
 # TODO: Move to pedtools
 foundersFirst = function(x) {
-  fou = founders(x, internal = T)
+  fou = founders(x, internal = TRUE)
 
   # Check if all foundders are already first
   if(length(fou) == max(fou))
     return(x)
 
-  nonfou = nonfounders(x, internal = T)
+  nonfou = nonfounders(x, internal = TRUE)
   reorderPed(x, neworder = c(fou, nonfou))
 }
 

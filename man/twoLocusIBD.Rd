@@ -4,8 +4,8 @@
 \alias{twoLocusIBD}
 \title{Two-locus IBD coefficients}
 \usage{
-twoLocusIBD(x, ids, rho, coefs = NULL, detailed = F, uniMethod = 1,
-  verbose = F)
+twoLocusIBD(x, ids, rho, coefs = NULL, detailed = FALSE,
+  uniMethod = 1, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}

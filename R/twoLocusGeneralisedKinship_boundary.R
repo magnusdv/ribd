@@ -14,10 +14,10 @@ kinImpossible = function(kin, mem) {
     # Boundary condition 2: Any group with 2 unrelated indivs?
     k1 = mem$k1
     for(s in uniq_sources[lengths(uniq_sources) > 1]) {
-      pairs_mat = comb2(s, vec = T)
+      pairs_mat = comb2(s, vec = TRUE)
       if(any(k1[pairs_mat] == 0)) {
         mem$iimp = mem$iimp + 1
-        return(T)
+        return(TRUE)
       }
     }
 
@@ -25,19 +25,19 @@ kinImpossible = function(kin, mem) {
     tab = tabulate(unlist(uniq_sources))
     if(any(tab > 2)) {
       mem$iimp = mem$iimp + 1
-      return(T)
+      return(TRUE)
     }
 
     # Boundary condition 0: Any identical from>to in different groups?
     meioses = lapply(locusGroups, function(g) 1000*g$to + g$from)
     if(anyDuplicated.default(unlist(meioses))) {
       mem$iimp = mem$iimp + 1
-      return(T)
+      return(TRUE)
     }
   }
 
   # If none of the boundary conditions are met, return FALSE
-  return(F)
+  return(FALSE)
 }
 
 
@@ -47,9 +47,9 @@ boundary_test = function(kin, mem) {
   loc2 = unlist(lapply(kin$locus2, function(g) g$from))
   if(all(mem$isFounder[c(loc1, loc2)])) {
     mem$ifound = mem$ifound + 1
-    return(T)
+    return(TRUE)
   }
-  return(F)
+  return(FALSE)
 }
 
 # Return value in boundary case
@@ -124,7 +124,7 @@ boundary_value = function(kin, mem) {
 
 # Input: list of 4 vectors
 parityCounts = function(x) {
-  nAll = length(unique.default(unlist(x, use.names = F)))
+  nAll = length(unique.default(unlist(x, use.names = FALSE)))
 
   loc1.g1 = x[[1]]
   loc1.g2 = x[[2]]

@@ -4,7 +4,7 @@
 
 
 compare_with_XIBD = function(x, ids, j) {
-  message("Comparison with `XIBD` package: ", appendLF = F)
+  message("Comparison with `XIBD` package: ", appendLF = FALSE)
 
   if(hasInbredFounders(x)) {
     message("skipped. (Pedigree has inbred founders.)")

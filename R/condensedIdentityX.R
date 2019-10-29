@@ -64,7 +64,7 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
     8,0,2,0,4,0,2,1,0,
     16,0,4,0,4,0,2,1,0,
     4,4,2,2,2,2,1,1,1,
-    16,0,4,0,4,0,4,1,0), byrow = T, ncol = 9)
+    16,0,4,0,4,0,4,1,0), byrow = TRUE, ncol = 9)
 
   # If input is a pair of indivs, return the 9 coeffs as a numeric vector
   if(length(ids) == 2) {
@@ -98,7 +98,7 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.
-  pairs = combn(ids_int, 2, simplify = F)
+  pairs = combn(ids_int, 2, simplify = FALSE)
 
   RHS = vapply(pairs, function(p) {
     id1 = p[1]; id2 = p[2]
@@ -123,7 +123,7 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
   res = data.frame(id1 = labs[idcols[, 1]],
                    id2 = labs[idcols[, 2]],
                    t.default(j),
-                   stringsAsFactors = F)
+                   stringsAsFactors = FALSE)
   names(res)[3:11] = paste0("D", 1:9)
 
   # Set NA at undefined states (when males are involved)

@@ -71,7 +71,7 @@
 #' multiPersonIBD(threeCousins2, ids)
 #'
 #' @export
-multiPersonIBD = function(x, ids, complete = F, verbose = F) {
+multiPersonIBD = function(x, ids, complete = FALSE, verbose = FALSE) {
   N = length(ids)
   if(N < 2)
     stop2("`length(ids)` must be at least 2")
@@ -116,13 +116,13 @@ multiPersonIBD = function(x, ids, complete = F, verbose = F) {
   glist = lapply(seq(1, 2*N, by = 2), function(i)
     paste(usePatterns[, i], usePatterns[, i+1], sep = " "))
 
-  res = as.data.frame(glist, col.names = as.character(ids), optional = T,
-                      stringsAsFactors = F)
+  res = as.data.frame(glist, col.names = as.character(ids), optional = TRUE,
+                      stringsAsFactors = FALSE)
   res = cbind(Prob = coefs, res)
 
   # Keep only nonzero rows
   if(!complete)
-    res = res[res$Prob > 0, , drop = F]
+    res = res[res$Prob > 0, , drop = FALSE]
 
   # Return
   res
@@ -139,7 +139,7 @@ standardAlleleSeq = function(x) { # x a vector of even length
   res = integer(length(x))
   a = x[1]
   i = 1L
-  while(T) {
+  while(TRUE) {
     res[x == a] = i
     a = x[match(0, res)]
     if(is.na(a))
@@ -235,14 +235,14 @@ minimalPattern = function(x) {
 }
 
 # Produce all permutations made by swapping the two alleles within (not between) individuals
-expandSwaps = function(x, makeUnique = T) { # x a vector of even length
+expandSwaps = function(x, makeUnique = TRUE) { # x a vector of even length
   n = length(x)/2
 
   res = matrix(0L, nrow = 2*n, ncol = 2^n)
   for(i in 1:n) {
     rows = c(2*i-1, 2*i)
     g = x[rows]
-    swap = rep(c(F,T), each = 2^(n-i), length.out = 2^n)
+    swap = rep(c(FALSE, TRUE), each = 2^(n-i), length.out = 2^n)
     res[rows, !swap] = g
     res[rows, swap] = g[2:1]
   }
@@ -257,7 +257,7 @@ expandSwaps = function(x, makeUnique = T) { # x a vector of even length
 
 
 # Remove impossible patterns based on pairwise kappa
-removeImpossiblePatterns = function(patterns, x, ids, verbose = T) {
+removeImpossiblePatterns = function(patterns, x, ids, verbose = TRUE) {
   N = length(ids)
   if(length(ids) < 3) return(patterns[, 1:(2*N + 1)])
 
@@ -267,10 +267,10 @@ removeImpossiblePatterns = function(patterns, x, ids, verbose = T) {
   kappas = kappaIBD(x, ids)
 
   nonz = lapply(1:nrow(kappas), function(i) (0:2)[kappas[i, 3:5] > 0])
-  names(nonz) = sapply(combn(N, 2, simplify = F), paste, collapse = "-")
+  names(nonz) = sapply(combn(N, 2, simplify = FALSE), paste, collapse = "-")
   for(p in names(nonz)) {
     goodrows = patterns[, p] %in% nonz[[p]]
-    patterns = patterns[goodrows, , drop = F]
+    patterns = patterns[goodrows, , drop = FALSE]
   }
 
   # Report change

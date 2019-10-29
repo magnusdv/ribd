@@ -4,7 +4,7 @@
 \alias{kinPattern}
 \title{Generalised kinship pattern}
 \usage{
-kinPattern(x, pattern, internal = F)
+kinPattern(x, pattern, internal = FALSE)
 }
 \arguments{
 \item{x}{A \code{ped} object}

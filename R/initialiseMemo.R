@@ -36,7 +36,7 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   }
 
   # For quick look-up:
-  FOU = founders(ped, internal = T)
+  FOU = founders(ped, internal = TRUE)
   isFounder = rep(FALSE, pedsize(ped))
   isFounder[FOU] = TRUE
 

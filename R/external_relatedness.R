@@ -157,14 +157,14 @@ idcoefs2 = function(x, ids, verbose = FALSE, cleanup = TRUE) {
   x = parentsBeforeChildren(x)
   ped = as.data.frame(x)[, 1:3]
 
-  write.table(ped, file = "__paramlink2idcoefs__.ped", quote = F, row.names = F, col.names = F)
-  write.table(ids, file = "__paramlink2idcoefs__.sample", quote = F, row.names = F, col.names = F)
+  write.table(ped, file = "__paramlink2idcoefs__.ped", quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(ids, file = "__paramlink2idcoefs__.sample", quote = FALSE, row.names = FALSE, col.names = FALSE)
   command = "idcoefs -p __paramlink2idcoefs__.ped -s __paramlink2idcoefs__.sample -o __paramlink2idcoefs__.output"
-  run = suppressWarnings(system(command, intern = T))
+  run = suppressWarnings(system(command, intern = TRUE))
 
   if (verbose)
     message(run)
-  res = read.table("__paramlink2idcoefs__.output", as.is = T)
+  res = read.table("__paramlink2idcoefs__.output", as.is = TRUE)
 
   if (cleanup)
     unlink(dir(pattern = "__paramlink2idcoefs__"))

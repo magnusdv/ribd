@@ -4,7 +4,7 @@
 \alias{multiPersonIBD}
 \title{Multi-person IBD coefficients}
 \usage{
-multiPersonIBD(x, ids, complete = F, verbose = F)
+multiPersonIBD(x, ids, complete = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A \code{ped} object.}

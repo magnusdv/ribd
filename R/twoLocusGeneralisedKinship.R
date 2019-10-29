@@ -1,4 +1,4 @@
-twoLocusGeneralisedKinship = function(x, locus1, locus2, rho, verbose = F, debug = F) {
+twoLocusGeneralisedKinship = function(x, locus1, locus2, rho, verbose = FALSE, debug = FALSE) {
 
   # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
@@ -79,7 +79,7 @@ genKin2L = function(kin, mem, indent = 0) {
   u = length(pivTargets[[4]])
 
 
-  un = length(unique.default(unlist(pivTargets, use.names = F)))
+  un = length(unique.default(unlist(pivTargets, use.names = FALSE)))
   ev = length(c(intersect(pivTargets[[1]], pivTargets[[3]]),
            intersect(pivTargets[[2]], pivTargets[[4]])))
   od = length(c(intersect(pivTargets[[1]], pivTargets[[4]]),

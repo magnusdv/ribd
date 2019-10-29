@@ -14,7 +14,7 @@ newKin2L = function(locus1, locus2, labels) {
 }
 
 # Helper function for creating kin2L objects
-kin2L = function(x, locus1, locus2, internal = F) {
+kin2L = function(x, locus1, locus2, internal = FALSE) {
   if(!is.ped(x))
     stop2("First argument must be a `ped` object")
 
@@ -80,25 +80,25 @@ print.kin2L = function(x, ...,  indent = 0) {
 sort_kin2L = function(x) {
   # Auxiliary function for sorting a single group
   sortGroup = function(g) {
-    ord = order(g$from, -g$to, decreasing = T, method = "shell")
+    ord = order(g$from, -g$to, decreasing = TRUE, method = "shell")
     list(from = g$from[ord], to = g$to[ord])
   }
 
   # Find highest ID
   x1 = x[[1]]
   x2 = x[[2]]
-  pivot = max(unlist(lapply(c(x1, x2), function(g) g$from), use.names = F))
+  pivot = max(unlist(lapply(c(x1, x2), function(g) g$from), use.names = FALSE))
 
   # Which groups are pivot groups?
-  piv1 = vapply(x1, function(g) pivot %in% g$from, FUN.VALUE = F)
-  piv2 = vapply(x2, function(g) pivot %in% g$from, FUN.VALUE = F)
+  piv1 = vapply(x1, function(g) pivot %in% g$from, FUN.VALUE = FALSE)
+  piv2 = vapply(x2, function(g) pivot %in% g$from, FUN.VALUE = FALSE)
 
   # Sort pivot groups and put them first
   x1[piv1] = lapply(x1[piv1], sortGroup)
-  x1 = x1[order(piv1, decreasing = T, method = "shell")]
+  x1 = x1[order(piv1, decreasing = TRUE, method = "shell")]
 
   x2[piv2] = lapply(x2[piv2], sortGroup)
-  x2 = x2[order(piv2, decreasing = T, method = "shell")]
+  x2 = x2[order(piv2, decreasing = TRUE, method = "shell")]
 
   # Ensure locus 1 has max number of pivot groups (either 1 or 2)
   if(sum(piv1) < sum(piv2))
@@ -178,11 +178,11 @@ kinRepl_1L = function(G, id, from1, to1, from2 = NULL, to2 = NULL) {
 char2kinList = function(x) {
   # Example input: "5>9 = 7>10, 6>9, 8>10"
   # Output: list(from = c(5,7), to = c(9,10)), list(from = 6, to = 9), list(from = 8, to = 10)
-  groups = strsplit(x, ",", fixed = T)[[1]]
+  groups = strsplit(x, ",", fixed = TRUE)[[1]]
 
-  kinList = lapply(strsplit(groups, "=", fixed = T), function(g) {
+  kinList = lapply(strsplit(groups, "=", fixed = TRUE), function(g) {
     g = gsub("^[ ]*|[ ]*$", "", g)
-    glist = strsplit(g, ">", fixed = T)
+    glist = strsplit(g, ">", fixed = TRUE)
 
     from = sapply(glist, '[', 1)
     to = sapply(glist, '[', 2) # NA if no meiosis indicator
@@ -269,14 +269,14 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   mem$k2 = list()
 
   # For quick look-up:
-  FOU = founders(ped, internal = T)
+  FOU = founders(ped, internal = TRUE)
   isFounder = rep(FALSE, pedsize(ped))
   isFounder[FOU] = TRUE
   mem$isFounder = isFounder
 
   ### Founder inbreeding
   # For linked loci only *completely* inbred founders are meaningful.
-  finb = founderInbreeding(ped, ids = founders(ped), named = T)
+  finb = founderInbreeding(ped, ids = founders(ped), named = TRUE)
   if(length(partials <- finb[finb > 0 & finb < 1]) > 0) {
     stop2("Partial founder inbreeding detected!",
           sprintf("\n  Individual '%s' (f = %g)", names(partials), partials),

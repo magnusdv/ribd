@@ -54,7 +54,7 @@
 #'
 #'
 #' @export
-twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F) {
+twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
   if(length(ids) != 2) stop2("`ids` must have length exactly 2")
 
@@ -103,10 +103,10 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
   }
 
   # Parents (internal indices)
-  f = father(x, a, internal = T)
-  g = father(x, b, internal = T)
-  m = mother(x, a, internal = T)
-  n = mother(x, b, internal = T)
+  f = father(x, a, internal = TRUE)
+  g = father(x, b, internal = TRUE)
+  m = mother(x, a, internal = TRUE)
+  n = mother(x, b, internal = TRUE)
 
   # Meiosis indicators
   # Parental meioses must be separated in case of selfing
@@ -151,7 +151,7 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = F, verbose = F
 
   # Helper function for computing generalised two-locus coefs
   .Phi = function(loc1, loc2) {
-    kin = kin2L(x, loc1, loc2, internal = T)
+    kin = kin2L(x, loc1, loc2, internal = TRUE)
     genKin2L(kin, mem, indent = NA)
   }
 
@@ -187,12 +187,12 @@ addFounderParents = function(x, ids) {
 
   if(id1 %in% fou) {
     if(founderInbreeding(x, id1) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
-    x = addParents(x, id1, verbose = F)
+    x = addParents(x, id1, verbose = FALSE)
   }
 
   if(id2 %in% fou) {
     if(founderInbreeding(x, id2) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
-    x = addParents(x, id2, verbose = F)
+    x = addParents(x, id2, verbose = FALSE)
   }
 
   x

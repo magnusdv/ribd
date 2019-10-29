@@ -38,7 +38,7 @@ involving up to 4 pedigree members. The founders may be inbred; see Examples.
 }
 \details{
 The function \code{generalisedKinship3()} computes the generalised kinship
-coefficient of three (not neccessarily distinct) members \code{a}, \code{b} and \code{c},
+coefficient of three (not necessarily distinct) members \code{a}, \code{b} and \code{c},
 defined as the probability that if a random allele is chosen from each of
 them, they are all identical by descent.
 

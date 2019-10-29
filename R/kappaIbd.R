@@ -107,7 +107,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
   pairs = t.default(combn(ids, 2))
   res = data.frame(id1 = pairs[, 1], id2 = pairs[, 2],
                    kappa0 = NA_real_, kappa1 = NA_real_, kappa2 = NA_real_,
-                   stringsAsFactors = F)
+                   stringsAsFactors = FALSE)
 
   # Rows that needs computing
   founder_rows = res$id1 %in% founders(x) | res$id2 %in% founders(x)
@@ -116,7 +116,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
 
   # Noninbred pairs involving founder(s)
   if(any(noninb_fou_rows <- noninbred_rows & founder_rows)) {
-    k1_fou = 4*KIN[pairs[noninb_fou_rows, , drop = F]]
+    k1_fou = 4*KIN[pairs[noninb_fou_rows, , drop = FALSE]]
     res[noninb_fou_rows, 3:5] = cbind(1 - k1_fou, k1_fou, 0)
   }
 
@@ -130,7 +130,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
     M2 = mother(x, id2.nn)
 
     k2 = KIN[cbind(F1, F2)]*KIN[cbind(M1, M2)] + KIN[cbind(F1, M2)]*KIN[cbind(M1, F2)]
-    k1 = 4*KIN[pairs[nn_rows, , drop = F]] - 2*k2
+    k1 = 4*KIN[pairs[nn_rows, , drop = FALSE]] - 2*k2
     k0 = 1 - k1 - k2
     res[nn_rows, 3:5] = cbind(k0, k1, k2)
   }
@@ -169,7 +169,7 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   }
 
   # All unordered pairs
-  pairs = combn(ids_int, 2, simplify = F)
+  pairs = combn(ids_int, 2, simplify = FALSE)
 
   # System of equations:
   # k0 + k1 +   k2 = 1
@@ -208,7 +208,7 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   res = data.frame(id1 = labs[idcols[, 1]],
                    id2 = labs[idcols[, 2]],
                    t.default(kappas),
-                   stringsAsFactors = F)
+                   stringsAsFactors = FALSE)
   names(res)[3:5] = paste0("kappa", 0:2)
 
   res

@@ -7,7 +7,7 @@ standardAlleleSeq = function(x) {
   res = integer(length(x))
   a = x[1]
   i = 1L
-  while(T) {
+  while(TRUE) {
     res[x == a] = i
     a = x[match(0, res)]
     if(is.na(a))
@@ -19,14 +19,14 @@ standardAlleleSeq = function(x) {
 
 # Produce all permutations made by swapping the two alleles within (not between) individuals
 # x = a multi-pattern (a positive integer vector of even length)
-expandSwaps = function(x, makeUnique = T) {
+expandSwaps = function(x, makeUnique = TRUE) {
   n = length(x)/2
 
   res = matrix(0L, nrow = 2*n, ncol = 2^n)
   for(i in 1:n) {
     rows = c(2*i-1, 2*i)
     g = x[rows]
-    swap = rep(c(F,T), each = 2^(n-i), length.out = 2^n)
+    swap = rep(c(FALSE, TRUE), each = 2^(n-i), length.out = 2^n)
     res[rows, !swap] = g
     res[rows, swap] = g[2:1]
   }
@@ -43,7 +43,7 @@ expandSwaps = function(x, makeUnique = T) {
 # x = a multi-pattern (a positive integer vector of even length)
 minimalPattern = function(x) {
   n = length(x)
-  swaps = expandSwaps(x, makeUnique = F)
+  swaps = expandSwaps(x, makeUnique = FALSE)
   s = apply(swaps, 1, function(v) sum(n^((n-1):0) * (v-1)))
   swaps[which.min(s), ]
 }
@@ -55,7 +55,7 @@ minimalPattern = function(x) {
 addExtraInfo = function(x) { # x = matrix where each row is a multi-pattern
   n = ncol(x)/2
 
-  uniqueSwaps = apply(x, 1, function(v) nrow(expandSwaps(v, makeUnique = T)))
+  uniqueSwaps = apply(x, 1, function(v) nrow(expandSwaps(v, makeUnique = TRUE)))
   x = cbind(x, swaps = uniqueSwaps)
 
   # Inbreeding info
@@ -68,7 +68,7 @@ addExtraInfo = function(x) { # x = matrix where each row is a multi-pattern
     return(x)
 
   # IBD status for each pair
-  prs = combn(n, 2, simplify = F)
+  prs = combn(n, 2, simplify = FALSE)
   for(p in prs) {
     i = p[1]; j = p[2]
     i1 = x[,2*i-1]
@@ -84,7 +84,7 @@ addExtraInfo = function(x) { # x = matrix where each row is a multi-pattern
 }
 ########################
 
-generateNext = function(x, inbred = F) {
+generateNext = function(x, inbred = FALSE) {
   if(is.matrix(x))
     x = lapply(1:nrow(x), function(i) x[i, ])
 
