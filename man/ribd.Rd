@@ -3,7 +3,6 @@
 \docType{package}
 \name{ribd}
 \alias{ribd}
-\alias{ribd-package}
 \title{ribd: Computation of pedigree-based relatedness coefficients}
 \description{
 Recursive algorithms for computing various relatedness coefficients,

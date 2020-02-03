@@ -4,8 +4,7 @@
 \alias{twoLocusIdentity}
 \title{Two-locus identity coefficients}
 \usage{
-twoLocusIdentity(x, ids, rho, coefs = NULL, detailed = FALSE,
-  verbose = FALSE)
+twoLocusIdentity(x, ids, rho, coefs = NULL, detailed = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}

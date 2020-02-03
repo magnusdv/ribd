@@ -4,8 +4,7 @@
 \alias{generalisedKinship}
 \title{Generalised kinship coefficients}
 \usage{
-generalisedKinship(x, pattern, mem = NULL, verbose = FALSE,
-  debug = FALSE)
+generalisedKinship(x, pattern, mem = NULL, verbose = FALSE, debug = FALSE)
 }
 \arguments{
 \item{x}{A \code{ped} object.}

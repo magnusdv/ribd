@@ -4,8 +4,15 @@
 \alias{twoLocusPlot}
 \title{Two-locus coefficient plot}
 \usage{
-twoLocusPlot(peds, coeff = "k11", xlab = "Recombination rate",
-  ylab = NA, col = seq_along(peds), lty = 1, ...)
+twoLocusPlot(
+  peds,
+  coeff = "k11",
+  xlab = "Recombination rate",
+  ylab = NA,
+  col = seq_along(peds),
+  lty = 1,
+  ...
+)
 }
 \arguments{
 \item{peds}{A list of lists. See details.}

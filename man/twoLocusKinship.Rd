@@ -4,8 +4,14 @@
 \alias{twoLocusKinship}
 \title{Two-locus kinship coefficients}
 \usage{
-twoLocusKinship(x, ids, rho, recombinants = NULL, verbose = FALSE,
-  debug = FALSE)
+twoLocusKinship(
+  x,
+  ids,
+  rho,
+  recombinants = NULL,
+  verbose = FALSE,
+  debug = FALSE
+)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}

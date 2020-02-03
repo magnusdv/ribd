@@ -7,14 +7,29 @@
 \alias{generalisedKinship22}
 \title{Karigl's generalised kinship coefficients}
 \usage{
-generalisedKinship3(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
+generalisedKinship3(
+  x,
+  ids,
+  sparse = NA,
+  chromType = "autosomal",
+  verbose = FALSE
+)
 
-generalisedKinship4(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
+generalisedKinship4(
+  x,
+  ids,
+  sparse = NA,
+  chromType = "autosomal",
+  verbose = FALSE
+)
 
-generalisedKinship22(x, ids, sparse = NA, chromType = "autosomal",
-  verbose = FALSE)
+generalisedKinship22(
+  x,
+  ids,
+  sparse = NA,
+  chromType = "autosomal",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}

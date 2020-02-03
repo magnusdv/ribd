@@ -48,7 +48,7 @@ the other by some combination of
 
 Each equivalence class has a "minimal" element, using integer labels, and
 being minimal with respect to standard sorting. For example, the minimal
-element equivalent to \code{(a,c),(d,c),(b,b)} is \code{(1,2),(2,3),(4,4)}.
+element equivalent to \verb{(a,c),(d,c),(b,b)} is \verb{(1,2),(2,3),(4,4)}.
 }
 \examples{
 ### Trivial example: Trio ###

@@ -4,8 +4,7 @@
 \alias{condensedIdentity}
 \title{Condensed identity coefficients}
 \usage{
-condensedIdentity(x, ids, sparse = NA, verbose = FALSE,
-  checkAnswer = verbose)
+condensedIdentity(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}

@@ -12,30 +12,28 @@ kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
 
-\item{ids}{A character (or coercible to character) containing ID labels of two
-or more pedigree members.}
+\item{ids}{A character (or coercible to character) containing ID labels of
+two or more pedigree members.}
 
-\item{inbredAction}{An integer telling the program what to do if either of the
-\code{ids} individuals are inbred. Possible values are: 0 = do nothing; 1 = print
-a warning message (default); 2 = raise an error. In the first two cases
-the coefficients are reported as \code{NA}.}
+\item{inbredAction}{An integer telling the program what to do if either of
+the \code{ids} individuals are inbred. Possible values are: 0 = do nothing; 1 =
+print a warning message (default); 2 = raise an error. In the first two
+cases the coefficients are reported as \code{NA}.}
 
-\item{sparse}{A positive integer, indicating the pedigree size limit for using
-sparse arrays (as implemented by the
-\href{https://CRAN.R-project.org/package=slam}{slam} package) instead of ordinary
-arrays.}
+\item{sparse}{A positive integer, indicating the pedigree size limit for
+using sparse arrays (as implemented by the
+\href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
+ordinary arrays.}
 
 \item{verbose}{A logical.}
-
-\item{...}{Further arguments.}
 }
 \value{
 If \code{ids} has length 2: A numeric vector of length 3: \eqn{(\kappa0,
- \kappa1, \kappa2)}.
+  \kappa1, \kappa2)}.
 
 If \code{ids} has length > 2: A data frame with one row for each pair of
-individuals, and 5 columns. The first two columns contain the ID labels, and
-columns 3-5 contain the IBD coefficients.
+individuals, and 5 columns. The first two columns contain the ID labels,
+and columns 3-5 contain the IBD coefficients.
 
 Unless \code{inbredAction = 2}, the coefficients of pairs involving inbred
 individuals (inbred \emph{females} in the X version) are reported as NA.
@@ -49,8 +47,8 @@ implemented.
 }
 \details{
 For non-inbred individuals a and b, their autosomal IBD coefficients
-\eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i = P(a
-and b share i alleles IBD at a random autosomal locus)}
+\eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
+P(a and b share i alleles IBD at a random autosomal locus)}
 
 The autosomal kappa coefficients are computed from the kinship coefficients.
 When a and b are both nonfounders, the following formulas are well-known:
@@ -61,8 +59,8 @@ When a and b are both nonfounders, the following formulas are well-known:
 }
 
 Here \eqn{\phi_MM} denotes the kinship coefficient between the mothers of a
-and b, and so on. If either a or b is a founder, then \eqn{\kappa2 = 0}, while
-the other two formulas remain as above.
+and b, and so on. If either a or b is a founder, then \eqn{\kappa2 = 0},
+while the other two formulas remain as above.
 
 The X chromosomal IBD coefficients are defined as in the autosomal case, with
 the exception that \eqn{\kappa2} is undefined when at least one of the two
