@@ -43,14 +43,16 @@ The package also computes a variety of lesser-known pedigree coefficients:
 
 
 ## Installation
-`ribd` is available for download from GitHub as follows: 
+To get the current official version of ribd, install from CRAN as follows:
 ```{r, eval = FALSE}
- # First install devtools if needed
-if(!require(devtools)) install.packages("devtools")
-
-# Install ribd from github
+install.packages("ribd")
+```
+Alternatively, you can obtain the latest development version from GitHub:
+```{r, eval = FALSE}
+# install.packages("devtools") # install devtools if needed
 devtools::install_github("magnusdv/ribd")
 ```
+
 
 ## Getting started
 ```{r example, eval = FALSE}
@@ -115,7 +117,7 @@ The X chromosomal version of `condensedIdentity()` is called `condensedIdentityX
 
 The point of `condensedIdentityX()` is to compute the coefficients (i.e., the expected proportions) of the pairwise identity states for a locus on the X chromosome. What these states are depends on the sexes of the involved individuals: either female-female, female-male, male-female or male-male. In some sense the first case is the easiest: When both are female the states are the same as in the autosomal case.
 
-Males, being hemizygous, have only 1 allele of a locus on X. Hence when males are involved the total number of alleles is less than 4, rendering the autosomal states pictured above meaningless. However, to avoid drawing (and learning the ordering of) new states for each sex combination, we re-use the autosomal states by using the following simple rule: **Replace the single allele of any male, with a pair of autozygous alleles**. In this way we get a one-to-one map from the X states to the autosomal state.
+Males, being hemizygous, have only 1 allele of a locus on X. Hence when males are involved the total number of alleles is less than 4, rendering the autosomal states pictured above meaningless. However, to avoid drawing (and learning the ordering of) new states for each sex combination, we can re-use the autosomal state pictograms by invoking the following simple rule: **Replace the single allele of any male, with a pair of autozygous alleles**. This gives a one-to-one map from the X states to the autosomal states.
 
 For simplicity the output always contains 9 coefficients, but with NA's in the positions of undefined states (depending on the sex combination). Hopefully this should all be clear from the following table:
 <img src="man/figures/jacquardStatesX.png" align="left">
