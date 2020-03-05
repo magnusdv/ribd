@@ -18,12 +18,18 @@ suppressPackageStartupMessages(library(ribd)) # kappa masks base::kappa
 
 # ribd <img src="man/figures/logo.png" align="right" height=140/>
 
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/ribd)](https://CRAN.R-project.org/package=ribd)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/ribd?color=yellow)](https://cran.r-project.org/package=ribd)
+[![](https://cranlogs.r-pkg.org/badges/last-month/ribd?color=yellow)](https://cran.r-project.org/package=ribd)
+<!-- badges: end -->
+
 
 ## Overview
 
 The goal of `ribd` is to compute various coefficients of relatedness and identity-by-descent (IBD) between pedigree members. It extends the `pedtools` package which provides useful utilities for pedigree construction and manipulation.
 
-The main functions in ribd compute the following pairwise coefficients:
+The main functions in `ribd` are the following:
 
 * `kinship()`, `kinshipX()` : Kinship coefficients
 * `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
@@ -43,7 +49,7 @@ The package also computes a variety of lesser-known pedigree coefficients:
 
 
 ## Installation
-To get the current official version of ribd, install from CRAN as follows:
+To get the current official version of `ribd`, install from CRAN as follows:
 ```{r, eval = FALSE}
 install.packages("ribd")
 ```
