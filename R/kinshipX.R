@@ -1,15 +1,24 @@
 #' @rdname kinship
 #' @export
-kinshipX = function(x) {
-  if(!is.ped(x)) stop2("Input is not a `ped` object")
-  if(any(x$SEX == 0)) stop2("Members with unknown gender not allowed in kinshipX algorithm: ",
-                            labels(x)[x$SEX == 0])
+kinshipX = function(x, ids = NULL) {
+  if(!is.ped(x))
+    stop2("Input is not a `ped` object")
+
+  if(any(x$SEX == 0))
+    stop2("Members with unknown gender not allowed in kinshipX algorithm: ",
+          labels(x)[x$SEX == 0])
 
   # Ensure standard order of pedigree members
   standardOrder = hasParentsBeforeChildren(x)
   if(!standardOrder) {
     origOrder = labels(x)
     x = parentsBeforeChildren(x)
+  }
+
+  if(singlepair <- !is.null(ids)) {
+    if(length(ids) != 2)
+      stop2("When `ids` is not NULL, it must be a vector of length 2")
+    IDS = internalID(x, ids)
   }
 
   FIDX = x$FIDX
@@ -35,8 +44,10 @@ kinshipX = function(x) {
   for(i in NONFOU)
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
 
+  max_dp = if(singlepair) max(dp[IDS]) else max(dp)
+
   # Iteratively fill the kinship matrix, one generation at a time
-  for (gen in seq_len(max(dp))) {
+  for (gen in seq_len(max_dp)) {
     indx = which(dp == gen)
 
     # males
@@ -55,6 +66,9 @@ kinshipX = function(x) {
     kins[, indx_fem] = (kins[, Findx_fem] + kins[, Mindx_fem])/2
     kins[cbind(indx_fem, indx_fem)] = (1 + kins[cbind(Findx_fem, Mindx_fem)])/2
   }
+
+  if(singlepair)
+    return(kins[IDS[1], IDS[2]])
 
   labs = labels(x)
   dimnames(kins) = list(labs, labs)

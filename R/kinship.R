@@ -10,9 +10,13 @@
 #' are identical by descent relative to the pedigree.
 #'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
-#'
-#' @return A symmetric matrix containing all pairwise kinship coefficients in
+#' @param ids Either a character of length 2, or NULL. In the former case, it
+#'   must contain the ID labels of two members of `x`, and the function will return
+#'   their kinship coefficient as a single number. If `ids` is NULL (this is the
+#'   default), the output is the complete kinship matrix.
+#' @return If `ids = NULL`, a symmetric matrix containing all pairwise kinship coefficients in
 #'   `x`.
+#'   If `ids` has length 2, the function returns a single number.
 #'
 #' @seealso [inbreeding()], [kappa()]
 #'
@@ -29,14 +33,21 @@
 #' kinship(x)
 #'
 #' @export
-kinship = function(x) {
-  if(!is.ped(x)) stop2("Input is not a `ped` object")
+kinship = function(x, ids = NULL) {
+  if(!is.ped(x))
+    stop2("Input is not a `ped` object")
 
   # Ensure standard order of pedigree members
   standardOrder = hasParentsBeforeChildren(x)
   if(!standardOrder) {
     origOrder = labels(x)
     x = parentsBeforeChildren(x)
+  }
+
+  if(singlepair <- !is.null(ids)) {
+    if(length(ids) != 2)
+      stop2("When `ids` is not NULL, it must be a vector of length 2")
+    IDS = internalID(x, ids)
   }
 
   FIDX = x$FIDX
@@ -60,8 +71,10 @@ kinship = function(x) {
   for(i in NONFOU)
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
 
+  max_dp = if(singlepair) max(dp[IDS]) else max(dp)
+
   # Iteratively fill the kinship matrix, one generation at a time
-  for (gen in seq_len(max(dp))) {
+  for (gen in seq_len(max_dp)) {
     indx = which(dp == gen)
     Mindx = MIDX[indx]
     Findx = FIDX[indx]
@@ -69,6 +82,8 @@ kinship = function(x) {
     kins[, indx] = (kins[, Findx] + kins[, Mindx])/2
     kins[cbind(indx, indx)] = (1 + kins[cbind(Findx, Mindx)])/2
   }
+
+  if(singlepair) return(kins[IDS[1], IDS[2]])
 
   labs = labels(x)
   dimnames(kins) = list(labs, labs)

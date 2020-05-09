@@ -5,16 +5,22 @@
 \alias{kinshipX}
 \title{Kinship coefficients}
 \usage{
-kinship(x)
+kinship(x, ids = NULL)
 
-kinshipX(x)
+kinshipX(x, ids = NULL)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+
+\item{ids}{Either a character of length 2, or NULL. In the former case, it
+must contain the ID labels of two members of \code{x}, and the function will return
+their kinship coefficient as a single number. If \code{ids} is NULL (this is the
+default), the output is the complete kinship matrix.}
 }
 \value{
-A symmetric matrix containing all pairwise kinship coefficients in
+If \code{ids = NULL}, a symmetric matrix containing all pairwise kinship coefficients in
 \code{x}.
+If \code{ids} has length 2, the function returns a single number.
 }
 \description{
 Compute the matrix of kinship coefficients (autosomal or X) of all members of
