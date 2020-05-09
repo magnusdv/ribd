@@ -13,7 +13,7 @@ test_that("kinship() gives same result with and without `ids`", {
 
   y = reorderPed(x, sample(10))
   expect_identical(kinship(y, ids = 9:10), kinship(y)["9","10"])
-  expect_identical(kinship(y, ids = 1:1), kinship(y)["1","1"])
+  expect_identical(kinship(y, ids = c(1,1)), kinship(y)["1","1"])
 })
 
 test_that("kinship coefficients with inbred founders are correct", {
