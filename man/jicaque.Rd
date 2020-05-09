@@ -4,13 +4,15 @@
 \name{jicaque}
 \alias{jicaque}
 \title{Jicaque pedigree}
-\format{A data frame with 22 rows and four columns:
+\format{
+A data frame with 22 rows and four columns:
 \itemize{
 \item \code{id}  : individual ID
 \item \code{fid} : father's ID (or 0 if not included)
 \item \code{mid} : mother's ID (or 0 if not included)
 \item \code{sex} : Gender codes, where 1 = male and 2 = female
-}}
+}
+}
 \usage{
 jicaque
 }
