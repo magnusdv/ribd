@@ -84,6 +84,6 @@ legend("topright", names(peds), col = 1:4, lty = 1:4)
 }
 \references{
 E. A. Thompson (1988). \emph{Two-locus and Three-locus Gene Identity
-by Descent in Pedigrees} IMA Journal of Mathematics Applied in Medicine &
+by Descent in Pedigrees}. IMA Journal of Mathematics Applied in Medicine &
 Biology, vol. 5.
 }

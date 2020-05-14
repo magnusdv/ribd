@@ -25,7 +25,7 @@
 #'   recursion process.
 #'
 #' @references E. A. Thompson (1988). _Two-locus and Three-locus Gene Identity
-#'   by Descent in Pedigrees_ IMA Journal of Mathematics Applied in Medicine &
+#'   by Descent in Pedigrees_. IMA Journal of Mathematics Applied in Medicine &
 #'   Biology, vol. 5.
 #'
 #'
