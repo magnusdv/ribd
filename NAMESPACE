@@ -2,6 +2,7 @@
 
 export(condensedIdentity)
 export(condensedIdentityX)
+export(constructPedigree)
 export(generalisedKinship)
 export(generalisedKinship22)
 export(generalisedKinship3)
