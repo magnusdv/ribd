@@ -14,14 +14,22 @@
 #'
 #' @references M. D. Vigeland (2020). _Relatedness coefficients in pedigrees
 #'   with inbred founders_. Journal of mathematical biology.
+#'   \doi{https://doi.org/10.1007/s00285-020-01505-x}
 #'
 #' @examples
 #'
 #' # Full siblings
 #' kap = c(0.25, 0.5, 0.25)
 #' x = constructPedigree(kap)
+#'
+#' # Validation
 #' kap2 = kappaIBD(x, leaves(x))
 #' stopifnot(all.equal(kap, kap2))
+#'
+#' # For kappa = (0,1,0), the result is not a parent-child relationship,
+#' # but half siblings whose shared parent is completely inbred.
+#' y = constructPedigree(kappa = c(0,1,0))
+#' plot(y)
 #'
 #' @export
 constructPedigree = function(kappa, verbose = FALSE) {
