@@ -59,3 +59,20 @@ test_that("inbreeding coefficients are correctly computed", {
   founderInbreeding(y, 1) = 1
   expect_identical(inbreeding(y), structure(c(1,0,0,0,3/8), names=1:5))
 })
+
+test_that("inbreeding() works in selfing pedigree", {
+  s = selfingPed(1)
+  expect_equal(inbreeding(s, id = 1), 0)
+  expect_equal(inbreeding(s, id = 2), 0.5)
+})
+
+test_that("X-chrom inbreeding is computed correctly", {
+  xPat = halfCousinPed(0, child = T)
+  xMat = swapSex(xPat, 1)
+  expect_equal(inbreedingX(xPat, id = 6), 0)
+  expect_equal(inbreedingX(xMat, id = 6), 0.25)
+
+  founderInbreeding(xMat, 1, chrom = "x") = 1
+  expect_equal(inbreedingX(xMat, id = 6), 0.5)
+})
+

@@ -5,20 +5,27 @@
 \alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
-inbreeding(x)
+inbreeding(x, id = NULL)
 
-inbreedingX(x)
+inbreedingX(x, id = NULL)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+
+\item{id}{Either a single ID label, or NULL (default).}
 }
 \value{
-A numeric vector of length \code{pedsize(x)}.
+If \code{id} is NULL, the output is a named numeric vector of length
+\code{pedsize(x)}, containing the inbreeding coefficients of each pedigree
+member.  is returned.
+
+If \code{id} is the label of a pedigree member, the inbreeding coefficient of
+this individual is returned unnamed.
 }
 \description{
 Compute the inbreeding coefficients of all members of a pedigree. These are
-simple wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}}. The founders
-may be inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
+simple wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}}. The founders may be inbred;
+see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
 }
 \details{
 The autosomal inbreeding coefficient of a pedigree member is defined as the
@@ -30,8 +37,8 @@ coefficient of the parents.
 The X chromosomal inbreeding coefficient of an female member is defined
 similarly to the autosomal case above. For males is it always 1.
 
-The inbreeding coefficients are computed from the kinship coefficients by the formula
-\deqn{f_a = 2*\phi_{aa} - 1.}{f = 2*phi - 1.}
+The inbreeding coefficients are computed from the diagonal of the kinship
+matrix, by the formula \deqn{f_a = 2*\phi_{aa} - 1.}{f_a = 2*phi_aa - 1.}
 }
 \examples{
 # Child of half siblings: f = 1/8
@@ -42,16 +49,24 @@ inbreeding(x)
 founderInbreeding(x, 1) = 1
 inbreeding(x)
 
-# The X inbreeding coefficients depend on the genders in the pedigree.
-# To exemplify this, we look at a child of half siblings.
+# Simpler output using the `id` argument:
+inbreeding(x, id = 6)
 
-x.pat = halfSibPed(sex2 = 2) # paternal half sibs
-x.pat = addChildren(x.pat, father = 4, mother = 5, nch = 1, sex = 2)
-stopifnot(inbreedingX(x.pat)[6] == 0)
+# The X inbreeding coefficients depend on the genders in the pedigree.
+# To exemplify, we consider a child of half siblings.
+
+xPat = halfSibPed(sex2 = 2) # paternal half sibs
+xPat = addChildren(xPat, father = 4, mother = 5, nch = 1, sex = 2)
+stopifnot(inbreedingX(xPat, id = 6) == 0)
 
 # Change to maternal half sibs => coeff becomes 1/4.
-x.mat = swapSex(x.pat, 1)
-stopifnot(inbreedingX(x.mat)[6] == 0.25)
+xMat = swapSex(xPat, 1)
+stopifnot(inbreedingX(xMat, id = 6) == 0.25)
+
+# Example with selfing and complete inbreeding
+s = selfingPed(1)
+founderInbreeding(s, 1) = 1
+inbreeding(s, id = 2)
 
 }
 \seealso{
