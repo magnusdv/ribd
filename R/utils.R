@@ -5,7 +5,7 @@ stop2 = function(...) {
 }
 
 # Quick version of combn(., 2)
-comb2 = function(n, vec = FALSE){
+comb2 = function(n, vec = length(n) > 1){
   if(vec) {
     v = n
     n = length(v)
@@ -16,12 +16,11 @@ comb2 = function(n, vec = FALSE){
   x = rep.int(seq_len(n - 1), (n - 1):1)
   o = c(0, cumsum((n-2):1))
   y = seq_along(x) + 1 - o[x]
-  res = cbind(x, y, deparse.level = 0)
 
   if(vec)
-    res = cbind(v[res[,1]], v[res[,2]])
-
-  res
+    cbind(v[x], v[y], deparse.level = 0)
+  else
+    cbind(x, y, deparse.level = 0)
 }
 
 # A safer version of base::sample
