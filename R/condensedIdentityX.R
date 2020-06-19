@@ -17,7 +17,7 @@
 #'
 #' For simplicity the output always contains 9 coefficients, but with NA's in the
 #' positions of undefined states (depending on the sex combination). The README
-#' file on the github home page of ribd has a table illustrating this.
+#' file on the GitHub home page of ribd has a table illustrating this.
 #'
 #' @inheritParams condensedIdentity
 #'

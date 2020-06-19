@@ -8,5 +8,5 @@
 Recursive algorithms for computing various relatedness coefficients,
 including Jacquard's condensed identity coefficients. The standard algorithms
 are extended to allow inbred founders. Both autosomal and X-linked
-coeffiecients are computed.
+coefficients are computed.
 }
