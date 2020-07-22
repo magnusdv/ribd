@@ -1,7 +1,7 @@
 Package: ribd
 Type: Package
 Title: Pedigree-based Relatedness Coefficients
-Version: 1.1.0
+Version: 1.1.0.9000
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
 Description: Recursive algorithms for computing various relatedness coefficients, 
