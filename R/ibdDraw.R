@@ -24,6 +24,9 @@
 #'   multiple of the height of a pedigree symbol. Default: 1. Ignored when `pos
 #'   = 0`.
 #' @param labs A logical indicating if labels should be included.
+#' @param checkParents A logical. If TRUE, a warning is issued if someone's
+#'   alleles don't match those of the parents. (This a superficial test and does
+#'   not catch all Mendelian errors.)
 #' @param margin Plot margins (bottom, left, top, right).
 #' @param ... Further arguments passed on to `plot.ped()`.
 #'
@@ -62,6 +65,8 @@
 #' ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
 #'         labs = TRUE, shaded = 3:4, col = "blue")
 #'
+#' # Mutations are warned about (unless `checkParents = FALSE`)
+#' ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
 #'
 #' ##############################
 #' # Example 2: Cousin pedigree #
@@ -81,6 +86,21 @@
 #' ibdDraw(x, als2, cols = cols, dist = 0.8)
 #' ibdDraw(x, als2, cols = cols, dist = 0.8, symbol = "text")
 #'
+#' ############################
+#' # Example 3: X inheritance #
+#' ############################
+#'
+#' x = nuclearPed(2, sex = c(1,2))
+#' als = list(1, 2:3, 3, c(1,3))
+#' ibdDraw(x, als, cols = c(3,7,2))
+#'
+#' #################################
+#' # Example 4: mtDNA inheritance  #
+#' #################################
+#'
+#' x = linearPed(2, sex = 2)
+#' als = list(1, 2, 2, 3, 2)
+#' ibdDraw(x, als, cols = 2:4)
 #'
 #'
 #' # Restore graphics parameters
@@ -89,7 +109,7 @@
 #' @importFrom graphics points text
 #' @export
 ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL,
-                   cex = NA, sep = NULL, dist = 1, labs = FALSE,
+                   cex = NA, sep = NULL, dist = 1, labs = FALSE, checkParents = TRUE,
                    margin = c(1, 1, 1, 1), ...) {
 
   if(!is.ped(x))
@@ -100,9 +120,15 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
   if(is.na(cex))
     cex = switch(symbol, point = 3, text = 2)
 
+  uniqAls = unique.default(unlist(alleles))
+
+  if(!setequal(setdiff(uniqAls, 0), 1:max(uniqAls)))
+    stop2("Consecutive numbers should be used as alleles. Missing: ",
+          setdiff(1:max(uniqAls), uniqAls))
+
   # Default colours
   if(is.null(cols))
-    cols = seq_along(unique.default(unlist(alleles)))
+    cols = 1:max(uniqAls)
 
   # Position and separation
   pos = rep(pos, length.out = pedsize(x))
@@ -123,15 +149,27 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
   # Height/width of ped symbols
   symh = p$boxh
   symw = p$boxw
-
   SEP = sep * symw
   DIST = dist * symh
+
+  nonfou = nonfounders(x, internal = TRUE)
 
   # Loop through all individuals in pedigree
   for(i in 1:pedsize(x)) {
     als = alleles[[i]]
     if(is.null(als))
       next
+
+    # Quick checks
+    if(length(als) > 2)
+      stop2("Individual has more than two alleles: ", labels(x)[i])
+    if(checkParents && i %in% nonfou) {
+      fa = alleles[[father(x, i, internal = TRUE)]]
+      mo = alleles[[mother(x, i, internal = TRUE)]]
+      if(!is.null(fa) && !is.null(mo) && !all(als %in% c(0, fa, mo)))
+        warning("Allele of individual ", labels(x)[i], " unseen in parents: ",
+                setdiff(als, c(0, fa, mo)), call. = FALSE)
+    }
 
     # Centre of allele pair
     if(pos[i] == 0) {

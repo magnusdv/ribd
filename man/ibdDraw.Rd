@@ -14,6 +14,7 @@ ibdDraw(
   sep = NULL,
   dist = 1,
   labs = FALSE,
+  checkParents = TRUE,
   margin = c(1, 1, 1, 1),
   ...
 )
@@ -45,6 +46,10 @@ multiple of the width of a pedigree symbol. Default: 0.5 when \code{pos = 0} and
 multiple of the height of a pedigree symbol. Default: 1. Ignored when \code{pos = 0}.}
 
 \item{labs}{A logical indicating if labels should be included.}
+
+\item{checkParents}{A logical. If TRUE, a warning is issued if someone's
+alleles don't match those of the parents. (This a superficial test and does
+not catch all Mendelian errors.)}
 
 \item{margin}{Plot margins (bottom, left, top, right).}
 
@@ -90,6 +95,8 @@ ibdDraw(x, als, cols = cols, symbol = "text", cex = 2)
 ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
         labs = TRUE, shaded = 3:4, col = "blue")
 
+# Mutations are warned about (unless `checkParents = FALSE`)
+ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
 
 ##############################
 # Example 2: Cousin pedigree #
@@ -109,6 +116,21 @@ als2 = list(1:2, 3:4, c(0,0), c(1,3), c(2,3), c(0,0), c(0,3), c(3,0))
 ibdDraw(x, als2, cols = cols, dist = 0.8)
 ibdDraw(x, als2, cols = cols, dist = 0.8, symbol = "text")
 
+############################
+# Example 3: X inheritance #
+############################
+
+x = nuclearPed(2, sex = c(1,2))
+als = list(1, 2:3, 3, c(1,3))
+ibdDraw(x, als, cols = c(3,7,2))
+
+#################################
+# Example 4: mtDNA inheritance  #
+#################################
+
+x = linearPed(2, sex = 2)
+als = list(1, 2, 2, 3, 2)
+ibdDraw(x, als, cols = 2:4)
 
 
 # Restore graphics parameters
