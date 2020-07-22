@@ -24,13 +24,15 @@
 #'   multiple of the height of a pedigree symbol. Default: 1. Ignored when `pos
 #'   = 0`.
 #' @param labs A logical indicating if labels should be included.
-#' @param checkParents A logical. If TRUE, a warning is issued if someone's
-#'   alleles don't match those of the parents. (This a superficial test and does
-#'   not catch all Mendelian errors.)
+#' @param checkFounders A logical. If TRUE (default), a warning is issued if a
+#'   founder has two equal alleles other than 0.
+#' @param checkParents A logical. If TRUE (default), a warning is issued if
+#'   someone's alleles don't match those of the parents. This a superficial test
+#'   and does not catch all Mendelian errors.
 #' @param margin Plot margins (bottom, left, top, right).
 #' @param ... Further arguments passed on to `plot.ped()`.
 #'
-#' @return None.
+#' @return The plot structure is returned invisibly.
 #'
 #' @seealso [pedtools::plot.ped()], `ibdsim2::haploDraw()`
 #'
@@ -90,9 +92,9 @@
 #' # Example 3: X inheritance #
 #' ############################
 #'
-#' x = nuclearPed(2, sex = c(1,2))
-#' als = list(1, 2:3, 3, c(1,3))
-#' ibdDraw(x, als, cols = c(3,7,2))
+#' x = nuclearPed(2, sex = c(1, 2))
+#' als = list(1, 2:3, 3, c(1, 3))
+#' ibdDraw(x, als, cols = c(3, 7, 2))
 #'
 #' #################################
 #' # Example 4: mtDNA inheritance  #
@@ -109,16 +111,23 @@
 #' @importFrom graphics points text
 #' @export
 ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL,
-                   cex = NA, sep = NULL, dist = 1, labs = FALSE, checkParents = TRUE,
-                   margin = c(1, 1, 1, 1), ...) {
+                   cex = NA, sep = NULL, dist = 1, labs = FALSE, checkFounders = TRUE,
+                   checkParents = TRUE, margin = c(1, 1, 1, 1), ...) {
 
   if(!is.ped(x))
     stop2("Argument `x` must be a `ped` object")
 
-  symbol = match.arg(symbol)
+  nInd = pedsize(x)
 
-  if(is.na(cex))
-    cex = switch(symbol, point = 3, text = 2)
+  # Fix `alleles`
+  if(!is.null(names(alleles))) {
+    a = vector(nInd, mode = "list")
+    a[internalID(x, names(alleles))] = alleles
+    alleles = a
+  }
+
+  if(length(alleles) < nInd)
+    alleles = c(alleles, vector(nInd - length(alleles), mode = "list"))
 
   uniqAls = unique.default(unlist(alleles))
 
@@ -126,16 +135,24 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
     stop2("Consecutive numbers should be used as alleles. Missing: ",
           setdiff(1:max(uniqAls), uniqAls))
 
+
+  symbol = match.arg(symbol)
+
+  if(is.na(cex))
+    cex = switch(symbol, point = 3, text = 2)
+
   # Default colours
   if(is.null(cols))
     cols = 1:max(uniqAls)
+  else if(length(cols) < max(uniqAls))
+    stop2("Too few colours")
 
   # Position and separation
-  pos = rep(pos, length.out = pedsize(x))
+  pos = rep(pos, length.out = nInd)
   if(is.null(sep))
     sep = ifelse(pos == 0, 0.5, 1)
   else
-    sep = rep(sep, length.out = pedsize(x))
+    sep = rep(sep, length.out = nInd)
 
   # ID labels?
   if(isTRUE(labs))
@@ -152,18 +169,26 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
   SEP = sep * symw
   DIST = dist * symh
 
-  nonfou = nonfounders(x, internal = TRUE)
+  fou = founders(x, internal = TRUE)
 
   # Loop through all individuals in pedigree
-  for(i in 1:pedsize(x)) {
+  for(i in 1:nInd) {
     als = alleles[[i]]
     if(is.null(als))
       next
 
-    # Quick checks
+    # Various checks
+    lab = labels(x)[i]
+
     if(length(als) > 2)
-      stop2("Individual has more than two alleles: ", labels(x)[i])
-    if(checkParents && i %in% nonfou) {
+      stop2("Individual has more than two alleles: ", lab)
+
+    if(checkFounders && i %in% fou) {
+      if(length(als) == 2 && all(als > 0) && als[1] == als[2])
+        warning("Founder ", lab, " has two identical alleles", call. = FALSE)
+    }
+
+    if(checkParents && !i %in% fou) {
       fa = alleles[[father(x, i, internal = TRUE)]]
       mo = alleles[[mother(x, i, internal = TRUE)]]
       if(!is.null(fa) && !is.null(mo) && !all(als %in% c(0, fa, mo)))
@@ -210,6 +235,8 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
       text(X, Y, txt, col = col, cex = cex)
     }
   }
+
+  invisible(p)
 }
 
 #' ibdDraw(nuclearPed(), al = list(1:2, 3:4, c(1,3)), cols = c(3,7))

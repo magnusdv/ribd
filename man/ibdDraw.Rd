@@ -14,6 +14,7 @@ ibdDraw(
   sep = NULL,
   dist = 1,
   labs = FALSE,
+  checkFounders = TRUE,
   checkParents = TRUE,
   margin = c(1, 1, 1, 1),
   ...
@@ -47,16 +48,19 @@ multiple of the height of a pedigree symbol. Default: 1. Ignored when \code{pos 
 
 \item{labs}{A logical indicating if labels should be included.}
 
-\item{checkParents}{A logical. If TRUE, a warning is issued if someone's
-alleles don't match those of the parents. (This a superficial test and does
-not catch all Mendelian errors.)}
+\item{checkFounders}{A logical. If TRUE (default), a warning is issued if a
+founder has two equal alleles other than 0.}
+
+\item{checkParents}{A logical. If TRUE (default), a warning is issued if
+someone's alleles don't match those of the parents. This a superficial test
+and does not catch all Mendelian errors.}
 
 \item{margin}{Plot margins (bottom, left, top, right).}
 
 \item{...}{Further arguments passed on to \code{plot.ped()}.}
 }
 \value{
-None.
+The plot structure is returned invisibly.
 }
 \description{
 This is a pedagogical tools for illustrating the concept of
@@ -120,9 +124,9 @@ ibdDraw(x, als2, cols = cols, dist = 0.8, symbol = "text")
 # Example 3: X inheritance #
 ############################
 
-x = nuclearPed(2, sex = c(1,2))
-als = list(1, 2:3, 3, c(1,3))
-ibdDraw(x, als, cols = c(3,7,2))
+x = nuclearPed(2, sex = c(1, 2))
+als = list(1, 2:3, 3, c(1, 3))
+ibdDraw(x, als, cols = c(3, 7, 2))
 
 #################################
 # Example 4: mtDNA inheritance  #
