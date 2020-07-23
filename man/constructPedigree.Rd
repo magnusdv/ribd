@@ -4,14 +4,17 @@
 \alias{constructPedigree}
 \title{Pedigree construction}
 \usage{
-constructPedigree(kappa, verbose = FALSE)
+constructPedigree(kappa, describe = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{kappa}{A probability vector of length 3; \eqn{(kappa0, kappa1,
 kappa2)}{(\kappa_0, \kappa_1, \kappa_2)}.}
 
+\item{describe}{A logical. If TRUE, a textual description of the resulting
+relationship is printed.}
+
 \item{verbose}{A logical. If TRUE, various details about the calculations are
-printed, as well as a textual description of the resulting relationship.}
+printed.}
 }
 \value{
 A \code{ped} object containing a pair of double half cousins with inbred
@@ -33,10 +36,14 @@ x = constructPedigree(kap)
 kap2 = kappaIBD(x, leaves(x))
 stopifnot(all.equal(kap, kap2))
 
-# For kappa = (0,1,0), the result is not a parent-child relationship,
-# but half siblings whose shared parent is completely inbred.
-y = constructPedigree(kappa = c(0,1,0))
+# A relationship halfway between parent-child and full sibs
+y = constructPedigree(kappa = c(1/8, 6/8, 1/8))
 plot(y)
+
+# kappa = (0,1,0) does not give a parent-child relationship,
+# but half siblings whose shared parent is completely inbred.
+z = constructPedigree(kappa = c(0,1,0))
+plot(z)
 
 }
 \references{

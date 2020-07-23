@@ -6,8 +6,10 @@
 #'
 #' @param kappa A probability vector of length 3; \eqn{(kappa0, kappa1,
 #'   kappa2)}{(\kappa_0, \kappa_1, \kappa_2)}.
+#' @param describe A logical. If TRUE, a textual description of the resulting
+#'   relationship is printed.
 #' @param verbose A logical. If TRUE, various details about the calculations are
-#'   printed, as well as a textual description of the resulting relationship.
+#'   printed.
 #'
 #' @return A `ped` object containing a pair of double half cousins with inbred
 #'   founders. (In corner cases the relationship collapses into siblings.)
@@ -26,13 +28,17 @@
 #' kap2 = kappaIBD(x, leaves(x))
 #' stopifnot(all.equal(kap, kap2))
 #'
-#' # For kappa = (0,1,0), the result is not a parent-child relationship,
-#' # but half siblings whose shared parent is completely inbred.
-#' y = constructPedigree(kappa = c(0,1,0))
+#' # A relationship halfway between parent-child and full sibs
+#' y = constructPedigree(kappa = c(1/8, 6/8, 1/8))
 #' plot(y)
 #'
+#' # kappa = (0,1,0) does not give a parent-child relationship,
+#' # but half siblings whose shared parent is completely inbred.
+#' z = constructPedigree(kappa = c(0,1,0))
+#' plot(z)
+#'
 #' @export
-constructPedigree = function(kappa, verbose = FALSE) {
+constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
   if(!is.numeric(kappa) || length(kappa) != 3)
     stop2("`kappa` must be a numeric vector of length 3")
   if(!all(kappa >= 0))
@@ -102,10 +108,10 @@ constructPedigree = function(kappa, verbose = FALSE) {
     x = nuclearPed(2)
     founderInbreeding(x, 1:2) = c(f1, f2)
 
-    if(verbose)
-      message(glue::glue("
+    if(describe)
+      cat(glue::glue("
         Result: Corner case when m = n = 0
-          Full siblings; founder inbreeding {round(f1, 2)} and {round(f1, 2)}
+          Full siblings; founder inbreeding {round(f1, 2)} and {round(f1, 2)}\n
         "))
 
     return(x)
@@ -123,7 +129,7 @@ constructPedigree = function(kappa, verbose = FALSE) {
 
     msg = glue::glue("
       Result:
-        Half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}
+        Paternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}\n
       ")
   }
   else {
@@ -145,13 +151,14 @@ constructPedigree = function(kappa, verbose = FALSE) {
     msg = glue::glue("
       Result:
         Paternal half cousins of degree {deg1}, removal {rem1}; founder inbreeding {round(f1, 2)}
-        Maternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}
+        Maternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}\n
       ")
   }
 
-  if(verbose) {
+  if(describe) {
     msg = sub("cousins of degree 0, removal 0", "siblings", msg)
-    message(msg)
+    msg = sub(", removal 0", "", msg)
+    cat(msg)
   }
 
   x
