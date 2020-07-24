@@ -148,80 +148,87 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
 #'
 #' Utility function for plotting points in the IBD triangle.
 #'
-#' @param k0,k2 Numerical vectors giving coordinates for points to be plotted in
-#'   the IBD triangle. Alternatively, `k0` may be a matrix or data frame
-#'   containing columns named either:
+#' @param kappa Coordinates of points to be plotted in the IBD triangle. Valid
+#'   input types are:
 #'
-#'   * `k0` and `k2`
+#'   * A numerical vector of length 2 or 3. In the latter case `kappa[c(1, 3)]`
+#'   is used.
 #'
-#'   * `kappa0` and `kappa2`
+#'   * A matrix of data frame, whose column names must include either `k0` and
+#'   `k2`, `kappa0` and `kappa2`, or `ibd0` and `ibd2`.
 #'
-#'   * `ibd0` and `ibd2`
+#'   * A list (and not a data frame), in which case an attempt is made to bind
+#'   the elements row-wise.
 #'
-#'   If `k0` is a list (and not a data frame) an attempt is made to
-#'   bind the elements row-wise. (This is useful e.g. when estimates are
-#'   produces by a call to `lapply`.)
 #' @param new A logical indicating if a new triangle should be drawn.
 #' @param col,cex,pch,lwd Parameters passed onto [points()].
-#' @param labels A character of same length as `k0` and `k2`, or a single
-#'   logical `TRUE` or `FALSE`. If TRUE, and `k0` is a data.frame, labels will
-#'   be created by pasting columns "ID1" and "ID2", if these are present. By
-#'   default, no labels are plotted.
-#' @param colLab,cexLab,pos,adj Parameters passed onto [text()] (if
-#'   `labels` is non-NULL).
+#' @param labels A character of same length as the number of points, or a single
+#'   logical `TRUE` or `FALSE`. If `TRUE`, an attempt is made to create labels
+#'   by pasting columns `ID1` and `ID2` in `kappa`, if these exist. By default,
+#'   no labels are plotted.
+#' @param colLab,cexLab,pos,adj Parameters passed onto [text()] (if `labels` is
+#'   non-NULL).
 #' @param keep.par A logical. If TRUE, the graphical parameters are not reset
 #'   after plotting, which may be useful for adding additional annotation.
-#' @param \dots Plot arguments passed on to `IBDtriangle()`.
+#' @param \dots Plot arguments passed on to `ibdTriangle()`.
 #'
 #' @return None
 #' @author Magnus Dehli Vigeland
 #'
 #' @examples
-#' showInTriangle(k0 = 3/8, k2 = 1/8, label = "3/4 siblings", pos = 1)
+#' showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 #'
 #' @export
-showInTriangle = function(k0, k2 = NULL, new = TRUE, col = "blue",
+showInTriangle = function(kappa, new = TRUE, col = "blue",
                           cex = 1, pch = 4, lwd = 2, labels = FALSE,
                           colLab = col, cexLab = 0.8,
                           pos = 1, adj = NULL, keep.par = TRUE, ...) {
 
-  if(is.matrix(k0))
-    k0 = as.data.frame(k0)
-  else if(is.list(k0) && !is.data.frame(k0))
-    k0 = do.call(rbind, k0)
+  if(is.vector(kappa) && !is.list(kappa)) {
+    if(!is.numeric(kappa))
+      stop2("Vector `kappa` is not numeric: ", kappa)
+    if(!length(kappa) %in% 2:3)
+      stop2("Vector `kappa` must have length 2 or 3. Received length: ", length(kappa))
+    if(is.null(names(kappa)))
+      names(kappa) = if(length(kappa) == 2) paste0("kappa", c(0, 2)) else paste0("kappa", 0:2)
 
-  if(is.data.frame(k0)) {
-    df = k0
+    kappa = as.data.frame(as.list(kappa))
+  }
+  else if(is.matrix(kappa))
+    kappa = as.data.frame(kappa)
+  else if(is.list(kappa) && !is.data.frame(kappa))
+    kappa = do.call(rbind, kappa)
+  else if(!is.data.frame(kappa))
+    stop2("Wrong input format of `kappa`: ", class(kappa))
 
-    if(!is.null(k2))
-      stop2("When the first argument is a data.frame/matrix/list, `k2` must be NULL")
+  ### `kappa` is now a data frame
+  df = kappa
 
-    nms = names(df)
-    allowedColnames = list(c("k0", "k2"),
-                           c("kappa0", "kappa2"),
-                           c("ibd0", "ibd2"))
-    for (colnms in allowedColnames) {
-      if(all(colnms %in% nms)) {
-        k0 = df[[colnms[1]]]
-        k2 = df[[colnms[2]]]
-        break
-      }
-    }
-    if(is.null(k2))
-      stop2("Columns names not recognised.")
-
-    if(isTRUE(labels)) {
-      id1 = if("ID1" %in% nms) df$ID1 else if ("id1" %in% nms) df$id1 else NULL
-      id2 = if("ID2" %in% nms) df$ID2 else if ("id2" %in% nms) df$id2 else NULL
-      if(is.null(id1) || is.null(id2))
-        stop2("Trying to create labels, but cannot find column `id1` and `id2`")
-      labels = paste(id1, id2, sep = "-")
+  # Extract k0 and k2
+  allowedColnames = list(c("kappa0", "kappa2"),
+                         c("k0", "k2"),
+                         c("ibd0", "ibd2"))
+  nms = names(kappa)
+  k0 = k2 = NULL
+  for (colnms in allowedColnames) {
+    if(all(colnms %in% nms)) {
+      k0 = df[[colnms[1]]]
+      k2 = df[[colnms[2]]]
+      break
     }
   }
-  else {
-    if(is.null(k2)) stop2("`k2` is NULL")
-    if(length(k0) != length(k2)) stop2("Arguments `k0` and `k2` must have the same length")
+  if(is.null(k0))
+    stop2("Columns names not recognised.")
+
+  # Labels
+  if(isTRUE(labels)) {
+    id1 = if("ID1" %in% nms) df$ID1 else if ("id1" %in% nms) df$id1 else NULL
+    id2 = if("ID2" %in% nms) df$ID2 else if ("id2" %in% nms) df$id2 else NULL
+    if(is.null(id1) || is.null(id2))
+      stop2("Trying to create labels, but cannot find column `id1` and `id2`")
+    labels = paste(id1, id2, sep = "-")
   }
+
 
   if(is.character(labels) && length(labels) != length(k0))
     stop2("When `labels` is a character, it must have the same length as `k0`")

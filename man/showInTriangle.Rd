@@ -5,8 +5,7 @@
 \title{Add points to the IBD triangle}
 \usage{
 showInTriangle(
-  k0,
-  k2 = NULL,
+  kappa,
   new = TRUE,
   col = "blue",
   cex = 1,
@@ -22,35 +21,33 @@ showInTriangle(
 )
 }
 \arguments{
-\item{k0, k2}{Numerical vectors giving coordinates for points to be plotted in
-the IBD triangle. Alternatively, \code{k0} may be a matrix or data frame
-containing columns named either:
+\item{kappa}{Coordinates of points to be plotted in the IBD triangle. Valid
+input types are:
 \itemize{
-\item \code{k0} and \code{k2}
-\item \code{kappa0} and \code{kappa2}
-\item \code{ibd0} and \code{ibd2}
-}
-
-If \code{k0} is a list (and not a data frame) an attempt is made to
-bind the elements row-wise. (This is useful e.g. when estimates are
-produces by a call to \code{lapply}.)}
+\item A numerical vector of length 2 or 3. In the latter case \code{kappa[c(1, 3)]}
+is used.
+\item A matrix of data frame, whose column names must include either \code{k0} and
+\code{k2}, \code{kappa0} and \code{kappa2}, or \code{ibd0} and \code{ibd2}.
+\item A list (and not a data frame), in which case an attempt is made to bind
+the elements row-wise.
+}}
 
 \item{new}{A logical indicating if a new triangle should be drawn.}
 
 \item{col, cex, pch, lwd}{Parameters passed onto \code{\link[=points]{points()}}.}
 
-\item{labels}{A character of same length as \code{k0} and \code{k2}, or a single
-logical \code{TRUE} or \code{FALSE}. If TRUE, and \code{k0} is a data.frame, labels will
-be created by pasting columns "ID1" and "ID2", if these are present. By
-default, no labels are plotted.}
+\item{labels}{A character of same length as the number of points, or a single
+logical \code{TRUE} or \code{FALSE}. If \code{TRUE}, an attempt is made to create labels
+by pasting columns \code{ID1} and \code{ID2} in \code{kappa}, if these exist. By default,
+no labels are plotted.}
 
-\item{colLab, cexLab, pos, adj}{Parameters passed onto \code{\link[=text]{text()}} (if
-\code{labels} is non-NULL).}
+\item{colLab, cexLab, pos, adj}{Parameters passed onto \code{\link[=text]{text()}} (if \code{labels} is
+non-NULL).}
 
 \item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
 after plotting, which may be useful for adding additional annotation.}
 
-\item{\dots}{Plot arguments passed on to \code{IBDtriangle()}.}
+\item{\dots}{Plot arguments passed on to \code{ibdTriangle()}.}
 }
 \value{
 None
@@ -59,7 +56,7 @@ None
 Utility function for plotting points in the IBD triangle.
 }
 \examples{
-showInTriangle(k0 = 3/8, k2 = 1/8, label = "3/4 siblings", pos = 1)
+showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 
 }
 \author{
