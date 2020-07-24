@@ -21,16 +21,17 @@
 #' @examples
 #'
 #' # Full siblings
-#' kap = c(0.25, 0.5, 0.25)
-#' x = constructPedigree(kap)
-#'
-#' # Validation
-#' kap2 = kappaIBD(x, leaves(x))
-#' stopifnot(all.equal(kap, kap2))
+#' x = constructPedigree(kappa = c(0.25, 0.5, 0.25))
+#' kappaIBD(x, leaves(x))
 #'
 #' # A relationship halfway between parent-child and full sibs
-#' y = constructPedigree(kappa = c(1/8, 6/8, 1/8))
+#' kap = c(1/8, 6/8, 1/8)
+#' showInTriangle(kap, label = " (1/8, 1/8)", pos = 4)
+#'
+#' y = constructPedigree(kappa = kap)
 #' plot(y)
+#'
+#' stopifnot(all.equal(kappaIBD(y, leaves(y)), kap))
 #'
 #' # kappa = (0,1,0) does not give a parent-child relationship,
 #' # but half siblings whose shared parent is completely inbred.
@@ -52,6 +53,8 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
   # If unrelated, return early
   if(k1 == 0 && k2 == 0) {
+    if(describe)
+      cat(glue::glue("Result:\n  Unrelated\n"))
     x = list(singleton(1), singleton(2))
     return(x)
   }
@@ -110,7 +113,8 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
     if(describe)
       cat(glue::glue("
-        Result: Corner case when m = n = 0
+        Result:
+          (Corner case with half-cousin degrees m = n = 0)
           Full siblings; founder inbreeding {round(f1, 2)} and {round(f1, 2)}\n
         "))
 
@@ -156,7 +160,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
   }
 
   if(describe) {
-    msg = sub("cousins of degree 0, removal 0", "siblings", msg)
+    msg = gsub("cousins of degree 0, removal 0", "siblings", msg)
     msg = sub(", removal 0", "", msg)
     cat(msg)
   }

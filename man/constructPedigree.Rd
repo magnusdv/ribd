@@ -29,16 +29,17 @@ The construction follows the method and formulae given in Vigeland (2020).
 \examples{
 
 # Full siblings
-kap = c(0.25, 0.5, 0.25)
-x = constructPedigree(kap)
-
-# Validation
-kap2 = kappaIBD(x, leaves(x))
-stopifnot(all.equal(kap, kap2))
+x = constructPedigree(kappa = c(0.25, 0.5, 0.25))
+kappaIBD(x, leaves(x))
 
 # A relationship halfway between parent-child and full sibs
-y = constructPedigree(kappa = c(1/8, 6/8, 1/8))
+kap = c(1/8, 6/8, 1/8)
+showInTriangle(kap, label = " (1/8, 1/8)", pos = 4)
+
+y = constructPedigree(kappa = kap)
 plot(y)
+
+stopifnot(all.equal(kappaIBD(y, leaves(y)), kap))
 
 # kappa = (0,1,0) does not give a parent-child relationship,
 # but half siblings whose shared parent is completely inbred.
