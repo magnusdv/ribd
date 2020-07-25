@@ -115,7 +115,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
       cat(glue::glue("
         Result:
           (Corner case with half-cousin degrees m = n = 0)
-          Full siblings; founder inbreeding {round(f1, 2)} and {round(f1, 2)}\n
+          Full siblings; founder inbreeding {round(f1, 2)} and {round(f2, 2)}\n
         "))
 
     return(x)
