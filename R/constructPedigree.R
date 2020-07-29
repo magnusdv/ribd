@@ -103,7 +103,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
         maternal kinship:  phi2 = {round(phi2, 4)}
         maternal separation:  n = {n}
-        maternal inbreeding: f2 = {round(f2,4)}\n
+        maternal inbreeding: f2 = {round(f2, 4)}\n
       "))
 
   # Special case: m = n = 0
@@ -115,7 +115,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
       cat(glue::glue("
         Result:
           (Corner case with half-cousin degrees m = n = 0)
-          Full siblings; founder inbreeding {round(f1, 2)} and {round(f2, 2)}\n
+          Full siblings; founder inbreeding {round(f1, 4)} and {round(f2, 4)}\n
         "))
 
     return(x)
@@ -133,7 +133,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
     msg = glue::glue("
       Result:
-        Paternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}\n
+        Paternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 4)}\n
       ")
   }
   else {
@@ -154,8 +154,8 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
     msg = glue::glue("
       Result:
-        Paternal half cousins of degree {deg1}, removal {rem1}; founder inbreeding {round(f1, 2)}
-        Maternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 2)}\n
+        Paternal half cousins of degree {deg1}, removal {rem1}; founder inbreeding {round(f1, 4)}
+        Maternal half cousins of degree {deg2}, removal {rem2}; founder inbreeding {round(f2, 4)}\n
       ")
   }
 
