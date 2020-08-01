@@ -272,7 +272,6 @@ twoLocKin = function(A, B, C, D, mem, indent = 0) {
     }
   }
 
-  isFou = mem$isFounder[a]
   ANC = mem$anc
 
   # If no common ancestors, return 0

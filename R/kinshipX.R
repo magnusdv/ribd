@@ -48,12 +48,10 @@ kinshipX = function(x, ids = NULL) {
 
   # Iteratively fill the kinship matrix, one generation at a time
   for (gen in seq_len(max_dp)) {
-    indx = which(dp == gen)
 
     # males
     indx_mal = which(dp == gen & SEX == 1)
     Mindx_mal = MIDX[indx_mal]
-    Findx_mal = FIDX[indx_mal]
     kins[indx_mal, ] = kins[Mindx_mal, ]
     kins[, indx_mal] = kins[, Mindx_mal]
     kins[cbind(indx_mal, indx_mal)] = 1
