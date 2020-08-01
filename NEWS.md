@@ -1,3 +1,12 @@
+# ribd 1.2.0
+
+* New function `ibdDraw()` for illustrating IBD patterns in a pedigree. IBD alleles are represented as coloured dots or as letters.
+
+* New function `ibdTriangle()`, which replaces `forrel::IBDtriangle()`
+
+* `constructPedigree()` now gives a textual description of the (usually double-half-cousin-like) pedigree it produces.
+
+
 # ribd 1.1.0
 
 * New function `constructPedigree()`, which constructs a pedigree yielding a prescribed set of IBD coefficients. This implements the algorithm described in https://doi.org/10.1007/s00285-020-01505-x.  
