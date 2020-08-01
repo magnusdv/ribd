@@ -13,7 +13,7 @@
 #' @param pos A vector recycled to the length of `labels(x)`, indicating allele
 #'   placement relative to the pedigree symbols: 0 = inside; 1 = below; 2 =
 #'   left; 3 = above; 4 = right. By default, all are placed below.
-#' @param cols A colour vector corresponding to the integers occuring in
+#' @param cols A colour vector corresponding to the integers occurring in
 #'   `alleles`.
 #' @param cex An expansion factor for the allele points/letters. Default: 3 for
 #'   points and 2 for text.

@@ -33,7 +33,7 @@ one or two integers, representing different colours. Zeroes produce
 placement relative to the pedigree symbols: 0 = inside; 1 = below; 2 =
 left; 3 = above; 4 = right. By default, all are placed below.}
 
-\item{cols}{A colour vector corresponding to the integers occuring in
+\item{cols}{A colour vector corresponding to the integers occurring in
 \code{alleles}.}
 
 \item{cex}{An expansion factor for the allele points/letters. Default: 3 for
