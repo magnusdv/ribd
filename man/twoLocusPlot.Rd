@@ -70,32 +70,41 @@ twoLocusPlot(peds, coeff = "k11")
 
 ###############################
 
+ped1 = addChildren(halfSibPed(sex2 = 2), 4, 5, nch = 2)
+ped2 = addChildren(addDaughter(nuclearPed(1), 3), 1, 5, nch = 2)
+ped3 = addChildren(addDaughter(nuclearPed(2), 4), 3, 6, nch = 2)
+
 peds = list(
-   `H-sibs` = list(ped = addChildren(halfSibPed(sex2 = 2), 4, 5, nch = 2),
-                 ids = 6:7),
-   `G-sibs` = list(ped = addChildren(addDaughter(nuclearPed(1), 3), 1, 5, nch = 2),
-                 ids = 6:7),
-   `U-sibs` = list(ped = addChildren(addDaughter(nuclearPed(2), 4), 3, 6, nch = 2),
-                 ids = 7:8)
+   `H-sibs` = list(ped = ped1, ids = leaves(ped1)),
+   `G-sibs` = list(ped = ped2, ids = leaves(ped2)),
+   `U-sibs` = list(ped = ped3, ids = leaves(ped3))
 )
 # plotPedList(peds)
 twoLocusPlot(peds, coeff = "kinship")
 
 ################################
 
-### Example where `coeff` is a function.
 ### Reproducing Fig 2 of Bishop & Williamson (1990)
+### This example illustrates `coeff` as a function.
 
 # The coefficient d11(rho) is the conditional probability of IBD = 1
 # in the first locus, given IBD = 1 in the second.
 
+G = linearPed(2)
+H = halfSibPed()
+U = cousinPed(0, removal = 1)
+FC = cousinPed(1)
+FC1R = cousinPed(1, removal = 1)
+SC = cousinPed(2)
+
 peds = list(
-    GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
-    HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
-    Uncle       = list(ped = cousinPed(0, 1), ids = c(3, 6)),
-    FirstCous   = list(ped = cousinPed(1),    ids = c(5, 8)),
-    FirstCous1R = list(ped = cousinPed(1, 1), ids = c(5, 10)),
-    SecondCous  = list(ped = cousinPed(2),    ids = c(7, 12)))
+    GrandParent = list(ped = G,    ids = c(1, 5)),
+    HalfSib     = list(ped = H,    ids = leaves(H)),
+    Uncle       = list(ped = U,    ids = leaves(U)),
+    FirstCous   = list(ped = FC,   ids = leaves(FC)),
+    FirstCous1R = list(ped = FC1R, ids = leaves(FC1R)),
+    SecondCous  = list(ped = SC,   ids = leaves(SC)))
+
 
 d11 = function(ped, ids, rho) {
   twoLocusIBD(ped, ids, rho, coefs = "k11")/kappaIBD(ped, ids)[2]

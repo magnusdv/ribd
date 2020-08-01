@@ -64,11 +64,16 @@ stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 ##################################################
 
 # Pedigrees (a) - (d)
+ped.a = linearPed(3)
+ped.b = halfCousinPed(0, removal = 1)
+ped.c = cousinPed(1)
+ped.d = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE)
+
 peds = list(
-  a = list(ped = linearPed(3), ids = c(1,7)),
-  b = list(ped = halfCousinPed(0, 1), ids = c(3,7)),
-  c = list(ped = cousinPed(1), ids = c(5,8)),
-  d = list(ped = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE), ids = c(5,9))
+  a = list(ped = ped.a, ids = c(1,7)),
+  b = list(ped = ped.b, ids = leaves(ped.b)),
+  c = list(ped = ped.c, ids = leaves(ped.c)),
+  d = list(ped = ped.d, ids = leaves(ped.d))
 )
 
 # Recombination values
@@ -79,7 +84,7 @@ kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
 
 # Plot
 matplot(rseq, kvals, type = "l", lwd = 2)
-legend("topright", names(peds), col = 1:4, lty = 1:4)
+legend("topright", names(peds), col = 1:4, lty = 1:4, lwd = 2)
 
 }
 \references{

@@ -32,13 +32,16 @@
 #' inbreeding(x)
 #'
 #' # If the father is 100% inbred, the inbreeding coeff of the child doubles
-#' founderInbreeding(x, 1) = 1
+#' fa = commonAncestors(x, 4:5) # robust to label change
+#' founderInbreeding(x, fa) = 1
+#'
 #' inbreeding(x)
 #'
 #' # Simpler output using the `id` argument:
 #' inbreeding(x, id = 6)
 #'
-#' # The X inbreeding coefficients depend on the genders in the pedigree.
+#' ### X-chromosomal inbreeding coefficients ###
+#' # These depend on the genders in the pedigree.
 #' # To exemplify, we consider a child of half siblings.
 #'
 #' xPat = halfSibPed(sex2 = 2) # paternal half sibs

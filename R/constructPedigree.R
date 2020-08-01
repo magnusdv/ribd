@@ -123,13 +123,14 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
 
   if(k2 == 0) {
     x = halfCousinPed(degree = deg2, removal = rem2)
-    founderInbreeding(x, 1) = f2
+    fou = commonAncestors(x, leaves(x))
+    founderInbreeding(x, fou) = f2
 
     # Reorder so that cousins come at the end
-    ids = leaves(x)
-    labs = labels(x)
-    x = reorderPed(x, neworder = c(setdiff(labs, ids), ids))
-    x = relabel(x, new = 1:pedsize(x))
+    #ids = leaves(x)
+    #labs = labels(x)
+    #x = reorderPed(x, neworder = c(setdiff(labs, ids), ids))
+    #x = relabel(x, new = 1:pedsize(x))
 
     msg = glue::glue("
       Result:
@@ -141,16 +142,17 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
                       removal1 = rem1, removal2 = rem2,
                       half1 = TRUE, half2 = TRUE)
     ids = leaves(x)
-    fou1 = commonAncestors(x, father(x, ids), inclusive = TRUE) # always 1 (?)
+    fou1 = commonAncestors(x, father(x, ids), inclusive = TRUE)
     fou2 = commonAncestors(x, mother(x, ids), inclusive = TRUE)
 
     # Reorder so that the inbred founders are 1 and 2, and cousins at the end
-    labs = labels(x)
-    x = reorderPed(x, neworder = c(fou1, fou2, setdiff(labs, c(fou1, fou2, ids)), ids))
-    x = relabel(x, new = 1:pedsize(x))
+    #labs = labels(x)
+    #x = reorderPed(x, neworder = c(fou1, fou2, setdiff(labs, c(fou1, fou2, ids)), ids))
+    #x = relabel(x, new = 1:pedsize(x))
 
     # Set founder inbreeding
-    founderInbreeding(x, 1:2) = c(f1, f2)
+    founderInbreeding(x, fou1) = f1
+    founderInbreeding(x, fou2) = f2
 
     msg = glue::glue("
       Result:

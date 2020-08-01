@@ -67,12 +67,16 @@ test_that("inbreeding() works in selfing pedigree", {
 })
 
 test_that("X-chrom inbreeding is computed correctly", {
-  xPat = halfCousinPed(0, child = T)
-  xMat = swapSex(xPat, 1)
-  expect_equal(inbreedingX(xPat, id = 6), 0)
-  expect_equal(inbreedingX(xMat, id = 6), 0.25)
+  x = halfCousinPed(0, child = T)
+  xMat = swapSex(x, 1)
+  child = leaves(x)
+  fou = commonAncestors(x, parents(x, child)) # robust
 
-  founderInbreeding(xMat, 1, chrom = "x") = 1
+  expect_equal(inbreedingX(x, id = child), 0)
+  expect_equal(inbreedingX(xMat, id = child), 0.25)
+
+  # With founder inbreeding
+  founderInbreeding(xMat, fou, chrom = "x") = 1
   expect_equal(inbreedingX(xMat, id = 6), 0.5)
 })
 

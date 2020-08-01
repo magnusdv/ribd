@@ -99,9 +99,11 @@ legend("topright", names(peds), col = 1:3, lty = 1:3)
 ############################################################
 
 # List of pedigrees and ID pairs
+GG = linearPed(3)
+HU = halfCousinPed(0, removal = 1)
 peds = list(
-  GreatGrand = list(ped = linearPed(3),        ids = c(1, 7)),
-  HalfUncle  = list(ped = halfCousinPed(0, 1), ids = c(3, 7))
+  GreatGrand = list(ped = GG, ids = c(1, 7)),
+  HalfUncle  = list(ped = HU, ids = leaves(HU))
 )
 
 # Compute `k11` for each rho
@@ -125,23 +127,24 @@ legend("topright", names(peds), col = 1:2, lty = 1:2)
 # coefficient cannot replace the genealogy in analyses of linked loci.
 ######################################################################
 
-xPO = addChildren(nuclearPed(1, sex = 2), 1, 3, nch = 1, sex = 2)
-xPO = addDaughter(addDaughter(xPO, 4), 4)
+po = addChildren(nuclearPed(1, sex = 2), 1, 3, nch = 1, sex = 2)
+po = addDaughter(addDaughter(po, 4), 4)
 
-xSIB = addChildren(nuclearPed(2, sex = 1:2), 3, 4, nch = 1)
-xSIB = addDaughter(addDaughter(xSIB, 5), 5)
+sib = addChildren(nuclearPed(2, sex = 1:2), 3, 4, nch = 1)
+sib = addDaughter(addDaughter(sib, 5), 5)
 
-plotPedList(list(xPO, xSIB), new = TRUE, title = c("PO", "SIB"))
+plotPedList(list(po, sib), new = TRUE, title = c("PO", "SIB"))
 
 # List of pedigrees and ID pairs
-peds = list(PO = list(ped = xPO, ids = c(6, 8)),
-            SIB = list(ped = xSIB, ids = c(7, 9)))
+peds = list(PO =  list(ped = po,  ids = leaves(po)),
+            SIB = list(ped = sib, ids = leaves(sib)))
 
 # Compute `k11` for each rho
 kvals = sapply(peds, function(x)
   sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
 
 # Plot
+dev.off()
 matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
 legend("topright", names(peds), col = 1:2, lty = 1:2)
 
@@ -187,7 +190,7 @@ stopifnot(all.equal(k2_mat, IBDSibs(0.25)))
 #####################################################
 
 x = quadHalfFirstCousins()
-ids = c(9, 10)
+ids = leaves(x)
 
 # First compute the one-locus IBD coefficients (= c(17, 14, 1)/32)
 k1 = kappaIBD(x, ids)

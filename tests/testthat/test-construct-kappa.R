@@ -2,7 +2,7 @@ context("Constructing pedigrees from kappa")
 
 testConstruction = function(k0, k2) {
   k = c(k0, 1-k0-k2, k2)
-  x = constructPedigree(k, verbose = FALSE)
+  x = constructPedigree(k, describe = FALSE, verbose = FALSE)
   k2 = kappaIBD(x, leaves(x))
   all.equal(k, k2)
 }

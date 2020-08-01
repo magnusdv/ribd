@@ -61,22 +61,26 @@
 #'
 #' @seealso [kinship()], [condensedIdentity()]
 #' @examples
-#' # Siblings
+#' ### Siblings
 #' x = nuclearPed(2)
 #' k = kappaIBD(x, 3:4)
 #' stopifnot(identical(k, c(.25, .5, .25)))
 #'
-#' # Quad half first cousins
+#' ### Quad half first cousins
 #' x = quadHalfFirstCousins()
 #' k = kappaIBD(x, leaves(x))
 #' stopifnot(identical(k, c(17/32, 14/32, 1/32)))
 #'
-#' # Paternal half brothers with 100% inbred father
+#' ### Paternal half brothers with 100% inbred father
 #' # Genetically indistinguishable from an (outbred) father-son relationship
 #' x = halfSibPed()
-#' founderInbreeding(x, 1) = 1
+#' ids = 4:5
 #'
-#' k = kappaIBD(x, 4:5)
+#' # Set founder inbreeding
+#' fou = commonAncestors(x, ids) # robust to label change
+#' founderInbreeding(x, fou) = 1
+#'
+#' k = kappaIBD(x, ids)
 #' stopifnot(identical(k, c(0, 1, 0)))
 #'
 #' @export
