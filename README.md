@@ -1,7 +1,7 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-ribd <img src="man/figures/logo.png" align="right" height=140/>
-===============================================================
+# ribd <img src="man/figures/logo.png" align="right" height=140/>
 
 <!-- badges: start -->
 
@@ -11,8 +11,7 @@ status](https://www.r-pkg.org/badges/version/ribd)](https://CRAN.R-project.org/p
 [![](https://cranlogs.r-pkg.org/badges/last-month/ribd?color=yellow)](https://cran.r-project.org/package=ribd)
 <!-- badges: end -->
 
-Overview
---------
+## Overview
 
 The goal of `ribd` is to compute various coefficients of relatedness and
 identity-by-descent (IBD) between pedigree members. It extends the
@@ -21,35 +20,34 @@ construction and manipulation.
 
 The main functions in `ribd` are the following:
 
--   `kinship()`, `kinshipX()` : Kinship coefficients
--   `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
--   `kappaIBD()`, `kappaIBDX()` : IBD coefficients
-    (*κ*<sub>0</sub>, *κ*<sub>1</sub>, *κ*<sub>2</sub>) (noninbred
-    individuals only)
--   `condensedIdentity()`, `condensedIdentityX()` : Jacquard’s condensed
+  - `kinship()`, `kinshipX()` : Kinship coefficients
+  - `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
+  - `kappaIBD()`, `kappaIBDX()` : IBD coefficients
+    \((\kappa_0, \kappa_1, \kappa_2)\) (noninbred individuals only)
+  - `condensedIdentity()`, `condensedIdentityX()` : Jacquard’s condensed
     identity coefficients
 
 A unique feature of `ribd` is the ability to handle pedigrees with
-inbred founders in all of the above calculations. More about this below!
+inbred founders in all of the above calculations. More about this
+below\!
 
 The package also computes a variety of lesser-known pedigree
 coefficients:
 
--   `generalisedKinship()` : Generalised kinship coefficients, as
+  - `generalisedKinship()` : Generalised kinship coefficients, as
     defined by Weeks and Lange (1988)
--   `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
+  - `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
     individuals only)
--   `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
+  - `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
     Thompson (1988)
--   `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
+  - `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
     individuals)
--   `twoLocusIdentity()` : Two-locus condensed identity coefficients
+  - `twoLocusIdentity()` : Two-locus condensed identity coefficients
     (any pair of individuals)
--   `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
+  - `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
     coefficients (*not exported*)
 
-Installation
-------------
+## Installation
 
 To get the current official version of `ribd`, install from CRAN as
 follows:
@@ -66,8 +64,7 @@ GitHub:
 devtools::install_github("magnusdv/ribd")
 ```
 
-Getting started
----------------
+## Getting started
 
 ``` r
 library(ribd)
@@ -95,8 +92,7 @@ condensedIdentity(x, ids = 5:6)
 #> [1] 0.06250 0.03125 0.12500 0.03125 0.12500 0.03125 0.21875 0.31250 0.06250
 ```
 
-Inbred founders
----------------
+## Inbred founders
 
 How would the above result would change if individual 1 was himself
 inbred, say, as a child of half siblings? A possible, but cumbersome,
@@ -130,14 +126,14 @@ condensedIdentity(z, ids = 5:6)
 Although the above strategy worked nicely in this case, it quickly gets
 awkward or impossible to model founder inbreeding by creating the
 complete pedigree. For example, inbreeding coefficients close to zero
-require enormous pedigrees! And even worse: What if individual 1 was
+require enormous pedigrees\! And even worse: What if individual 1 was
 100% inbred? This cannot be modelled in this way, as it calls for an
 infinite pedigree.
 
 A much easier approach is to use the `founderInbreeding()` feature
 offered by `pedtools`: We simply specify the inbreeding level of
 individual 1 (in the original `x`) to be that of a child of half
-siblings, i.e. 1/8.
+siblings, i.e. \(1/8\).
 
 ``` r
 founderInbreeding(x, ids = 1) = 1/8
@@ -152,8 +148,7 @@ condensedIdentity(x, ids = 5:6)
 #> [8] 0.29687500 0.05468750
 ```
 
-The pairwise condensed identity states
---------------------------------------
+## The pairwise condensed identity states
 
 The following figure shows the 9 *condensed identity states* of two
 individuals *a* and *b*. Each state shows the pattern of IBD between the
