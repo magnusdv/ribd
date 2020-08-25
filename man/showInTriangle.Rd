@@ -7,7 +7,7 @@
 showInTriangle(
   kappa,
   new = TRUE,
-  col = "blue",
+  col = 6,
   cex = 1,
   pch = 4,
   lwd = 2,

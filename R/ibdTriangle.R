@@ -179,7 +179,7 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
 #' showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 #'
 #' @export
-showInTriangle = function(kappa, new = TRUE, col = "blue",
+showInTriangle = function(kappa, new = TRUE, col = 6,
                           cex = 1, pch = 4, lwd = 2, labels = FALSE,
                           colLab = col, cexLab = 0.8,
                           pos = 1, adj = NULL, keep.par = TRUE, ...) {
