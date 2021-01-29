@@ -1,4 +1,3 @@
-context("Kinship")
 
 test_that("kinship coefficients are the same with ribd and kinship2", {
   x = randomPed(10, founders=2, seed=1234)

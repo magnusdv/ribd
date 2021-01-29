@@ -1,4 +1,3 @@
-context("Constructing pedigrees from kappa")
 
 testConstruction = function(k0, k2) {
   k = c(k0, 1-k0-k2, k2)

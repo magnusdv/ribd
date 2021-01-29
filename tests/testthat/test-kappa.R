@@ -1,4 +1,3 @@
-context("Kinship")
 
 test_that("kappaIBD() deals sensibly with inbred individuals", {
   x = nuclearPed(1)

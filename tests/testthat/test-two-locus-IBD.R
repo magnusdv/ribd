@@ -1,4 +1,3 @@
-context("Two-locus IBD coefficients")
 
 tlibd = function(x, ids, rho = 0.25, ...) {
   twoLocusIBD(x, ids, rho = rho, ...)

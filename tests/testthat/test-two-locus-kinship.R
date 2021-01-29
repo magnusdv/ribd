@@ -1,4 +1,3 @@
-context("Two-locus kinship")
 
 test_that("two-loc kinship is correct in selfing ped", {
   x = selfingPed(1)

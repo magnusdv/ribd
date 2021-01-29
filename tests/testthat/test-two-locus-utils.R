@@ -1,4 +1,3 @@
-context("Two-locus utilities")
 
 test_that("two-loc kinship class replacment works", {
   x = linearPed(2)

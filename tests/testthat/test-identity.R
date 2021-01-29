@@ -1,4 +1,3 @@
-context("Identity")
 
 ident = function(x, ids, ...) condensedIdentity(x, ids, verbose=F, ...)
 

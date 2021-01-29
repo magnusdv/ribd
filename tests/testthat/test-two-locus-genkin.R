@@ -1,4 +1,3 @@
-context("Two-locus generalised kinship")
 
 tlgk = function(x, loc1, loc2 = "", rho = 0.25, ...)
   twoLocusGeneralisedKinship(x, loc1, loc2, rho = rho, ...)

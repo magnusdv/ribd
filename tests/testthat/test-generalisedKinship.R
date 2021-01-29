@@ -1,4 +1,3 @@
-context("Generalised kinships")
 
 gk3 = function(x, ids, ...) generalisedKinship3(x, ids, verbose = F, ...)
 gk4 = function(x, ids, ...) generalisedKinship4(x, ids, verbose = F, ...)

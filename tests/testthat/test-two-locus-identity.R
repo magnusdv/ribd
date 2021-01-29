@@ -1,4 +1,3 @@
-context("Two-locus identity coefficients")
 
 tlid = function(x, ids, rho = 0.25, ...) {
   twoLocusIdentity(x, ids, rho = rho, ...)
