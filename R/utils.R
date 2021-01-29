@@ -32,16 +32,3 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 
 # Fast intersection. NB: assumes no duplicates!
 .myintersect = function(x, y) y[match(x, y, 0L)]
-
-# TODO: Move to pedtools
-foundersFirst = function(x) {
-  fou = founders(x, internal = TRUE)
-
-  # Check if all foundders are already first
-  if(length(fou) == max(fou))
-    return(x)
-
-  nonfou = nonfounders(x, internal = TRUE)
-  reorderPed(x, neworder = c(fou, nonfou))
-}
-

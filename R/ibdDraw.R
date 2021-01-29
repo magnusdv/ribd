@@ -65,7 +65,7 @@
 #'
 #' # Further arguments (note that `col` is an argument of `ped.plot()`)
 #' ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
-#'         labs = TRUE, shaded = 3:4, col = "blue")
+#'         labs = TRUE, hatched = 3:4, col = "blue")
 #'
 #' # Mutations are warned about (unless `checkParents = FALSE`)
 #' ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
