@@ -97,22 +97,41 @@ ibdDraw(x, als, cols = cols, symbol = "text", cex = 2)
 
 # Further arguments (note that `col` is an argument of `ped.plot()`)
 ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
-        labs = TRUE, shaded = 3:4, col = "blue")
+        labs = TRUE, hatched = 3:4, col = "blue")
 
 # Mutations are warned about (unless `checkParents = FALSE`)
 ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
 
 
+##############################
+# Example 2: Cousin pedigree #
+##############################
+
+x = swapSex(cousinPed(1), 3)
+als = list(1:2, 3:4, NULL, c(1,3), c(2,3), NULL, 3, 3)
+
+cols = c(7, 3, 2, 4)
+ibdDraw(x, als, cols = cols, dist = 0.8)
+ibdDraw(x, als, cols = cols, dist = 0.8, symbol = "text")
+
+# Alternative: 0's give greyed-out alleles
+als2 = list(1:2, 3:4, c(0,0), c(1,3), c(2,3), c(0,0), c(0,3), c(3,0))
+
+ibdDraw(x, als2, cols = cols, dist = 0.8)
+ibdDraw(x, als2, cols = cols, dist = 0.8, symbol = "text")
+
+
 ############################
-# Example 2: X inheritance #
+# Example 3: X inheritance #
 ############################
 
 x = nuclearPed(2, sex = c(1, 2))
 als = list(1, 2:3, 3, c(1, 3))
 ibdDraw(x, als, cols = c(3, 7, 2))
 
+
 #################################
-# Example 3: mtDNA inheritance  #
+# Example 4: mtDNA inheritance  #
 #################################
 
 x = linearPed(2, sex = 2)

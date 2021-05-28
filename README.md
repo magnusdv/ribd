@@ -20,31 +20,30 @@ construction and manipulation.
 
 The main functions in `ribd` are the following:
 
-  - `kinship()`, `kinshipX()` : Kinship coefficients
-  - `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
-  - `kappaIBD()`, `kappaIBDX()` : IBD coefficients
-    \((\kappa_0, \kappa_1, \kappa_2)\) (noninbred individuals only)
-  - `condensedIdentity()`, `condensedIdentityX()` : Jacquard’s condensed
+-   `kinship()`, `kinshipX()` : Kinship coefficients
+-   `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
+-   `kappaIBD()`, `kappaIBDX()` : IBD coefficients
+    `kappa = (k0, k1, k2)` (noninbred individuals only)
+-   `condensedIdentity()`, `condensedIdentityX()` : Jacquard’s condensed
     identity coefficients
 
 A unique feature of `ribd` is the ability to handle pedigrees with
-inbred founders in all of the above calculations. More about this
-below\!
+inbred founders in all of the above calculations. More about this below!
 
 The package also computes a variety of lesser-known pedigree
 coefficients:
 
-  - `generalisedKinship()` : Generalised kinship coefficients, as
+-   `generalisedKinship()` : Generalised kinship coefficients, as
     defined by Weeks and Lange (1988)
-  - `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
+-   `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
     individuals only)
-  - `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
+-   `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
     Thompson (1988)
-  - `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
+-   `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
     individuals)
-  - `twoLocusIdentity()` : Two-locus condensed identity coefficients
+-   `twoLocusIdentity()` : Two-locus condensed identity coefficients
     (any pair of individuals)
-  - `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
+-   `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
     coefficients (*not exported*)
 
 ## Installation
@@ -66,109 +65,143 @@ devtools::install_github("magnusdv/ribd")
 
 ## Getting started
 
+In the following we illustrate the use of **ribd** by computing a few
+well-known examples. We start by loading the package.
+
 ``` r
 library(ribd)
+#> Loading required package: pedtools
 ```
 
-To illustrate the use of `ribd` we compute the condensed identity
-coefficients after one generation of full sib mating. This is a suitable
-example because the answer is well known, and it is one of the simplest
-in which all 9 coefficients are non-zero.
+#### Inbreeding: A child of first cousins
 
-We create the pedigree with `pedtools` as follows:
+For a child of related parents, its inbreeding coefficient is defined as
+the probability of autozygosity (i.e., homologous alleles being IBD) in
+a random autosomal locus.
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+
+For example, the child of first cousins shown above has inbreeding
+coefficient 1/16. We can compute this with **ribd** as follows:
+
+``` r
+# Create pedigree
+x = cousinPed(1, child = TRUE)
+
+# Plot pedigree
+plot(x)
+
+# Inbreeding coefficient of the child
+inbreeding(x, id = 9)
+#> [1] 0.0625
+```
+
+#### Kinship coefficient
+
+The kinship coefficient between two cousins (in the pedigree above)
+should equal the inbreeding coefficient of their child:
+
+``` r
+kinship(x, ids = 7:8)
+#> [1] 0.0625
+```
+
+As expected, the result was again 1/16.
+
+#### IBD coefficients and the IBD triangle
+
+For a pair of noninbred individuals, the three `kappa` coefficients are
+defined as the probability that they have exactly 0, 1 or 2 alleles IBD,
+respectively, at a random autosomal locus. For example, for a pair of
+full siblings, this works out to be 1/4, 1/2 and 1/4, respectively.
+
+Since the three kappa’s always sum to 1, any two of them are sufficient,
+forming the coordinates of a point in the plane. This gives rise to the
+*IBD triangle*, which is a useful tools for visualising (noninbred)
+relationships. The implementation in **ribd** uses `kappa0` on the first
+axis and `kappa2` on the second. In the example below, we place all
+pairs of pedigree members in the triangle.
+
+We validate this with the `kappaIBD()` function of **ribd**:
+
+``` r
+# Create and plot pedigree
+y = nuclearPed(2)
+plot(y, margin = rep(4, 4))
+
+# Compute kappa for all pairs
+k = kappaIBD(y)
+
+# IBD triangle
+showInTriangle(k, labels = T, cexLab = 1.3, pos = c(3,2,3,4,4,3))
+```
+
+<img src="man/figures/README-triangle-S-1.png" width="90%" style="display: block; margin: auto;" />
+
+As shown by [Thompson
+(1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all
+relationships of noninbred individuals satisfy a certain quadratic
+inequality in the kappa’s, resulting in an unattainable region of the
+triangle (shown in gray above).
+
+#### A more complex example
+
+Here is a relationship in the *interior* of the attainable region of the
+IBD triangle:
+
+``` r
+z = halfSibStack(2)
+plot(z, hatched = 7:8, margin = c(3,2,2,2))
+
+kap = kappaIBD(z, ids = 7:8)
+showInTriangle(kap)
+```
+
+<img src="man/figures/README-halfsibstack-1.png" width="90%" style="display: block; margin: auto;" />
+
+## The pairwise condensed identity states
+
+The following figure shows the 9 *condensed identity states* of two
+individuals *a* and *b*. Each state shows a pattern of identity by
+descent (IBD) between the four homologous alleles. The four alleles are
+represented as dots, with a connecting line segment indicating IBD. The
+states are shown in the ordering used by Jacquard and most subsequent
+authors.
+
+<img src="man/figures/jacquardStates.png" width="100%" style="display: block; margin: auto;" />
+
+#### Example: Full sib mating
+
+The following relationship is perhaps the simplest example where all 9
+coefficients are nonzero.
 
 ``` r
 x = fullSibMating(1)
-plot(x)
+plot(x, hatched = 5:6)
 ```
 
 <img src="man/figures/README-sibs-1.png" style="display: block; margin: auto;" />
 
-The identity coefficients of the children are computed with
-`condensedIdentity()`
+The function `condensedIdentity()` returns the nine coefficients in the
+order given above.
 
 ``` r
 condensedIdentity(x, ids = 5:6)
 #> [1] 0.06250 0.03125 0.12500 0.03125 0.12500 0.03125 0.21875 0.31250 0.06250
 ```
 
-## Inbred founders
-
-How would the above result would change if individual 1 was himself
-inbred, say, as a child of half siblings? A possible, but cumbersome,
-approach to answer this question would be to *expand* the pedigree to
-include the complete family history. Here is one way to do this, using
-`pedtools::mergePed()` to merge `x` with a suitably labelled half-sib
-pedigree:
-
-``` r
-y = halfSibPed(sex1 = 1, sex2 = 2)
-y = addChildren(y, father = 4, mother = 5, nch = 1)
-y = relabel(y, c(101:105, 1)) # prepare merge by relabeling
-z = mergePed(y, x)
-```
-
-``` r
-plot(z)
-```
-
-<img src="man/figures/README-sibs-extended-1.png" style="display: block; margin: auto;" />
-
-Now that we have the complete pedigree we could answer the original
-question by running `condensedIdentity()` on `z`.
-
-``` r
-condensedIdentity(z, ids = 5:6)
-#> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000 0.21875000
-#> [8] 0.29687500 0.05468750
-```
-
-Although the above strategy worked nicely in this case, it quickly gets
-awkward or impossible to model founder inbreeding by creating the
-complete pedigree. For example, inbreeding coefficients close to zero
-require enormous pedigrees\! And even worse: What if individual 1 was
-100% inbred? This cannot be modelled in this way, as it calls for an
-infinite pedigree.
-
-A much easier approach is to use the `founderInbreeding()` feature
-offered by `pedtools`: We simply specify the inbreeding level of
-individual 1 (in the original `x`) to be that of a child of half
-siblings, i.e. \(1/8\).
-
-``` r
-founderInbreeding(x, ids = 1) = 1/8
-```
-
-When we now run `condensedIdentity()` on `x`, this inbreeding is taken
-into account, giving the same answer as for `z` above.
-
-``` r
-condensedIdentity(x, ids = 5:6)
-#> [1] 0.06640625 0.03515625 0.13281250 0.03125000 0.13281250 0.03125000 0.21875000
-#> [8] 0.29687500 0.05468750
-```
-
-## The pairwise condensed identity states
-
-The following figure shows the 9 *condensed identity states* of two
-individuals *a* and *b*. Each state shows the pattern of IBD between the
-4 homologous alleles at an autosomal locus. The states are shown in the
-ordering used by Jacquard and most subsequent authors. This is also the
-order of the coefficients output by `condensedIdentity()`.
-<img src="man/figures/jacquardStates.png" align="left">
-
-### Identity states on X
+## Identity states on X
 
 The X chromosomal version of `condensedIdentity()` is called
 `condensedIdentityX()`. What this function computes requires some
 explanation, which we offer here.
 
-The point of `condensedIdentityX()` is to compute the coefficients
-(i.e., the expected proportions) of the pairwise identity states for a
-locus on the X chromosome. What these states are depends on the sexes of
-the involved individuals: either female-female, female-male, male-female
-or male-male. In some sense the first case is the easiest: When both are
-female the states are the same as in the autosomal case.
+As in the autosomal case, the identity coefficients on X are the
+expected proportions of the possible IBD states involving the alleles at
+a random locus (on X). The challenge is that the set of states depends
+on the individual’s sex: F/F, F/M, M/F or M/M (were F = female and M =
+male). The easiest case is F/F: When both are female, the states are
+just as in the autosomal case.
 
 Males, being hemizygous, have only 1 allele of a locus on X. Hence when
 males are involved the total number of alleles is less than 4, rendering
@@ -182,4 +215,63 @@ states to the autosomal states.
 For simplicity the output always contains 9 coefficients, but with NA’s
 in the positions of undefined states (depending on the sex combination).
 Hopefully this should all be clear from the following table:
-<img src="man/figures/jacquardStatesX.png" align="left">
+
+<img src="man/figures/jacquardStatesX.png" width="100%" style="display: block; margin: auto;" />
+
+## Pedigrees with inbred founders
+
+A unique feature of **ribd** (in fact, throughout the **ped suite**
+packages) is the support for inbred founders. This greatly expands the
+set of pedigrees we can analyse with a computer.
+
+#### Example
+
+Here is a fun example using inbred founders: *A relationship exactly
+midway (at least arithmetically speaking) between parent-child and full
+siblings.* To achieve this, we modify the pedigree `z` from above
+(half-sibs/half-cousins), giving two of the founders carefully chosen
+inbreeding coefficients.
+
+``` r
+founderInbreeding(z, id = 3) = 3 - 2*sqrt(2)
+founderInbreeding(z, id = 6) = 0.5 * sqrt(2)
+```
+
+Note that founder inbreeding is by default included in the pedigree
+plot:
+
+``` r
+# Plot pedigree
+plot(z, hatched = 7:8)
+
+# IBD triangle
+showInTriangle(kappaIBD(z, 7:8))
+```
+
+<div class="figure" style="text-align: center">
+
+<img src="man/figures/README-coef-construct-1.png" alt="A relationship with kappa = (1/8, 6/8, 1/8)" width="42%" /><img src="man/figures/README-coef-construct-2.png" alt="A relationship with kappa = (1/8, 6/8, 1/8)" width="47%" />
+<p class="caption">
+A relationship with kappa = (1/8, 6/8, 1/8)
+</p>
+
+</div>
+
+If you wonder how the weird-looking inbreeding coefficients above were
+chosen, you can check out my paper [Relatedness coefficients in
+pedigrees with inbred
+founders](https://doi.org/10.1007/s00285-020-01505-x) (J Math Biol,
+2020). In it I show that *any* point in the white region of the IBD
+triangle can be constructed as a double half cousin relationship with
+suitable founder inbreeding.
+
+The construction described in the paper is implemented in the function
+`constructPedigree()` in **ribd**. For example, the following command
+produces basically the pedigree in the previous figure:
+
+``` r
+w = constructPedigree(kappa = c(1/8, 6/8, 1/8))
+#> Result:
+#>   Paternal half cousins of degree 1; founder inbreeding 0.1716
+#>   Maternal half siblings; founder inbreeding 0.7071
+```
