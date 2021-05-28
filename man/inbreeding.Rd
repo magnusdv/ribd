@@ -5,22 +5,21 @@
 \alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
-inbreeding(x, id = NULL)
+inbreeding(x, ids = NULL)
 
-inbreedingX(x, id = NULL)
+inbreedingX(x, ids = NULL)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
 
-\item{id}{Either a single ID label, or NULL (default).}
+\item{ids}{A vector of ID labels, or NULL (default).}
 }
 \value{
-If \code{id} is NULL, the output is a named numeric vector of length
-\code{pedsize(x)}, containing the inbreeding coefficients of each pedigree
-member.  is returned.
+If \code{ids} has length 1, the inbreeding coefficient of this individual
+is returned as a single unnamed number.
 
-If \code{id} is the label of a pedigree member, the inbreeding coefficient of
-this individual is returned unnamed.
+Otherwise, the output is a named numeric vector containing the inbreeding
+coefficients of the indicated pedigree members (if \code{ids = NULL}: all).
 }
 \description{
 Compute the inbreeding coefficients of all members of a pedigree. These are
@@ -51,8 +50,8 @@ founderInbreeding(x, fa) = 1
 
 inbreeding(x)
 
-# Simpler output using the `id` argument:
-inbreeding(x, id = 6)
+# Simpler output using the `ids` argument:
+inbreeding(x, ids = 6)
 
 ### X-chromosomal inbreeding coefficients ###
 # These depend on the genders in the pedigree.
@@ -60,16 +59,16 @@ inbreeding(x, id = 6)
 
 xPat = halfSibPed(sex2 = 2) # paternal half sibs
 xPat = addChildren(xPat, father = 4, mother = 5, nch = 1, sex = 2)
-stopifnot(inbreedingX(xPat, id = 6) == 0)
+stopifnot(inbreedingX(xPat, ids = 6) == 0)
 
 # Change to maternal half sibs => coeff becomes 1/4.
 xMat = swapSex(xPat, 1)
-stopifnot(inbreedingX(xMat, id = 6) == 0.25)
+stopifnot(inbreedingX(xMat, ids = 6) == 0.25)
 
 # Example with selfing and complete inbreeding
 s = selfingPed(1)
 founderInbreeding(s, 1) = 1
-inbreeding(s, id = 2)
+inbreeding(s, ids = 2)
 
 }
 \seealso{
