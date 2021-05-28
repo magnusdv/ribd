@@ -5,12 +5,12 @@
 \alias{kappaIbdX}
 \title{IBD (kappa) coefficients}
 \usage{
-kappaIBD(x, ids = labels(x), inbredAction = 1)
+kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE)
 
 kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 }
 \arguments{
-\item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+\item{x}{A pedigree in the form of a \code{ped} object (or a list of such).}
 
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
@@ -20,6 +20,9 @@ the \code{ids} individuals are inbred. Possible values are: 0 = do nothing; 1 =
 print a warning message (default); 2 = raise an error. In the first two
 cases the coefficients are reported as \code{NA}.}
 
+\item{simplify}{Simplify the output (to a numeric of length 3) if \code{ids} has
+length 2. Default: TRUE.}
+
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
@@ -28,12 +31,12 @@ ordinary arrays.}
 \item{verbose}{A logical.}
 }
 \value{
-If \code{ids} has length 2: A numeric vector of length 3: \eqn{(\kappa0,
-  \kappa1, \kappa2)}.
+If \code{ids} has length 2 and \code{simplify = TRUE}: A numeric vector of
+length 3: \eqn{(\kappa0, \kappa1, \kappa2)}.
 
-If \code{ids} has length > 2: A data frame with one row for each pair of
-individuals, and 5 columns. The first two columns contain the ID labels,
-and columns 3-5 contain the IBD coefficients.
+Otherwise: A data frame with one row for each pair of individuals, and 5
+columns. The first two columns contain the ID labels, and columns 3-5
+contain the IBD coefficients.
 
 Unless \code{inbredAction = 2}, the coefficients of pairs involving inbred
 individuals (inbred \emph{females} in the X version) are reported as NA.

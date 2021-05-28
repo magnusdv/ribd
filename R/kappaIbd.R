@@ -34,25 +34,27 @@
 #'
 #' * Two females: As in the autosomal case.
 #'
-#' @param x A pedigree in the form of a [`pedtools::ped`] object.
+#' @param x A pedigree in the form of a `ped` object (or a list of such).
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
 #' @param inbredAction An integer telling the program what to do if either of
 #'   the `ids` individuals are inbred. Possible values are: 0 = do nothing; 1 =
 #'   print a warning message (default); 2 = raise an error. In the first two
 #'   cases the coefficients are reported as `NA`.
+#' @param simplify Simplify the output (to a numeric of length 3) if `ids` has
+#'   length 2. Default: TRUE.
 #' @param sparse A positive integer, indicating the pedigree size limit for
 #'   using sparse arrays (as implemented by the
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
 #' @param verbose A logical.
 #'
-#' @return If `ids` has length 2: A numeric vector of length 3: \eqn{(\kappa0,
-#'   \kappa1, \kappa2)}.
+#' @return If `ids` has length 2 and `simplify = TRUE`: A numeric vector of
+#'   length 3: \eqn{(\kappa0, \kappa1, \kappa2)}.
 #'
-#'   If `ids` has length > 2: A data frame with one row for each pair of
-#'   individuals, and 5 columns. The first two columns contain the ID labels,
-#'   and columns 3-5 contain the IBD coefficients.
+#'   Otherwise: A data frame with one row for each pair of individuals, and 5
+#'   columns. The first two columns contain the ID labels, and columns 3-5
+#'   contain the IBD coefficients.
 #'
 #'   Unless `inbredAction = 2`, the coefficients of pairs involving inbred
 #'   individuals (inbred *females* in the X version) are reported as NA.
@@ -84,8 +86,34 @@
 #' stopifnot(identical(k, c(0, 1, 0)))
 #'
 #' @export
-kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
-  if(!is.ped(x)) stop2("Input is not a `ped` object")
+kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE) {
+
+  if(is.pedList(x)) {
+    ids = unlist(ids)
+    compNr = getComponent(x, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
+    compNr = unique.default(compNr)
+
+    if(length(compNr) == 1)
+      return(kappaIBD(x[[compNr]], ids, inbredAction = inbredAction))
+
+    x = x[compNr]
+    nPed = length(x)
+    idsComp = lapply(labels(x), intersect, ids)
+
+    # Within-component coefficients
+    kapComp = lapply(which(lengths(idsComp) > 1), function(i)
+      kappaIBD(x[[i]], idsComp[[i]], inbredAction = inbredAction, simplify = FALSE))
+    kapTot = do.call(rbind, kapComp)
+
+    # Between-components
+    for(i in seq_len(nPed - 1)) for(j in seq(i+1, nPed)) for(a in idsComp[[i]])
+      kapTot = rbind(kapTot, data.frame(id1 = a, id2 = idsComp[[j]],
+                                        kappa0 = 1, kappa1 = 0, kappa2 = 0,
+                                        stringsAsFactors = FALSE))
+    return(kapTot)
+  }
+  else if(!is.ped(x))
+    stop2("Input is not a `ped` object")
 
   labs = labels(x)
   ids = as.character(ids)
@@ -138,8 +166,9 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1) {
     res[nn_rows, 3:5] = cbind(k0, k1, k2)
   }
 
-  if(length(ids) == 2)
-    return(as.numeric(res[1, 3:5]))
+  # Simplify output for a single pair
+  if(simplify && length(ids) == 2)
+    res = as.numeric(res[1, 3:5])
 
   res
 }
