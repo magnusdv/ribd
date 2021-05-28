@@ -5,14 +5,16 @@
 \alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
-inbreeding(x, ids = NULL)
+inbreeding(x, ids = NULL, id = NULL)
 
-inbreedingX(x, ids = NULL)
+inbreedingX(x, ids = NULL, id = NULL)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
 
 \item{ids}{A vector of ID labels, or NULL (default).}
+
+\item{id}{Deprecated; use \code{ids} instead.}
 }
 \value{
 If \code{ids} has length 1, the inbreeding coefficient of this individual

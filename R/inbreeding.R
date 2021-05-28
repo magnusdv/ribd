@@ -18,6 +18,8 @@
 #'
 #' @param x A pedigree, in the form of a [`pedtools::ped`] object.
 #' @param ids A vector of ID labels, or NULL (default).
+#' @param id Deprecated; use `ids` instead.
+#'
 #' @return If `ids` has length 1, the inbreeding coefficient of this individual
 #'   is returned as a single unnamed number.
 #'
@@ -57,7 +59,11 @@
 #' inbreeding(s, ids = 2)
 #'
 #' @export
-inbreeding = function(x, ids = NULL) {
+inbreeding = function(x, ids = NULL, id = NULL) {
+  if(!is.null(id)) {
+    message("Parameter `id` has been renamed to `ids`")
+    ids = id
+  }
 
   if(length(ids) == 1) {
 
@@ -75,7 +81,7 @@ inbreeding = function(x, ids = NULL) {
   inb = 2 * diag(kin) - 1
 
   if(!is.null(ids))
-    inb = inb[ids]
+    inb = inb[as.character(ids)]
 
   inb
 }
@@ -83,7 +89,11 @@ inbreeding = function(x, ids = NULL) {
 
 #' @rdname inbreeding
 #' @export
-inbreedingX = function(x, ids = NULL) {
+inbreedingX = function(x, ids = NULL, id = NULL) {
+  if(!is.null(id)) {
+    message("Parameter `id` has been renamed to `ids`")
+    ids = id
+  }
 
   if(length(ids) == 1) {
 
@@ -101,7 +111,7 @@ inbreedingX = function(x, ids = NULL) {
   inb = 2 * diag(kin) - 1
 
   if(!is.null(ids))
-    inb = inb[ids]
+    inb = inb[as.character(ids)]
 
   inb
 }
