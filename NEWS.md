@@ -1,8 +1,17 @@
+# ribd 1.3.0
+
+* The README has been rewritten and substantially expanded.
+
+* `kappaIBD()` now accepts ped lists as input.
+
+* In `inbreeding()` the argument `id` is renamed to `ids` and accepts vectors of length > 1.
+
+
 # ribd 1.2.0
 
 * New function `ibdDraw()` for illustrating IBD patterns in a pedigree. IBD alleles are represented as coloured dots or as letters.
 
-* New function `ibdTriangle()`, which replaces `forrel::IBDtriangle()`
+* New function `ibdTriangle()`, which replaces `forrel::IBDtriangle()`.
 
 * `constructPedigree()` now gives a textual description of the (usually double-half-cousin-like) pedigree it produces.
 
