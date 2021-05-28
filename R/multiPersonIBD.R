@@ -79,7 +79,7 @@ multiPersonIBD = function(x, ids, complete = FALSE, verbose = FALSE) {
     stop2("length(ids) > 6: Not implemented yet")
 
   # Stop if any of `ids` are inbred
-  inb = inbreeding(x)[ids]
+  inb = inbreeding(x, ids)
   if(any(isInbred <- inb > .Machine$double.eps)) {
     message(paste0(sprintf(" Individual '%s' is inbred (f = %g)",
                            ids[isInbred], inb[isInbred]), collapse = "\n"))
