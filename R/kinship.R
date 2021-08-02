@@ -35,14 +35,19 @@
 #'
 #' @export
 kinship = function(x, ids = NULL) {
+
+  if(singlepair <- !is.null(ids)) {
+    if(length(ids) != 2)
+      stop2("When `ids` is not NULL, it must be a vector of length 2")
+    IDS = internalID(x, ids)
+  }
+
   if(is.pedList(x)) {
 
-    if(length(ids) == 2) {
-      compNr = getComponent(x, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
-      if(compNr[1] != compNr[2])
-        return(0)
-      else
-        return(kinship(x[[compNr[1]]], ids))
+    if(singlepair) {  # Note: Here IDS is a data frame with cols id, comp, int
+      comp = IDS$comp[1]
+      kin = if(comp == IDS$comp[2]) kinship(x[[comp]], ids) else 0
+      return(kin)
     }
 
     # Initialise big matrix
@@ -61,6 +66,7 @@ kinship = function(x, ids = NULL) {
   else if(!is.ped(x))
     stop2("First argument must be a `ped` object or a list of such")
 
+
   # Ensure standard order of pedigree members
   standardOrder = hasParentsBeforeChildren(x)
   if(!standardOrder) {
@@ -68,11 +74,6 @@ kinship = function(x, ids = NULL) {
     x = parentsBeforeChildren(x)
   }
 
-  if(singlepair <- !is.null(ids)) {
-    if(length(ids) != 2)
-      stop2("When `ids` is not NULL, it must be a vector of length 2")
-    IDS = internalID(x, ids)
-  }
 
   FIDX = x$FIDX
   MIDX = x$MIDX

@@ -92,4 +92,8 @@ test_that("kinship() works in pedlist", {
 
   expect_equal(kinship(x, 2:3), 0.25)
   expect_equal(kinship(x, 3:4), 0)
+
+  expect_error(kinship(x, 3:5), "When `ids` is not NULL, it must be a vector of length 2")
+  expect_error(kinship(x, 4:5), "Unknown ID label: 5")
+
 })
