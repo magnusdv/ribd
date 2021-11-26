@@ -1,3 +1,8 @@
+# ribd 1.3.1
+
+* `kinship()` now accepts a list of pedigrees as input.
+
+
 # ribd 1.3.0
 
 * The README has been rewritten and substantially expanded.
