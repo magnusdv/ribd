@@ -24,16 +24,16 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The goal of `ribd` is to compute various coefficients of relatedness and identity-by-descent (IBD) between pedigree members. It extends the `pedtools` package which provides useful utilities for pedigree construction and manipulation.
+The goal of **ribd** is to compute various coefficients of relatedness and identity-by-descent (IBD) between pedigree members. It extends the `pedtools` package which provides useful utilities for pedigree construction and manipulation.
 
-The main functions in `ribd` are the following:
+The main functions in **ribd** are the following, all of which support both autosomal and X-chromosomal modes:
 
-* `kinship()`, `kinshipX()` : Kinship coefficients
-* `inbreeding()`, `inbreedingX()` : Inbreeding coefficients
-* `kappaIBD()`, `kappaIBDX()` : IBD coefficients `kappa = (k0, k1, k2)` (noninbred individuals only)
-* `condensedIdentity()`, `condensedIdentityX()` : Jacquard's condensed identity coefficients
+* `kinship()` : Kinship coefficients
+* `inbreeding()` : Inbreeding coefficients
+* `kappaIBD()` : IBD coefficients `kappa = (k0, k1, k2)` between noninbred individuals
+* `condensedIdentity()` : Jacquard's condensed identity coefficients
 
-A unique feature of `ribd` is the ability to handle pedigrees with inbred founders in all of the above calculations. More about this below!
+A unique feature of **ribd** is the ability to handle pedigrees with inbred founders in all of the above calculations. More about this below!
 
 The package also computes a variety of lesser-known pedigree coefficients:
 
@@ -46,7 +46,7 @@ The package also computes a variety of lesser-known pedigree coefficients:
 
 
 ## Installation
-To get the current official version of `ribd`, install from CRAN as follows:
+To get the current official version of **ribd**, install from CRAN as follows:
 ```{r, eval = FALSE}
 install.packages("ribd")
 ```
@@ -79,22 +79,20 @@ x = cousinPed(1, child = TRUE)
 plot(x)
 
 # Inbreeding coefficient of the child
-inbreeding(x, id = 9)
+inbreeding(x, ids = 9)
 ```
 
 #### Kinship coefficient 
-The kinship coefficient between two cousins (in the pedigree above) should equal the inbreeding coefficient of their child:
+By theory, the above inbreeding coefficient should equal the *kinship coefficient* between the parents, i.e., the two cousins `7` and `8`:
 ```{r}
 kinship(x, ids = 7:8)
 ```
 As expected, the result was again 1/16.
 
-#### IBD coefficients and the IBD triangle
+#### Kappa coefficients and the IBD triangle
 For a pair of noninbred individuals, the three `kappa` coefficients are defined as the probability that they have exactly 0, 1 or 2 alleles IBD, respectively, at a random autosomal locus. For example, for a pair of full siblings, this works out to be 1/4, 1/2 and 1/4, respectively.
 
 Since the three kappa's always sum to 1, any two of them are sufficient, forming the coordinates of a point in the plane. This gives rise to the *IBD triangle*, which is a useful tools for visualising (noninbred) relationships. The implementation in **ribd** uses `kappa0` on the first axis and `kappa2` on the second. In the example below, we place all pairs of pedigree members in the triangle.
-
-
 
 We validate this with the `kappaIBD()` function of **ribd**:
 
