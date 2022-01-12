@@ -5,7 +5,7 @@
 \alias{kappaIbdX}
 \title{IBD (kappa) coefficients}
 \usage{
-kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE)
+kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE)
 
 kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 }
@@ -23,6 +23,9 @@ cases the coefficients are reported as \code{NA}.}
 \item{simplify}{Simplify the output (to a numeric of length 3) if \code{ids} has
 length 2. Default: TRUE.}
 
+\item{Xchrom}{A logical, indicating if the autosomal (default) or
+X-chromosomal kappa coefficients should be computed.}
+
 \item{sparse}{A positive integer, indicating the pedigree size limit for
 using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
@@ -39,22 +42,24 @@ columns. The first two columns contain the ID labels, and columns 3-5
 contain the IBD coefficients.
 
 Unless \code{inbredAction = 2}, the coefficients of pairs involving inbred
-individuals (inbred \emph{females} in the X version) are reported as NA.
-Furthermore, the X chromosomal \eqn{\kappa2} is NA whenever at least one of
+individuals (X-inbred females if \code{Xchrom = T}) are reported as NA.
+Furthermore, the X-chromosomal \eqn{\kappa2} is NA whenever at least one of
 the two individuals is male.
 }
 \description{
 Computes the three IBD coefficients summarising the relationship between two
 non-inbred individuals. Both autosomal and X chromosomal versions are
-implemented.
+implemented. The pedigree founders (other than the individuals in question)
+are allowed to be inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set
+this up, and see Examples below.
 }
 \details{
 For non-inbred individuals a and b, their autosomal IBD coefficients
 \eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
-P(a and b share i alleles IBD at a random autosomal locus)}
+P(a and b share exactly i alleles IBD at a random autosomal locus)}
 
 The autosomal kappa coefficients are computed from the kinship coefficients.
-When a and b are both nonfounders, the following formulas are well-known:
+When a and b are both nonfounders, the following formulas hold:
 \itemize{
 \item \eqn{\kappa2 = \phi_MM * \phi_FF + \phi_MF * \phi_FM}
 \item \eqn{\kappa1 = 4 * \phi_ab - 2 * \kappa2}
@@ -65,27 +70,29 @@ Here \eqn{\phi_MM} denotes the kinship coefficient between the mothers of a
 and b, and so on. If either a or b is a founder, then \eqn{\kappa2 = 0},
 while the other two formulas remain as above.
 
-The X chromosomal IBD coefficients are defined as in the autosomal case, with
-the exception that \eqn{\kappa2} is undefined when at least one of the two
-individuals is male. Hence the computation is greatly simplified when males
-are involved. Denoting the standard kinship coefficient by \eqn{\phi}, the
-formulas are:
+The X-chromosomal IBD coefficients are defined similarly to the autosomal
+case. Here \eqn{\kappa2} is undefined when one or both individuals are male,
+which greatly simplifies the calculations when males are involved. The
+formulas are (with \eqn{\phi_ab} referring to the X-chromosomal kinship
+coefficient):
 \itemize{
-\item Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi, \phi, NA)}
-\item One male, one female: \eqn{(\kappa0, \kappa1, \kappa2) = (1-2*\phi, 2*\phi,
-NA)}
-\item Two females: As in the autosomal case.
+\item Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi_ab, \phi_ab, NA)}
+\item One male, one female: \eqn{(\kappa0, \kappa1, \kappa2) = (1-2*\phi_ab,
+2*\phi_ab, NA)}
+\item Two females: Similar formulas as in the autosomal case.
 }
 }
 \examples{
 ### Siblings
 x = nuclearPed(2)
+kappaIBD(x)
+
 k = kappaIBD(x, 3:4)
 stopifnot(identical(k, c(.25, .5, .25)))
 
 ### Quad half first cousins
 x = quadHalfFirstCousins()
-k = kappaIBD(x, leaves(x))
+k = kappaIBD(x, ids = leaves(x))
 stopifnot(identical(k, c(17/32, 14/32, 1/32)))
 
 ### Paternal half brothers with 100\% inbred father
@@ -99,6 +106,10 @@ founderInbreeding(x, fou) = 1
 
 k = kappaIBD(x, ids)
 stopifnot(identical(k, c(0, 1, 0)))
+
+### X-chromosomal kappa
+y = nuclearPed(2, sex = 2)
+kappaIBD(y, Xchrom = TRUE)
 
 }
 \seealso{

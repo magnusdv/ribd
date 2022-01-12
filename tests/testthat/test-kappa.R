@@ -7,7 +7,7 @@ test_that("kappaIBD() deals sensibly with inbred individuals", {
 
   # action = 1
   expect_identical(kappaIBD(x, 1:2, inbredAction = 1), rep(NA_real_, 3))
-  expect_message(kappaIBD(x, 1:2, inbredAction = 1), "Warning:")
+  expect_message(kappaIBD(x, 1:2, inbredAction = 1), "inbred")
 
   # action = 2
   expect_error(kappaIBD(x, 1:2, inbredAction = 2), "Kappa coefficients are only")
