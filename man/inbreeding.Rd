@@ -5,16 +5,17 @@
 \alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
-inbreeding(x, ids = NULL, id = NULL)
+inbreeding(x, ids = NULL, Xchrom = FALSE)
 
-inbreedingX(x, ids = NULL, id = NULL)
+inbreedingX(x, ids = NULL)
 }
 \arguments{
-\item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
+\item{x}{A pedigree in the form of a \code{ped} object, or a list of such.}
 
 \item{ids}{A vector of ID labels, or NULL (default).}
 
-\item{id}{Deprecated; use \code{ids} instead.}
+\item{Xchrom}{A logical, indicating if the autosomal (default) or
+X-chromosomal inbreeding coefficients should be computed.}
 }
 \value{
 If \code{ids} has length 1, the inbreeding coefficient of this individual
@@ -24,53 +25,62 @@ Otherwise, the output is a named numeric vector containing the inbreeding
 coefficients of the indicated pedigree members (if \code{ids = NULL}: all).
 }
 \description{
-Compute the inbreeding coefficients of all members of a pedigree. These are
-simple wrappers of \code{\link[=kinship]{kinship()}} and \code{\link[=kinshipX]{kinshipX()}}. The founders may be inbred;
-see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up.
+Compute the inbreeding coefficients of all members of a pedigree. Both
+autosomal and X-chromosomal coefficients are supported. This function is a
+simple wrapper of \code{\link[=kinship]{kinship()}}. Note that pedigree founders are allowed to be
+inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this up, and see
+Examples below.
 }
 \details{
 The autosomal inbreeding coefficient of a pedigree member is defined as the
 probability that, at a random autosomal locus, the two alleles carried by the
 member are identical by descent relative to the pedigree. It follows from the
-definition that the inbreeding coefficient of a member equals the kinship
-coefficient of the parents.
+definition that the inbreeding coefficient of a non-founder equals the
+kinship coefficient of the parents.
 
-The X chromosomal inbreeding coefficient of an female member is defined
-similarly to the autosomal case above. For males is it always 1.
+The implementation here uses \code{\link[=kinship]{kinship()}} to compute the kinship matrix, and
+computes the inbreeding coefficients from the diagonal, by the formula
+\deqn{f_a = 2*\phi_{aa} - 1.}{f_a = 2*phi_aa - 1.}
 
-The inbreeding coefficients are computed from the diagonal of the kinship
-matrix, by the formula \deqn{f_a = 2*\phi_{aa} - 1.}{f_a = 2*phi_aa - 1.}
+The X chromosomal inbreeding coefficient of females are defined (and
+computed) similarly to the autosomal case above. For males is it always
+defined as 1.
 }
 \examples{
 # Child of half siblings: f = 1/8
 x = halfCousinPed(0, child = TRUE)
-inbreeding(x)
 
-# If the father is 100\% inbred, the inbreeding coeff of the child doubles
-fa = commonAncestors(x, 4:5) # robust to label change
-founderInbreeding(x, fa) = 1
-
+# Inbreeding vector
 inbreeding(x)
 
 # Simpler output using the `ids` argument:
 inbreeding(x, ids = 6)
 
-### X-chromosomal inbreeding coefficients ###
-# These depend on the genders in the pedigree.
-# To exemplify, we consider a child of half siblings.
 
-xPat = halfSibPed(sex2 = 2) # paternal half sibs
-xPat = addChildren(xPat, father = 4, mother = 5, nch = 1, sex = 2)
-stopifnot(inbreedingX(xPat, ids = 6) == 0)
+### X-chromosomal inbreeding ###
 
-# Change to maternal half sibs => coeff becomes 1/4.
-xMat = swapSex(xPat, 1)
-stopifnot(inbreedingX(xMat, ids = 6) == 0.25)
+# Males have inbreeding coefficient 1
+stopifnot(inbreeding(x, ids = 6, Xchrom = TRUE) == 1)
+
+y1 = swapSex(x, ids = 6)  # female child
+stopifnot(inbreeding(y1, ids = 6, Xchrom = TRUE) == 0)
+
+y2 = swapSex(y1, ids = 2) # female ancestor
+stopifnot(inbreeding(y2, ids = 6, Xchrom = TRUE) == 0.25)
+
+
+### Inbred founder ###
+
+# Mother 100\% inbred
+founderInbreeding(x, ids = 2) = 1
+
+inbreeding(x)
+
 
 # Example with selfing and complete inbreeding
 s = selfingPed(1)
 founderInbreeding(s, 1) = 1
-inbreeding(s, ids = 2)
+stopifnot(inbreeding(s, ids = 2) == 1)
 
 }
 \seealso{

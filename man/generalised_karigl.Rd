@@ -77,6 +77,6 @@ stopifnot(phi3 == 1/16, phi3_inbred == 1/8 + 1/32)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}, \code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}},
+\code{\link[=kinship]{kinship()}}, \code{\link[=condensedIdentity]{condensedIdentity()}},
 \code{\link[=condensedIdentityX]{condensedIdentityX()}}
 }

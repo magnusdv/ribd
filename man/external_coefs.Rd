@@ -3,20 +3,14 @@
 \name{external_coefs}
 \alias{external_coefs}
 \alias{kinship2_kinship}
-\alias{kinship2_kinshipX}
 \alias{kinship2_inbreeding}
-\alias{kinship2_inbreedingX}
 \alias{idcoefs}
 \alias{idcoefs2}
 \title{Relatedness coefficients by other programs}
 \usage{
-kinship2_kinship(x, ids = NULL)
+kinship2_kinship(x, ids = NULL, Xchrom = FALSE)
 
-kinship2_kinshipX(x, ids = NULL)
-
-kinship2_inbreeding(x)
-
-kinship2_inbreedingX(x)
+kinship2_inbreeding(x, Xchrom = FALSE)
 
 idcoefs(x, ids)
 
@@ -27,6 +21,9 @@ idcoefs2(x, ids, verbose = FALSE, cleanup = TRUE)
 
 \item{ids}{A integer vector of length 2.}
 
+\item{Xchrom}{A logical, indicating if the autosomal (default) or
+X-chromosomal coefficients should be computed.}
+
 \item{verbose}{A logical, indicating if messages from IdCoefs should be
 printed.}
 
@@ -34,14 +31,14 @@ printed.}
 the IdCoefs run are deleted automatically.}
 }
 \value{
-For \code{kinship2_inbreeding()} and \code{kinship2_inbreedingX()}, a named
-numerical vector with the inbreeding coefficients and ID labels as names.
+For \code{kinship2_inbreeding()}, a
+numerical vector with inbreeding coefficients, named with ID labels.
 
-For \code{kinship2_kinship()} and \code{kinship2_kinshipX()}, either a single numeric
+For \code{kinship2_kinship()}, either a single numeric
 (if \code{ids} is a pair of pedigree members) or the whole kinship matrix, with
 the ID labels as dimnames.
 
-For \code{jaquard()} and \code{jaquard2()}, a numerical vector of length 9 (in the
+For \code{idcoefs()} and \code{idcoefs2()}, a numerical vector of length 9 (in the
 standard order of Jacquard's condensed identity coefficients).
 }
 \description{
@@ -49,11 +46,8 @@ Wrappers for functions in other packages or external programs, computing
 various relatedness coefficients.
 }
 \details{
-\code{kinship2_inbreeding()} and \code{kinship2_kinship()} are wrappers of
-\code{\link[kinship2:kinship]{kinship2::kinship()}} with the parameter \code{chrtype = "autosome"}.
-
-Similarly ,\code{kinship2_inbreedingX()} and \code{kinship2_kinshipX()} wrap
-\code{\link[kinship2:kinship]{kinship2::kinship()}} using \code{chrtype = "x"}.
+\code{kinship2_kinship()} and \code{kinship2_inbreeding()} are wrappers of
+\code{\link[kinship2:kinship]{kinship2::kinship()}}.
 
 \code{idcoefs()} wraps \code{\link[identity:identity.coefs]{identity::identity.coefs()}}, which is an R interface for
 the C program \code{IdCoefs} written by Mark Abney (2009). The \code{identity.coefs()}
@@ -67,17 +61,39 @@ calling \code{IdCoefs} via \code{\link[=system]{system()}}.
 }
 \examples{
 # A random pedigree with 2 founders and 5 matings
-p = pedtools::randomPed(g = 5, founders = 2, seed = 111)
+p = pedtools::randomPed(g = 5, founders = 2, seed = 123)
 
-# Check that ribd agrees with kinship2 package
-kinship_k2 = kinship2_kinship(p)
-kinship_ribd = kinship(p)
-stopifnot(identical(kinship_k2, kinship_ribd))
+### Kinship matrix
 
-# Check on X also
-kinshipX_k2 = kinship2_kinshipX(p)
-kinshipX_ribd = kinshipX(p)
-stopifnot(identical(kinshipX_k2, kinshipX_ribd))
+# Autosomal: Check that ribd agrees with kinship2
+stopifnot(identical(
+  kinship(p),          # ribd
+  kinship2_kinship(p)  # kinship2
+
+))
+
+# X chromosomal kinship
+stopifnot(identical(
+  kinship(p, Xchrom = TRUE),          # ribd
+  kinship2_kinship(p, Xchrom = TRUE)  # kinship2
+))
+
+
+### Inbreeding coefficients
+
+# Autosomal
+stopifnot(identical(
+  inbreeding(p),          # ribd
+  kinship2_inbreeding(p)  # kinship2
+
+))
+
+# X chromosomal
+stopifnot(identical(
+  inbreeding(p, Xchrom = TRUE),          # ribd
+  kinship2_inbreeding(p, Xchrom = TRUE)  # kinship2
+))
+
 
 }
 \references{

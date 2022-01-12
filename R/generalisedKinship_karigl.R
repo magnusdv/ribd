@@ -25,7 +25,7 @@
 #'
 #' @return A numeric of length 1.
 #'
-#' @seealso [kinship()], [kinshipX()], [condensedIdentity()],
+#' @seealso [kinship()], [condensedIdentity()],
 #'   [condensedIdentityX()]
 #' @examples
 #' # Generalised kinship between three siblings

@@ -61,5 +61,5 @@ condensedIdentityX(x_brothers, ids = 5:6)
 
 }
 \seealso{
-\code{\link[=kinshipX]{kinshipX()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
+\code{\link[=kinship]{kinship()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
 }

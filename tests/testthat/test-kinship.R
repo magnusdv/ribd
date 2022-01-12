@@ -2,7 +2,7 @@
 test_that("kinship coefficients are the same with ribd and kinship2", {
   x = randomPed(10, founders=2, seed=1234)
   expect_identical(kinship(x), kinship2_kinship(x))
-  expect_identical(kinshipX(x), kinship2_kinshipX(x))
+  expect_identical(kinship(x, Xchrom = T), kinship2_kinship(x, Xchrom = T))
 })
 
 test_that("kinship() gives same result with and without `ids`", {
@@ -71,12 +71,19 @@ test_that("X-chrom inbreeding is computed correctly", {
   child = leaves(x)
   fou = commonAncestors(x, parents(x, child)) # robust
 
-  expect_equal(inbreedingX(x, ids = child), 0)
-  expect_equal(inbreedingX(xMat, ids = child), 0.25)
+  # Always 1 for males
+  expect_equal(inbreeding(x, ids = child, Xchrom = T), 1)
+  expect_equal(inbreeding(xMat, ids = child, Xchrom = T), 1)
+
+  # Female child
+  x = swapSex(x, child)
+  xMat = swapSex(xMat, child)
+  expect_equal(inbreeding(x, ids = child, Xchrom = T), 0)
+  expect_equal(inbreeding(xMat, ids = child, Xchrom = T), 0.25)
 
   # With founder inbreeding
   founderInbreeding(xMat, fou, chrom = "x") = 1
-  expect_equal(inbreedingX(xMat, id = 6), 0.5)
+  expect_equal(inbreeding(xMat, id = 6, Xchrom = T), 0.5)
 })
 
 

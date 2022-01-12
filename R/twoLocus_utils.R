@@ -263,7 +263,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   mem$anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly
-  mem$k1 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
+  mem$k1 = kinship(ped, Xchrom = chromType == "x")
 
   # Storage for two-locus kinship values
   mem$k2 = list()

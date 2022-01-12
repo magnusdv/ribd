@@ -278,7 +278,7 @@ initialiseGKMemo = function(ped, chromType = "autosomal", counters = NULL) {
   mem$anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly
-  mem$k1 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
+  mem$k1 = kinship(ped, Xchrom = chromType == "x")
 
   # Storage for result values
   mem$PHI = list()

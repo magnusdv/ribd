@@ -29,7 +29,7 @@
 #'   individuals, and 11 columns. The first two columns contain the ID labels,
 #'   and columns 3-11 contain the condensed identity coefficients.
 #'
-#' @seealso [kinshipX()], [condensedIdentity()], [pedtools::founderInbreeding()]
+#' @seealso [kinship()], [condensedIdentity()], [pedtools::founderInbreeding()]
 #'
 #' @examples
 #'

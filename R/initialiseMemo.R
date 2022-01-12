@@ -16,7 +16,8 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   anc = hasCommonAncestor(ped)
 
   # Compute kinship matrix directly
-  KIN2 = switch(chromType, autosomal = kinship(ped), x = kinshipX(ped))
+  KIN2 = kinship(ped, Xchrom = chromType == "x")
+
 
   maxId = max(ids)
   if(is.na(sparse)) sparse = 20
