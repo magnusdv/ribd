@@ -39,7 +39,7 @@
 #' @references Abney, Mark (2009). _A graphical algorithm for fast computation
 #'   of identity coefficients and generalized kinship coefficients._
 #'   Bioinformatics, 25, 1561-1563.
-#'   <http://home.uchicago.edu/~abney/abney_web/Software.html>
+#'   <https://home.uchicago.edu/~abney/abney_web/Software.html>
 #'
 #' @examples
 #' # A random pedigree with 2 founders and 5 matings

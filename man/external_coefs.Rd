@@ -84,7 +84,7 @@ stopifnot(identical(kinshipX_k2, kinshipX_ribd))
 Abney, Mark (2009). \emph{A graphical algorithm for fast computation
 of identity coefficients and generalized kinship coefficients.}
 Bioinformatics, 25, 1561-1563.
-\url{http://home.uchicago.edu/~abney/abney_web/Software.html}
+\url{https://home.uchicago.edu/~abney/abney_web/Software.html}
 }
 \seealso{
 \code{\link[kinship2:kinship]{kinship2::kinship()}}, \code{\link[identity:identity.coefs]{identity::identity.coefs()}}
