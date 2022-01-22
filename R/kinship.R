@@ -42,15 +42,14 @@
 #' @export
 kinship = function(x, ids = NULL, Xchrom = FALSE) {
 
-  if(singlepair <- !is.null(ids)) {
-    if(length(ids) != 2)
-      stop2("When `ids` is not NULL, it must be a vector of length 2")
-    IDS = internalID(x, ids)
-  }
+  singlepair = !is.null(ids)
+  if(singlepair && length(ids) != 2)
+    stop2("When `ids` is not NULL, it must be a vector of length 2")
 
   if(is.pedList(x)) {
 
     if(singlepair) {  # Note: Here IDS is a data frame with cols id, comp, int
+      IDS = internalID(x, ids)
       comp = IDS$comp[1]
       kin = if(comp == IDS$comp[2]) kinship(x[[comp]], ids, Xchrom = Xchrom) else 0
       return(kin)
@@ -86,6 +85,8 @@ kinship = function(x, ids = NULL, Xchrom = FALSE) {
     x = parentsBeforeChildren(x)
   }
 
+  if(singlepair)
+    IDS = internalID(x, ids) # internal index after parentsBeforeCh!
 
   FIDX = x$FIDX
   MIDX = x$MIDX

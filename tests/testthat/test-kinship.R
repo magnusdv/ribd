@@ -10,7 +10,8 @@ test_that("kinship() gives same result with and without `ids`", {
   expect_identical(kinship(x, ids = 9:10), kinship(x)[9,10])
   expect_identical(kinship(x, ids = c(1,1)), kinship(x)[1,1])
 
-  y = reorderPed(x, sample(10))
+  set.seed(123)
+  y = reorderPed(x, sample(10, ))
   expect_identical(kinship(y, ids = 9:10), kinship(y)["9","10"])
   expect_identical(kinship(y, ids = c(1,1)), kinship(y)["1","1"])
 })
