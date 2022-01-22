@@ -288,8 +288,8 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchro
 kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
   message("This function is deprecated. Use `kappaIBD(..., Xchrom = TRUE)` instead.")
 
-  # TODO!!: Simplify this as in the autosomal case
-  if(!is.ped(x)) stop2("Input is not a `ped` object")
+  if(!is.ped(x))
+    stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
