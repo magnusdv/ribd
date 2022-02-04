@@ -11,23 +11,24 @@
 #' case. When males are involved, the two individuals have less than 4 alleles,
 #' hence the states differ from the autosomal ones. However, to avoid drawing
 #' (and learning) new pictures we re-use the autosomal states by using the
-#' following simple rule: **Replace any hemizygous male allele with a pair
-#' of autozygous alleles**. In this way each X state corresponds to a unique
+#' following simple rule: **Replace any hemizygous male allele with a pair of
+#' autozygous alleles**. In this way each X state corresponds to a unique
 #' autosomal state.
 #'
-#' For simplicity the output always contains 9 coefficients, but with NA's in the
-#' positions of undefined states (depending on the sex combination). The README
-#' file on the GitHub home page of ribd has a table illustrating this.
+#' For simplicity the output always contains 9 coefficients, but with NA's in
+#' the positions of undefined states (depending on the sex combination). The
+#' README file on the GitHub home page of ribd has a table illustrating this.
 #'
 #' @inheritParams condensedIdentity
 #'
-#' @return If `ids` has length 2: A vector of length 9, containing the condensed
-#'   identity coefficients. If any of the individuals are male, certain states
-#'   are undefined, and the corresponding coefficients are NA. (See Details.)
+#' @return If `ids` has length 2 and `simplify = TRUE`: A vector of length 9,
+#'   containing the condensed identity coefficients. If any of the individuals
+#'   are male, certain states are undefined, and the corresponding coefficients
+#'   are NA. (See Details.)
 #'
-#'   If `ids` has length > 2: A data frame with one row for each pair of
-#'   individuals, and 11 columns. The first two columns contain the ID labels,
-#'   and columns 3-11 contain the condensed identity coefficients.
+#'   Otherwise, a data frame with 11 columns and one row for each pair of
+#'   individuals. The first two columns contain the ID labels, and columns 3-11
+#'   contain the condensed identity coefficients.
 #'
 #' @seealso [kinship()], [condensedIdentity()], [pedtools::founderInbreeding()]
 #'
@@ -43,7 +44,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
+condensedIdentityX = function(x, ids, sparse = NA, simplify = TRUE, verbose = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
@@ -94,7 +95,13 @@ condensedIdentityX = function(x, ids, sparse = NA, verbose = FALSE) {
     if(verbose)
       printCounts(mem)
 
-    return(j)
+    if(simplify)
+      return(j)
+    else {
+      res = data.frame(ids[1], ids[2], t.default(j))
+      names(res) = c("id1", "id2", paste0("D", 1:9))
+      return(res)
+    }
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.

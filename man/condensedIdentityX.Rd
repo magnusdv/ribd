@@ -4,7 +4,7 @@
 \alias{condensedIdentityX}
 \title{Identity coefficients on X}
 \usage{
-condensedIdentityX(x, ids, sparse = NA, verbose = FALSE)
+condensedIdentityX(x, ids, sparse = NA, simplify = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
@@ -17,16 +17,20 @@ using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
 
+\item{simplify}{Simplify the output (to a numeric of length 9) if \code{ids} has
+length 2. Default: TRUE.}
+
 \item{verbose}{A logical}
 }
 \value{
-If \code{ids} has length 2: A vector of length 9, containing the condensed
-identity coefficients. If any of the individuals are male, certain states
-are undefined, and the corresponding coefficients are NA. (See Details.)
+If \code{ids} has length 2 and \code{simplify = TRUE}: A vector of length 9,
+containing the condensed identity coefficients. If any of the individuals
+are male, certain states are undefined, and the corresponding coefficients
+are NA. (See Details.)
 
-If \code{ids} has length > 2: A data frame with one row for each pair of
-individuals, and 11 columns. The first two columns contain the ID labels,
-and columns 3-11 contain the condensed identity coefficients.
+Otherwise, a data frame with 11 columns and one row for each pair of
+individuals. The first two columns contain the ID labels, and columns 3-11
+contain the condensed identity coefficients.
 }
 \description{
 Computes the X chromosomal condensed identity coefficients of a pairwise
@@ -41,13 +45,13 @@ individuals. If both are female, the states are the same as in the autosomal
 case. When males are involved, the two individuals have less than 4 alleles,
 hence the states differ from the autosomal ones. However, to avoid drawing
 (and learning) new pictures we re-use the autosomal states by using the
-following simple rule: \strong{Replace any hemizygous male allele with a pair
-of autozygous alleles}. In this way each X state corresponds to a unique
+following simple rule: \strong{Replace any hemizygous male allele with a pair of
+autozygous alleles}. In this way each X state corresponds to a unique
 autosomal state.
 
-For simplicity the output always contains 9 coefficients, but with NA's in the
-positions of undefined states (depending on the sex combination). The README
-file on the GitHub home page of ribd has a table illustrating this.
+For simplicity the output always contains 9 coefficients, but with NA's in
+the positions of undefined states (depending on the sex combination). The
+README file on the GitHub home page of ribd has a table illustrating this.
 }
 \examples{
 

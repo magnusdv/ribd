@@ -14,18 +14,20 @@
 #'   using sparse arrays (as implemented by the
 #'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
 #'   ordinary arrays.
+#' @param simplify Simplify the output (to a numeric of length 9) if `ids` has
+#'   length 2. Default: TRUE.
 #' @param verbose A logical
 #' @param checkAnswer A logical. If TRUE, and the `identity` package is
 #'   installed, the result is checked against the output of
 #'   [identity::identity.coefs()]. This option is ignored if any of the founders
 #'   are inbred, or if `ids` has length greater than 2.
 #'
-#' @return If `ids` has length 2: A vector of length 9, containing the condensed
-#'   identity coefficients.
+#' @return If `ids` has length 2 and `simplify = TRUE`: A vector of length 9,
+#'   containing the condensed identity coefficients.
 #'
-#'   If `ids` has length > 2: A data frame with one row for each pair of
-#'   individuals, and 11 columns. The first two columns contain the ID labels,
-#'   and columns 3-11 contain the condensed identity coefficients.
+#'   Otherwise, a data frame with 11 columns and one row for each pair of
+#'   individuals. The first two columns contain the ID labels, and columns 3-11
+#'   contain the condensed identity coefficients.
 #'
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
 #'   identity coefficients_ Annals of Human Genetics, vol. 45.
@@ -46,8 +48,10 @@
 #'
 #' @importFrom utils combn
 #' @export
-condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose) {
-  if(!is.ped(x)) stop2("Input is not a `ped` object")
+condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, verbose = FALSE,
+                             checkAnswer = verbose && length(ids) == 2L) {
+  if(!is.ped(x))
+    stop2("Input is not a `ped` object")
 
   # Enforce parents to precede their children
   if(!hasParentsBeforeChildren(x))
@@ -94,7 +98,13 @@ condensedIdentity = function(x, ids, sparse = NA, verbose = FALSE, checkAnswer =
         return(chk)
     }
 
-    return(j)
+    if(simplify)
+      return(j)
+    else {
+      res = data.frame(ids[1], ids[2], t.default(j))
+      names(res) = c("id1", "id2", paste0("D", 1:9))
+      return(res)
+    }
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.

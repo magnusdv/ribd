@@ -4,7 +4,14 @@
 \alias{condensedIdentity}
 \title{Condensed identity coefficients}
 \usage{
-condensedIdentity(x, ids, sparse = NA, verbose = FALSE, checkAnswer = verbose)
+condensedIdentity(
+  x,
+  ids,
+  sparse = NA,
+  simplify = TRUE,
+  verbose = FALSE,
+  checkAnswer = verbose && length(ids) == 2L
+)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object}
@@ -17,6 +24,9 @@ using sparse arrays (as implemented by the
 \href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
 ordinary arrays.}
 
+\item{simplify}{Simplify the output (to a numeric of length 9) if \code{ids} has
+length 2. Default: TRUE.}
+
 \item{verbose}{A logical}
 
 \item{checkAnswer}{A logical. If TRUE, and the \code{identity} package is
@@ -25,12 +35,12 @@ installed, the result is checked against the output of
 are inbred, or if \code{ids} has length greater than 2.}
 }
 \value{
-If \code{ids} has length 2: A vector of length 9, containing the condensed
-identity coefficients.
+If \code{ids} has length 2 and \code{simplify = TRUE}: A vector of length 9,
+containing the condensed identity coefficients.
 
-If \code{ids} has length > 2: A data frame with one row for each pair of
-individuals, and 11 columns. The first two columns contain the ID labels,
-and columns 3-11 contain the condensed identity coefficients.
+Otherwise, a data frame with 11 columns and one row for each pair of
+individuals. The first two columns contain the ID labels, and columns 3-11
+contain the condensed identity coefficients.
 }
 \description{
 Computes the 9 condensed identity coefficients of pairwise relationships in a
