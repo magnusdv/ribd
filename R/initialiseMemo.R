@@ -18,10 +18,14 @@ initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbos
   # Compute kinship matrix directly
   KIN2 = kinship(ped, Xchrom = chromType == "x")
 
-
   maxId = max(ids)
-  if(is.na(sparse)) sparse = 20
-  if(is.numeric(sparse)) sparse = maxId > sparse
+
+  # When to use sparse arrays. Default: pedsize > 30
+  if(is.na(sparse))
+    sparse = 30
+
+  if(is.numeric(sparse))
+    sparse = maxId > sparse
 
   if(sparse) {
     if(verbose) message("Using sparse lookup tables")
