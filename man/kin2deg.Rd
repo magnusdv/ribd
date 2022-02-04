@@ -38,6 +38,10 @@ deg
 stopifnot(deg['7', '8'] == 3)
 
 }
+\references{
+KING manual with thresholds for relationship degrees:
+\url{https://www.kingrelatedness.com/manual.shtml}
+}
 \seealso{
 \code{\link[=kinship]{kinship()}}, \code{\link[=coeffTable]{coeffTable()}}
 }

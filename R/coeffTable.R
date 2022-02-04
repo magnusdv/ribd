@@ -95,6 +95,8 @@ coeffTable = function(x, ids = labels(x), coeffs = c("f", "phi", "deg", "kappa",
 #'   `degree = NA` or something else might be preferable.
 #'
 #' @return An integer vector of the same length as `kin`.
+#' @references KING manual with thresholds for relationship degrees:
+#'   <https://www.kingrelatedness.com/manual.shtml>
 #'
 #' @seealso [kinship()], [coeffTable()]
 #' @examples
