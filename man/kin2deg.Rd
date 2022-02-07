@@ -23,6 +23,13 @@ used by some software for relatedness inference (e.g. KING).
 \details{
 The implementation uses the conversion formula \deqn{deg = round(-log2(kin) -
 1).}
+The first degrees correspond to the following approximate kinship ranges:
+\itemize{
+\item \verb{[0.354, 1]}: 0th degree (MZ twins or duplicates)
+\item \verb{[0.177, 0.354)}: 1st degree (parent-offspring, full siblings)
+\item \verb{[0.0884, 0.177)}: 2nd degree (half sibs, grandparent-grandchild, avuncular)
+\item \verb{[0.0442, 0.0884)} 3rd degree (half-avuncular, first cousins, great-grandparent etc)
+}
 }
 \examples{
 x = cousinPed(1)

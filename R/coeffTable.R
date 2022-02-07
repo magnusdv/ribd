@@ -88,6 +88,15 @@ coeffTable = function(x, ids = labels(x), coeffs = c("f", "phi", "deg", "kappa",
 #'
 #' The implementation uses the conversion formula \deqn{deg = round(-log2(kin) -
 #' 1).}
+#' The first degrees correspond to the following approximate kinship ranges:
+#'
+#' * `[0.354, 1]`: 0th degree (MZ twins or duplicates)
+#'
+#' * `[0.177, 0.354)`: 1st degree (parent-offspring, full siblings)
+#'
+#' * `[0.0884, 0.177)`: 2nd degree (half sibs, grandparent-grandchild, avuncular)
+#'
+#' * `[0.0442, 0.0884)` 3rd degree (half-avuncular, first cousins, great-grandparent etc)
 #'
 #' @param kin A vector of kinship coefficients, i.e., numbers in `[0, 1]`.
 #' @param unrelated The conversion of unrelated individuals (`kin = 0`).
@@ -116,6 +125,10 @@ coeffTable = function(x, ids = labels(x), coeffs = c("f", "phi", "deg", "kappa",
 kin2deg = function(kin, unrelated = Inf) {
   deg = round(-log2(kin) - 1)
 
+  # Push negative degrees (inbred MZ) up to 0
+  deg[deg < 0] = 0
+
+  # Modify entries for unrelated?
   if(!identical(unrelated, Inf)) {
     if(length(unrelated) != 1)
       stop2("Argument `unrelated` must have length 1: ", unrelated)
