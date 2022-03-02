@@ -32,3 +32,4 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 
 # Fast intersection. NB: assumes no duplicates!
 .myintersect = function(x, y) y[match(x, y, 0L)]
+
