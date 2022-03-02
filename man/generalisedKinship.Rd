@@ -21,8 +21,10 @@ generalisedKinship(x, pattern, mem = NULL, verbose = FALSE, debug = FALSE)
 A single probability.
 }
 \description{
-Compute generalised single-locus kinship coefficients, using the algorithm by
-Weeks & Lange (1988).
+Compute generalised single-locus kinship coefficients, as defined by Weeks &
+Lange (1988), and also the further generalisation by Lange & Sinsheimer
+(1992) allowing to specify if the alleles involved are paternally or
+maternally inherited.
 }
 \examples{
 x = nuclearPed(3)
