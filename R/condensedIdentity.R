@@ -16,6 +16,8 @@
 #'   ordinary arrays.
 #' @param simplify Simplify the output (to a numeric of length 9) if `ids` has
 #'   length 2. Default: TRUE.
+#' @param self A logical indicating if self-relationships (e.g., between a
+#'   pedigree member and itself) should be included. FALSE by default.
 #' @param verbose A logical
 #' @param checkAnswer A logical. If TRUE, and the `identity` package is
 #'   installed, the result is checked against the output of
