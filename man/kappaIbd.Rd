@@ -22,13 +22,6 @@ length 2. Default: TRUE.}
 
 \item{Xchrom}{A logical, indicating if the autosomal (default) or
 X-chromosomal kappa coefficients should be computed.}
-
-\item{sparse}{A positive integer, indicating the pedigree size limit for
-using sparse arrays (as implemented by the
-\href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
-ordinary arrays.}
-
-\item{verbose}{A logical.}
 }
 \value{
 If \code{ids} has length 2 and \code{simplify = TRUE}: A numeric vector of
@@ -110,5 +103,5 @@ kappaIBD(y, Xchrom = TRUE)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}
+\code{\link[=kinship]{kinship()}}, \code{\link[=identityCoefs]{identityCoefs()}}
 }

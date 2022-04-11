@@ -47,11 +47,6 @@
 #'   length 2. Default: TRUE.
 #' @param Xchrom A logical, indicating if the autosomal (default) or
 #'   X-chromosomal kappa coefficients should be computed.
-#' @param sparse A positive integer, indicating the pedigree size limit for
-#'   using sparse arrays (as implemented by the
-#'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
-#'   ordinary arrays.
-#' @param verbose A logical.
 #'
 #' @return If `ids` has length 2 and `simplify = TRUE`: A numeric vector of
 #'   length 3: \eqn{(\kappa0, \kappa1, \kappa2)}.
@@ -65,7 +60,7 @@
 #'   Furthermore, the X-chromosomal \eqn{\kappa2} is NA whenever at least one of
 #'   the two individuals is male.
 #'
-#' @seealso [kinship()], [condensedIdentity()]
+#' @seealso [kinship()], [identityCoefs()]
 #'
 #' @examples
 #' ### Siblings
