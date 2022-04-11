@@ -159,7 +159,7 @@ compare_with_identity = function(x, ids, j) {
     return()
   }
 
-  jj = idcoefs(x, ids)
+  jj = identity_identity(x, ids)
   if(isTRUE(all.equal(j, jj)))
     message("OK!")
   else {

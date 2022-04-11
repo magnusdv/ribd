@@ -4,14 +4,11 @@
 \alias{external_coefs}
 \alias{kinship2_kinship}
 \alias{kinship2_inbreeding}
-\alias{idcoefs2}
 \title{Relatedness coefficients by other programs}
 \usage{
 kinship2_kinship(x, ids = NULL, Xchrom = FALSE)
 
 kinship2_inbreeding(x, Xchrom = FALSE)
-
-idcoefs2(x, ids, verbose = FALSE, cleanup = TRUE)
 }
 \arguments{
 \item{x}{A pedigree, in the form of a \code{\link[pedtools:ped]{pedtools::ped}} object.}
@@ -20,12 +17,6 @@ idcoefs2(x, ids, verbose = FALSE, cleanup = TRUE)
 
 \item{Xchrom}{A logical, indicating if the autosomal (default) or
 X-chromosomal coefficients should be computed.}
-
-\item{verbose}{A logical, indicating if messages from \code{IdCoefs} should be
-printed.}
-
-\item{cleanup}{A logical: If TRUE, the pedfile and sample file created for
-the \code{IdCoefs} run are deleted automatically.}
 }
 \value{
 For \code{kinship2_inbreeding()}, a numerical vector with inbreeding
@@ -34,26 +25,13 @@ coefficients, named with ID labels.
 For \code{kinship2_kinship()}, either a single numeric (if \code{ids} is a pair of
 pedigree members) or the whole kinship matrix, with the ID labels as
 dimnames.
-
-For \code{idcoefs()} and \code{idcoefs2()}, a numerical vector of length 9 (in the
-standard order of Jacquard's condensed identity coefficients).
 }
 \description{
-Wrappers for functions in other packages or external programs, computing
-various relatedness coefficients.
+Wrappers for functions in other packages or external programs.
 }
 \details{
-\code{kinship2_kinship()} and \code{kinship2_inbreeding()} are wrappers of
+\code{kinship2_kinship()} and \code{kinship2_inbreeding()} both wrap
 \code{\link[kinship2:kinship]{kinship2::kinship()}}.
-
-\code{idcoefs()} wraps \code{identity::identity.coefs()}, which is an R interface for
-the C program \code{IdCoefs} written by Mark Abney (2009). The \code{identity.coefs()}
-function sometimes causes R to crash, motivating an alternative wrapper
-\code{idcoefs2()} which executes an external call to the original C program
-\code{IdCoefs} (version 2.1.1). For this to work, \code{IdCoefs} must be installed on
-the computer (see link in the References section below) and available on the
-system's PATH variable. The function \code{idcoefs2()} then writes the necessary
-files to disk and calls \code{IdCoefs} via \code{\link[=system]{system()}}.
 }
 \examples{
 # A random pedigree with 2 founders and 5 matings
@@ -92,15 +70,6 @@ stopifnot(identical(
 
 
 }
-\references{
-Abney, Mark (2009). \emph{A graphical algorithm for fast computation
-of identity coefficients and generalized kinship coefficients.}
-Bioinformatics, 25, 1561-1563.
-\url{https://home.uchicago.edu/~abney/abney_web/Software.html}
-}
 \seealso{
-\code{\link[kinship2:kinship]{kinship2::kinship()}}, \code{identity::identity.coefs()}
-}
-\author{
-Magnus Dehli Vigeland
+\code{\link[kinship2:kinship]{kinship2::kinship()}}
 }
