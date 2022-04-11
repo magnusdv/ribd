@@ -48,7 +48,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, verbose = FALSE,
+condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE, verbose = FALSE,
                              checkAnswer = verbose && length(ids) == 2L) {
   if(!is.ped(x))
     stop2("Input is not a `ped` object")

@@ -9,6 +9,7 @@ condensedIdentity(
   ids,
   sparse = NA,
   simplify = TRUE,
+  self = FALSE,
   verbose = FALSE,
   checkAnswer = verbose && length(ids) == 2L
 )
