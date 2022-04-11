@@ -184,7 +184,7 @@ compare_with_identity = function(x, ids, j) {
   x
 }
 
-# Only used in legacy functions `condensedIdentity` `condensedIdentityX` and (deprecated) `kappaIbdX`
+# Only used in legacy functions `condensedIdentity` `condensedIdentityX`
 initialiseMemo = function(ped, ids, sparse = 20, chromType = "autosomal", verbose = FALSE) {
 
   chromType = match.arg(tolower(chromType), c("autosomal", "x"))

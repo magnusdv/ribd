@@ -2,12 +2,9 @@
 % Please edit documentation in R/kappaIbd.R
 \name{kappaIBD}
 \alias{kappaIBD}
-\alias{kappaIbdX}
 \title{IBD (kappa) coefficients}
 \usage{
 kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE)
-
-kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{ped} object (or a list of such).}
