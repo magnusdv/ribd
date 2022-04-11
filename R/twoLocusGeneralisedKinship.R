@@ -180,7 +180,6 @@ genKin2L = function(kin, mem, indent = 0) {
 
 
 printCounts2 = function(mem) {
-  init_time = format(mem$initTime, digits = 4)
   tot_time = format(Sys.time()-mem$st, digits = 3)
 
   msg = glue::glue("
