@@ -279,3 +279,43 @@ removeImpossiblePatterns = function(patterns, x, ids, verbose = TRUE) {
 
   patterns
 }
+
+
+
+# Initialise memoisation
+initialiseGKMemo = function(ped, chromType = "autosomal", counters = NULL) {
+  if(chromType != "autosomal")
+    stop2("Only `chromType = autosomal` is implemented at the moment")
+
+  # Create memory storage
+  mem = new.env()
+
+  # Start timing
+  mem$st = Sys.time()
+
+  mem$FIDX = ped$FIDX
+  mem$MIDX = ped$MIDX
+  mem$SEX = ped$SEX
+
+  # Kinship matrix and inbreeding coeffs
+  k1 = kinship(ped, Xchrom = chromType == "x")
+  mem$k1 = k1
+  mem$inbreeding = unname(2 * diag(k1) - 1)
+
+  # Storage for result values
+  mem$PHI = list()
+
+  # For quick look-up:
+  FOU = founders(ped, internal = TRUE)
+  isFounder = rep(FALSE, pedsize(ped))
+  isFounder[FOU] = TRUE
+  mem$isFounder = isFounder
+
+  # Counters
+  for(cou in counters)
+    assign(cou, 0, envir = mem)
+
+  mem
+}
+
+

@@ -299,8 +299,8 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
 
   # Setup memoisation
   mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "x", verbose = verbose)
-  KIN2 = mem$KIN2
-  INB = 2*diag(KIN2) - 1 # inbreeding coeffs
+  KIN = mem$KIN
+  INB = 2*diag(KIN) - 1 # inbreeding coeffs
   SEX = mem$SEX
 
   if(verbose && any(INB[SEX == 2] > .Machine$double.eps)) {
@@ -328,7 +328,7 @@ kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
       c(NA_real_, NA_real_, NA_real_)
     else {
       id1 = p[1]; id2 = p[2]
-      u = KIN2[[id1, id2]]
+      u = KIN[[id1, id2]]
       switch(sum(SEX[p] == 2) + 1,
              c(1 - u, u, NA), # both males
              c(1 - 2*u, 2*u, NA), # one male, one female
