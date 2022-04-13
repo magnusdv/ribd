@@ -45,47 +45,21 @@ length 2. Default: TRUE.}
 columns.}
 }
 \value{
-A data frame with L + 2 columns, where L is either 9 (default) or 15
-(if \code{detailed = TRUE}).
+A data frame with L + 2 columns, where L is either 9 or 15 (if
+\code{detailed = TRUE}).
 
 If \code{simplify = TRUE} and \code{length(ids) = 2}: A numeric vector of length \code{L}.
 }
 \description{
 This function calculates the pairwise identity coefficients described by
-Jacquard (1974). Unlike \code{\link[=condensedIdentity]{condensedIdentity()}} (and
-\code{identity::identity.coefs()}), this function also computes the 15 \emph{detailed}
-identity coefficients. If \code{detailed = FALSE} the output is equivalent to
-\code{\link[=condensedIdentity]{condensedIdentity()}}, which is usually faster.
+Jacquard (1974). Unlike the previous \code{\link[=condensedIdentity]{condensedIdentity()}} (which will
+continue to exist), this function also computes the 15 \emph{detailed} identity
+coefficients. The implementation supports pedigrees with inbred founders, and
+X-chromosomal coefficients.
 }
 \details{
-Karigl (1981) gave the first recursive algorithm for the 9 condensed Jacqaurd
-coefficients, based on certain \emph{generalised kinship coefficients}. Karigl's
-method is implemented in \code{\link[=condensedIdentity]{condensedIdentity()}}.
-
-Weeks & Lange (1988) suggested a broader and more natural generalisation of
-kinship coefficients, and a recursive algorithm for computing them. This is
-implemented in \code{gKinship(..., method = "WL")}.
-
-Lange & Sinsheimer (1992) described an even further generalisation of kinship
-coefficients, allowing a mix of deterministic and random sampling of alleles.
-This is also implemented in \code{gKinship(..., method = "LS")}.
-
-In the same paper, Lange & Sinsheimer (1992) used the new generalisations to
-give (i) an alternative algorithm for the 9 condensed identity coefficients,
-and (ii) an algorithm for the 15 detailed coefficients. Both of these are
-implemented in \code{identityCoefs()}.
-
-\code{method = "idcoefs"} calls the C program \code{IdCoefs} (version 2.1.1) by Mark
-Abney (2009). This requires \code{IdCoefs} to installed on the computer (see link
-under References) and available on the system search path.
-\code{identity_idcoefs()} then writes the necessary files to disk and calls
-\code{IdCoefs} via \code{\link[=system]{system()}}.
-
-\code{method = "identity"} wraps \code{identity::identity.coefs()}, which is an R
-interface for \code{IdCoefs}.
-
 Both the condensed and detailed coefficients are given in the orders used by
-Jacquard (1974). The function \code{detailed2condensed} converts from detailed
+Jacquard (1974). The function \code{detailed2condensed()} converts from detailed
 coefficients (d1, ... d15) to condensed ones (D1, ..., D9) using the
 following relations:
 \itemize{
@@ -98,6 +72,34 @@ following relations:
 \item D7 = d9 + d12
 \item D8 = d10 + d11 + d13 + d14
 \item D9 = d15
+}
+\subsection{Algorithms for computing identity coefficients}{
+
+The following is a brief overview of various algorithms for computing
+(single-locus) condensed and/or detailed identity coefficients. This topic is
+closely linked to that of \emph{generalised kinship coefficients}, which is
+further described in the documentation of \code{\link[=gKinship]{gKinship()}}.
+
+[For each algorithm below, it is indicated in brackets how to enforce its
+usage in \code{identityCoefs()}.]
+\itemize{
+\item Karigl (1981) gave the first recursive algorithm for the 9 condensed
+Jacqaurd coefficients. [\code{method = "K"}]
+\item Weeks & Lange (1988) suggested a broader and more natural generalisation of
+kinship coefficients, and a recursive algorithm for computing them. [\code{method = "WL"}]
+\item Lange & Sinsheimer (1992) described an even further generalisation of
+kinship coefficients, allowing a mix of deterministic and random sampling of
+alleles. They used this to give (i) an alternative algorithm for the 9
+condensed identity coefficients, and (ii) an algorithm for the 15 detailed
+coefficients. [\code{method = "LS"}]
+\item The C program \code{IdCoefs} (version 2.1.1) by Mark Abney (2009) uses a graph
+model to obtain very fast computation of condensed identity coefficients.
+This requires \code{IdCoefs} to be installed on the computer (see link under
+References) and available on the system search path. The function then writes
+the necessary files to disk and calls \code{IdCoefs} via \code{\link[=system]{system()}}. [\code{method = "idcoefs"}]
+\item The R package \code{identity} provides an R interface for \code{IdCoefs}, avoiding
+calls to \code{system()}. [\verb{method = "identity"\]}
+}
 }
 }
 \examples{

@@ -1,39 +1,14 @@
 #' Omnibus function for identity coefficients
 #'
 #' This function calculates the pairwise identity coefficients described by
-#' Jacquard (1974). Unlike [condensedIdentity()] (and
-#' `identity::identity.coefs()`), this function also computes the 15 *detailed*
-#' identity coefficients. If `detailed = FALSE` the output is equivalent to
-#' [condensedIdentity()], which is usually faster.
+#' Jacquard (1974). Unlike the previous [condensedIdentity()] (which will
+#' continue to exist), this function also computes the 15 *detailed* identity
+#' coefficients. The implementation supports pedigrees with inbred founders, and
+#' X-chromosomal coefficients.
 #'
-#' Karigl (1981) gave the first recursive algorithm for the 9 condensed Jacqaurd
-#' coefficients, based on certain *generalised kinship coefficients*. Karigl's
-#' method is implemented in [condensedIdentity()].
-#'
-#' Weeks & Lange (1988) suggested a broader and more natural generalisation of
-#' kinship coefficients, and a recursive algorithm for computing them. This is
-#' implemented in `gKinship(..., method = "WL")`.
-#'
-#' Lange & Sinsheimer (1992) described an even further generalisation of kinship
-#' coefficients, allowing a mix of deterministic and random sampling of alleles.
-#' This is also implemented in `gKinship(..., method = "LS")`.
-#'
-#' In the same paper, Lange & Sinsheimer (1992) used the new generalisations to
-#' give (i) an alternative algorithm for the 9 condensed identity coefficients,
-#' and (ii) an algorithm for the 15 detailed coefficients. Both of these are
-#' implemented in `identityCoefs()`.
-#'
-#' `method = "idcoefs"` calls the C program `IdCoefs` (version 2.1.1) by Mark
-#' Abney (2009). This requires `IdCoefs` to installed on the computer (see link
-#' under References) and available on the system search path.
-#' `identity_idcoefs()` then writes the necessary files to disk and calls
-#' `IdCoefs` via [system()].
-#'
-#' `method = "identity"` wraps `identity::identity.coefs()`, which is an R
-#' interface for `IdCoefs`.
 #'
 #' Both the condensed and detailed coefficients are given in the orders used by
-#' Jacquard (1974). The function `detailed2condensed` converts from detailed
+#' Jacquard (1974). The function `detailed2condensed()` converts from detailed
 #' coefficients (d1, ... d15) to condensed ones (D1, ..., D9) using the
 #' following relations:
 #'
@@ -55,6 +30,40 @@
 #'
 #' * D9 = d15
 #'
+#'
+#' ## Algorithms for computing identity coefficients
+#'
+#' The following is a brief overview of various algorithms for computing
+#' (single-locus) condensed and/or detailed identity coefficients. This topic is
+#' closely linked to that of *generalised kinship coefficients*, which is
+#' further described in the documentation of [gKinship()].
+#'
+#' \[For each algorithm below, it is indicated in brackets how to enforce its
+#' usage in `identityCoefs()`.\]
+#'
+#' * Karigl (1981) gave the first recursive algorithm for the 9 condensed
+#' Jacqaurd coefficients. \[`method = "K"`\]
+#'
+#' * Weeks & Lange (1988) suggested a broader and more natural generalisation of
+#' kinship coefficients, and a recursive algorithm for computing them. \[`method
+#' = "WL"`\]
+#'
+#' * Lange & Sinsheimer (1992) described an even further generalisation of
+#' kinship coefficients, allowing a mix of deterministic and random sampling of
+#' alleles. They used this to give (i) an alternative algorithm for the 9
+#' condensed identity coefficients, and (ii) an algorithm for the 15 detailed
+#' coefficients. \[`method = "LS"`\]
+#'
+#' * The C program `IdCoefs` (version 2.1.1) by Mark Abney (2009) uses a graph
+#' model to obtain very fast computation of condensed identity coefficients.
+#' This requires `IdCoefs` to be installed on the computer (see link under
+#' References) and available on the system search path. The function then writes
+#' the necessary files to disk and calls `IdCoefs` via [system()]. \[`method =
+#' "idcoefs"`\]
+#'
+#' * The R package `identity` provides an R interface for `IdCoefs`, avoiding
+#' calls to `system()`. \[`method = "identity"\]`
+#'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A vector of two ID labels.
 #' @param detailed A logical. If FALSE (default), the 9 condensed coefficients
@@ -70,8 +79,8 @@
 #' @param d Either a numeric vector of length 15, or a data frame with 17
 #'   columns.
 #'
-#' @return A data frame with L + 2 columns, where L is either 9 (default) or 15
-#'   (if `detailed = TRUE`).
+#' @return A data frame with L + 2 columns, where L is either 9 or 15 (if
+#'   `detailed = TRUE`).
 #'
 #'   If `simplify = TRUE` and `length(ids) = 2`: A numeric vector of length `L`.
 #'
