@@ -80,3 +80,80 @@ identity_idcoefs = function(x, ids, self = FALSE, execPath = "idcoefs", verbose 
 
 
 
+identity_merlin = function(x, ids = labels(x), self = FALSE, detailed = FALSE, execPath = "merlin", verbose = FALSE, cleanup = TRUE) {
+
+  # Check merlin availability
+  if(!nzchar(pth <- Sys.which(execPath))) {
+    stop2("MERLIN not found. Use the `execPath` argument to supply the path to the executable")
+  }
+
+  x = prepPed(x)
+  pairs = prepIds(x, ids, self = self, int = TRUE)
+
+  # Add empty marker (seems to be needed for MERLIN to work)
+  x = setMarkers(x, NULL)
+  x = addMarker(x)
+
+  prefix = "__ribd2merlin__"
+  fin = paste(prefix, c("ped", "map", "dat"), sep = ".")
+  fout = paste(prefix, "s15", sep = ".")
+
+  if(cleanup)
+    on.exit({unlink(c(fin, fout))})
+
+  ### Generate MERLIN input files
+  # ped file
+  pedmatr = cbind(1, as.matrix(x, include.attrs = FALSE))
+  write(t.default(pedmatr), file = fin[1], ncolumns = ncol(pedmatr))
+
+  ### map file
+  write(c(CHROM = 1, MARKER = NA, MB = NA), file = fin[2], ncolumns = 3)
+
+  ### dat file
+  write(c("M", NA), file = fin[3], ncolumns = 2)
+
+  # Run MERLIN --extended
+  commandArgs = c(execPath,
+                  sprintf("-p %s.ped -d %s.dat -m %s.map --prefix %s", prefix, prefix, prefix, prefix),
+                  sprintf("--bits %d", 2*pedsize(x) - length(founders(x))),
+                  "--extended")
+  command = paste(commandArgs, collapse = " ")
+
+  if (verbose)
+    cat("\nExecuting the following command:\n", paste0(commandArgs, collapse = "\n "), "\n", sep = "")
+
+  mout = suppressWarnings(system(command, intern = TRUE))
+
+  # Catch errors
+  err = NULL
+  if (any(fatal <- substr(mout, 1, 11) == "FATAL ERROR"))
+    err = mout[which(fatal)[1]:length(mout)]
+  else if (any(warn <- substr(mout, 2, 8) == "WARNING"))
+    err = mout[which(warn)[1] + 0:5]
+
+  if(!is.null(err))
+    warning(paste0(err, collapse = "\n"), call. = FALSE)
+  else if (verbose)
+    cat("\nMERLIN run completed\n")
+
+  # Load results file
+  j = read.table(fout, header = TRUE)
+
+  # Extracted wanted pairs/cols
+  j[j$ID1 > j$ID2, 2:3] = j[j$ID1 > j$ID2, 3:2] # swap ids
+  rownames(j) = paste(j$ID1, j$ID2, sep = "-")
+  jsub = j[sapply(pairs, paste, collapse="-"), , drop = FALSE]
+
+  # Prepare output
+  labs = labels(x)
+  res = data.frame(id1 = labs[jsub$ID1], id2 = labs[jsub$ID2], jsub[,-(1:4)])
+  names(res)[-(1:2)] = paste0("d", seq_len(ncol(res) - 2)) # not sure if always 15
+  rownames(res) = NULL
+
+  if(!detailed)
+    res = detailed2condensed(res)
+
+  res
+}
+
+
