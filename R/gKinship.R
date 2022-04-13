@@ -1,33 +1,34 @@
 #' Generalised kinship coefficients
 #'
-#' Computes single-locus *generalised kinship coefficients* of various kinds.
+#' Computes single-locus generalised kinship coefficients of various kinds.
 #' These are fundamental for computing identity coefficients (see
 #' [identityCoefs()]), but are also interesting in their own right. Each
-#' generalised kinship coefficient is the probability of observing a
-#' corresponding *generalised kinship pattern*, as defined and discussed in the
+#' generalised kinship coefficient is defined as the probability of observing a
+#' corresponding *generalised IBD pattern*, as defined and discussed in the
 #' Details section below.
 #'
 #'
-#' ## From kinship to generalised kinship
+#' ## The starting point: standard kinship coefficients
 #'
-#' The classical kinship coefficient $\varphi$ between two pedigree members A
-#' and B, is the probability that two alleles sampled from A and B (one from
-#' each), at a random autosomal locus, are identical by descent (IBD).
+#' The classical kinship coefficient phi between two pedigree members A and B,
+#' is the probability that two alleles sampled from A and B (one from each), at
+#' a random autosomal locus, are identical by descent (IBD).
 #'
-#' In the notation to be introduced shortly, we would denote the *IBD pattern*
-#' here as `(A,B)`, write $\varphi = Pr[(A,B)]$.
+#' In the language and notation to be introduced shortly, we would write `phi =
+#' Pr[(A,B)]` where `(A,B)` is an *IBD pattern*.
 #'
 #' ## Generalised IBD patterns
 #'
-#' A generalised IBD pattern (GIP) is a partition of a set of alleles drawn
-#' from members of a pedigree, such that the alleles in each subset are
-#' IBD. Each subset (also referred to as a *group* or a
-#' *block*) is written as a collection of pedigree members (A, B, ...), with the
+#' We define a *generalised IBD pattern* (GIP) to be a partition of a set of
+#' alleles drawn from members of a pedigree, such that the alleles in each
+#' subset are IBD. Each subset (also referred to as a *group* or a *block*) is
+#' written as a collection of pedigree members (A, B, ...), with the
 #' understanding that each member represents one of its alleles at the given
 #' locus. A member may occur in multiple blocks, and also more than once within
 #' a block.
 #'
-#' Additional requirements give rise to different flavours of GIPs (and corresponding coefficients):
+#' Additional requirements give rise to different flavours of GIPs (and their
+#' corresponding coefficients):
 #'
 #' * `Distinct` (resp. `non-distinct`): alleles in different blocks are non-IBD
 #' (resp. may be IBD)
@@ -35,9 +36,8 @@
 #' * `Deterministic` (resp. `random`): the parental origin (paternal or
 #' maternal) of each allele is fixed (resp. unknown).
 #'
-#' We may say that a GIP is *partially* (rather than *fully*)
-#' deterministic if the parental origin is fixed for some, but not all alleles
-#' involved.
+#' We may say that a GIP is *partially* (rather than *fully*) deterministic if
+#' the parental origin is fixed for some, but not all alleles involved.
 #'
 #'
 #' ## Notational examples
@@ -76,7 +76,7 @@
 #' (Note: This section is included only for completeness; `kinpat` objects
 #' should not be directly manipulated by end users.)
 #'
-#' Internally, a GK pattern is stored as a list of integer vectors, each vector
+#' Internally, a GIP is stored as a list of integer vectors, each vector
 #' giving the indices of pedigree members constituting an IBD block. In
 #' addition, the object has three attributes:
 #'
@@ -98,7 +98,7 @@
 #' * 30 = a random allele of individual 3
 #'
 #'
-#' ## A brief history of generalised kinship patterns and coefficients
+#' ## A brief history of generalised kinship coefficients
 #'
 #' The notion of generalised kinship coefficients originated with Karigl (1981)
 #' who used a selection of random, non-distinct patterns (in our terminology) to
@@ -109,7 +109,7 @@
 #' corresponding coefficients.
 #'
 #' In a follow-up paper, Lange & Sinsheimer (1992) introduced partially
-#' deterministic, (distinct) patterns, and used these to compute detailed
+#' deterministic (distinct) patterns, and used these to compute detailed
 #' identity coefficients.
 #'
 #' In another follow-up, Weeks et al. (1995) extended the work on random,
@@ -157,8 +157,8 @@
 #' @param mem For internal use.
 #' @param ... Further arguments.
 
-#' @return `gKinship()` returns a single number, the probability of the given GK
-#'   pattern.
+#' @return `gKinship()` returns a single number, the probability of the given
+#'   IBD pattern.
 #'
 #'   `kinpat()` returns an object of class `kinpat`. This is internally a list
 #'   of integer vectors, with attributes `labs`, `deterministic` and `distinct`.

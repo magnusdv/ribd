@@ -42,43 +42,43 @@ non-IBD. Default: TRUE. (Irrelevant for single-block patterns.)}
 \item{...}{Further arguments.}
 }
 \value{
-\code{gKinship()} returns a single number, the probability of the given GK
-pattern.
+\code{gKinship()} returns a single number, the probability of the given
+IBD pattern.
 
 \code{kinpat()} returns an object of class \code{kinpat}. This is internally a list
 of integer vectors, with attributes \code{labs}, \code{deterministic} and \code{distinct}.
 (See also Details.)
 }
 \description{
-Computes single-locus \emph{generalised kinship coefficients} of various kinds.
+Computes single-locus generalised kinship coefficients of various kinds.
 These are fundamental for computing identity coefficients (see
 \code{\link[=identityCoefs]{identityCoefs()}}), but are also interesting in their own right. Each
-generalised kinship coefficient is the probability of observing a
-corresponding \emph{generalised kinship pattern}, as defined and discussed in the
+generalised kinship coefficient is defined as the probability of observing a
+corresponding \emph{generalised IBD pattern}, as defined and discussed in the
 Details section below.
 }
 \details{
-\subsection{From kinship to generalised kinship}{
+\subsection{The starting point: standard kinship coefficients}{
 
-The classical kinship coefficient $\varphi$ between two pedigree members A
-and B, is the probability that two alleles sampled from A and B (one from
-each), at a random autosomal locus, are identical by descent (IBD).
+The classical kinship coefficient phi between two pedigree members A and B,
+is the probability that two alleles sampled from A and B (one from each), at
+a random autosomal locus, are identical by descent (IBD).
 
-In the notation to be introduced shortly, we would denote the \emph{IBD pattern}
-here as \verb{(A,B)}, write $\varphi = Pr\link{(A,B)}$.
+In the language and notation to be introduced shortly, we would write \verb{phi = Pr[(A,B)]} where \verb{(A,B)} is an \emph{IBD pattern}.
 }
 
 \subsection{Generalised IBD patterns}{
 
-A generalised IBD pattern (GIP) is a partition of a set of alleles drawn
-from members of a pedigree, such that the alleles in each subset are
-IBD. Each subset (also referred to as a \emph{group} or a
-\emph{block}) is written as a collection of pedigree members (A, B, ...), with the
+We define a \emph{generalised IBD pattern} (GIP) to be a partition of a set of
+alleles drawn from members of a pedigree, such that the alleles in each
+subset are IBD. Each subset (also referred to as a \emph{group} or a \emph{block}) is
+written as a collection of pedigree members (A, B, ...), with the
 understanding that each member represents one of its alleles at the given
 locus. A member may occur in multiple blocks, and also more than once within
 a block.
 
-Additional requirements give rise to different flavours of GIPs (and corresponding coefficients):
+Additional requirements give rise to different flavours of GIPs (and their
+corresponding coefficients):
 \itemize{
 \item \code{Distinct} (resp. \code{non-distinct}): alleles in different blocks are non-IBD
 (resp. may be IBD)
@@ -86,9 +86,8 @@ Additional requirements give rise to different flavours of GIPs (and correspondi
 maternal) of each allele is fixed (resp. unknown).
 }
 
-We may say that a GIP is \emph{partially} (rather than \emph{fully})
-deterministic if the parental origin is fixed for some, but not all alleles
-involved.
+We may say that a GIP is \emph{partially} (rather than \emph{fully}) deterministic if
+the parental origin is fixed for some, but not all alleles involved.
 }
 
 \subsection{Notational examples}{
@@ -124,7 +123,7 @@ elements with "p" or "m". See Examples for how to create the above patterns.
 (Note: This section is included only for completeness; \code{kinpat} objects
 should not be directly manipulated by end users.)
 
-Internally, a GK pattern is stored as a list of integer vectors, each vector
+Internally, a GIP is stored as a list of integer vectors, each vector
 giving the indices of pedigree members constituting an IBD block. In
 addition, the object has three attributes:
 \itemize{
@@ -144,7 +143,7 @@ unknown; 1 = paternal; 2 = maternal), so that, e.g.:
 }
 }
 
-\subsection{A brief history of generalised kinship patterns and coefficients}{
+\subsection{A brief history of generalised kinship coefficients}{
 
 The notion of generalised kinship coefficients originated with Karigl (1981)
 who used a selection of random, non-distinct patterns (in our terminology) to
@@ -155,7 +154,7 @@ patterns in full generality and gave an algorithm for computing the
 corresponding coefficients.
 
 In a follow-up paper, Lange & Sinsheimer (1992) introduced partially
-deterministic, (distinct) patterns, and used these to compute detailed
+deterministic (distinct) patterns, and used these to compute detailed
 identity coefficients.
 
 In another follow-up, Weeks et al. (1995) extended the work on random,
