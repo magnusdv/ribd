@@ -15,7 +15,7 @@ identity_LS = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
 
   # Recursion wrapper to simplify typing
   recu = function(..., debug = FALSE) {
-    recurse_LS(kinpat(x, list(...)), X = Xchrom, mem = mem, debug = debug)
+    recurse_LS(gip(x, list(...)), X = Xchrom, mem = mem, debug = debug)
   }
 
   # Detailed identity states (following Figure 6.2 (page 105), Jacquard 1974)
@@ -52,30 +52,30 @@ identity_LS = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
   res
 }
 
-gKinship_LS = function(x, kp, Xchrom = FALSE, mem, debug = FALSE) {
-  recurse_LS(kp, X = Xchrom, mem = mem, debug = debug)
+gKinship_LS = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
+  recurse_LS(gp, X = Xchrom, mem = mem, debug = debug)
 }
 
 # Recursion method of Lange & Sinsheimer
-recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
+recurse_LS = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   mem$i = mem$i + 1
-  kp = kinpatReduce(kp, deterministic = TRUE)
+  gp = gipReduce(gp, deterministic = TRUE)
 
   # If no longer deterministic, switch to random algorithm (WL)
-  if(!isDeterministic(kp))
-    return(recurse_WL(kp, X = X, mem, debug = debug, indent = indent))
+  if(!isDeterministic(gp))
+    return(recurse_WL(gp, X = X, mem, debug = debug, indent = indent))
 
   if(debug)
-    cat(strrep(" ", indent), kinpat2string(kp), "\n", sep = "")
+    cat(strrep(" ", indent), gip2string(gp), "\n", sep = "")
 
   # B0: Trivial pattern
-  if(sum(lengths(kp)) <= 1)  {
+  if(sum(lengths(gp)) <= 1)  {
     mem$B0 = mem$B0 + 1
     return(debugReturn(1, debug = debug, indent = indent, comment = " (B0)"))
   }
 
   # B2: Any group with 2 unrelated indivs?
-  uniqList = lapply(kp, function(g) unique.default(g %/% 10))
+  uniqList = lapply(gp, function(g) unique.default(g %/% 10))
   for(s in uniqList) {
     if(length(s) < 2)
       next
@@ -100,11 +100,11 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   recu = function(k) recurse_LS(k, X = X, mem = mem, debug = debug, indent = indent +2)
 
   # If 2 (for simplicity) unrelated groups: Factorise
-  if(length(kp) == 2) {
+  if(length(gp) == 2) {
     u1 = uniqList[[1]]; u2 = uniqList[[2]]
     interpairs = cbind(rep(u1, each = length(u2)), rep(u2, length(u1)))
     if(!any(mem$REL[interpairs])) { # any pair not related?
-      res = recu(`[[<-`(kp, 2, NULL)) * recu(`[[<-`(kp, 1, NULL))
+      res = recu(`[[<-`(gp, 2, NULL)) * recu(`[[<-`(gp, 1, NULL))
       return(debugReturn(res, debug = debug, indent = indent, comment = " Factorised"))
     }
   }
@@ -112,21 +112,21 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   ### Additional restrictions for deterministic patterns
 
   # Restriction D2: Anyone with m&p in same group AND (in multiple groups OR not inbred)
-  if(restrictionD2(kp, tab = tab, inb = mem$INB)) {
+  if(restrictionD2(gp, tab = tab, inb = mem$INB)) {
     mem$D2 = mem$D2 + 1
     return(debugReturn(0, debug = debug, indent = indent, comment = " (D2)"))
   }
 
   # Restriction D1: Anyone with paternal (resp. maternal) allele in multiple blocks?
-  if(any(tab > 1) && restrictionD1(kp)) {
+  if(any(tab > 1) && restrictionD1(gp)) {
     mem$D1 = mem$D1 + 1
     return(debugReturn(0, debug = debug, indent = indent, comment = " (D1)"))
   }
 
-  kp = kinpatSort(kp)
+  gp = gipSort(gp)
 
   # Lookup in array; compute if necessary.
-  kinStr = paste(kp, collapse = ", ")
+  kinStr = paste(gp, collapse = ", ")
   val = mem$MEM2[[kinStr]]
 
   if(!is.null(val)) {
@@ -136,8 +136,8 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
   mem$irec = mem$irec + 1
 
-  g1 = kp[[1]]
-  g2 = if(length(kp) > 1) kp[[2]] else NULL
+  g1 = gp[[1]]
+  g2 = if(length(gp) > 1) gp[[2]] else NULL
 
   ids1 = g1 %/% 10
   ids2 = g2 %/% 10
@@ -163,16 +163,16 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
     A1 = .5^s
     res = switch(ndet1 + 1,
                  # Rule 1a
-                 A1 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = fa)) +
-                   A1 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = mo)) +
-                   if(s > 1) (1 - 2*A1) * recu(kinpatReplaceDet(kp, id = pivot, rep1 = famo)) else 0,
+                 A1 * recu(gipReplaceDet(gp, id = pivot, rep1 = fa)) +
+                   A1 * recu(gipReplaceDet(gp, id = pivot, rep1 = mo)) +
+                   if(s > 1) (1 - 2*A1) * recu(gipReplaceDet(gp, id = pivot, rep1 = famo)) else 0,
 
                  # Rule 1b
-                 A1 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = famo[det1])) +
-                   if(s > 0) (1 - A1) * recu(kinpatReplaceDet(kp, id = pivot, rep1 = famo)) else 0,
+                 A1 * recu(gipReplaceDet(gp, id = pivot, rep1 = famo[det1])) +
+                   if(s > 0) (1 - A1) * recu(gipReplaceDet(gp, id = pivot, rep1 = famo)) else 0,
 
                  # Rule 1c
-                 res = recu(kinpatReplaceDet(kp, id = pivot, rep1 = famo))
+                 res = recu(gipReplaceDet(gp, id = pivot, rep1 = famo))
     )
   }
   else {  # t > 0
@@ -187,13 +187,13 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
     if(ndet1 + ndet2 == 0) { # Rule 2a
       res =
-        A2 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = fa, rep2 = mo)) +
-        A2 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = mo, rep2 = fa))
+        A2 * recu(gipReplaceDet(gp, id = pivot, rep1 = fa, rep2 = mo)) +
+        A2 * recu(gipReplaceDet(gp, id = pivot, rep1 = mo, rep2 = fa))
     }
     else {  # Rules 2b and 2c
       # NB: This must also work when fa = mo (selfing!)
       reps = if(ndet1 == 1 && det1 == 1 || ndet2 == 1 && det2 == 2) famo else rev.default(famo)
-      res = A2 * recu(kinpatReplaceDet(kp, id = pivot, rep1 = reps[1], rep2 = reps[2]))
+      res = A2 * recu(gipReplaceDet(gp, id = pivot, rep1 = reps[1], rep2 = reps[2]))
     }
   }
 
@@ -203,15 +203,15 @@ recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
 
 # Restriction D1: Anyone with paternal (resp. maternal) allele in multiple blocks?
-restrictionD1 = function(kp) {
-  # Assumes that kp is reduced, i.e., nobody has repeated det-sampling *within* a block
-  vec = unlist(kp, use.names = FALSE)
+restrictionD1 = function(gp) {
+  # Assumes that gp is reduced, i.e., nobody has repeated det-sampling *within* a block
+  vec = unlist(gp, use.names = FALSE)
   anyDuplicated.default(vec[vec %% 10 > 0])
 }
 
 # Restriction D2: Anyone with m&p in same group AND (in multiple groups OR not inbred)
-restrictionD2 = function(kp, tab, inb) {
-  for(g in kp) {
+restrictionD2 = function(gp, tab, inb) {
+  for(g in gp) {
     gdet = g[g %% 10 > 0]
     if(length(gdet) < 2) next
     idsdet = gdet %/% 10

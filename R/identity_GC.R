@@ -17,7 +17,7 @@ identity_GC = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
 
   # Recursion wrapper to simplify typing
   recu = function(..., debug = FALSE) {
-    recurse_GC(kinpat(x, list(...), distinct = TRUE), X = Xchrom, mem = mem, debug = debug)
+    recurse_GC(gip(x, list(...), distinct = TRUE), X = Xchrom, mem = mem, debug = debug)
   }
 
   # Garcia-Cortes, equation 4
@@ -94,28 +94,28 @@ identity_GC = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
 }
 
 
-gKinship_GC = function(x, kp, Xchrom = FALSE, mem, debug = FALSE) {
-  if(!isDeterministic(kp))
+gKinship_GC = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
+  if(!isDeterministic(gp))
     stop2("Method 'GC' supports deterministic kinship patterns only")
 
-  recurse_GC(kp, X = Xchrom, mem = mem, debug = debug)
+  recurse_GC(gp, X = Xchrom, mem = mem, debug = debug)
 }
 
-recurse_GC = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
-  if(length(kp) == 1)
-    psi1G(kp, X = X, mem = mem, debug = debug)
-  else if(identical(lengths(kp), c(2L, 2L)))
-    psi22(kp, X = X, mem = mem, debug = debug)
+recurse_GC = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
+  if(length(gp) == 1)
+    psi1G(gp, X = X, mem = mem, debug = debug)
+  else if(identical(lengths(gp), c(2L, 2L)))
+    psi22(gp, X = X, mem = mem, debug = debug)
   else
     stop2("Method 'GC' currently only supports patterns of either 1 group or 2 groups with two elements")
 }
 
 # Main recursion function for generalised gamete probabilities with 1 group
-psi1G = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
+psi1G = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   if(debug)
-    cat(strrep(" ", indent), kinpat2string(kp), "\n", sep = "")
+    cat(strrep(" ", indent), gip2string(gp), "\n", sep = "")
 
-  g = kp[[1]]
+  g = gp[[1]]
   L = length(g)
 
   # Quick return if trivial case
@@ -145,8 +145,8 @@ psi1G = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
   # Any duplicates -> remove and recurse
   if(dup <- anyDuplicated.default(g)) {
-    kp[[1]] = g[-dup]
-    return(psi1G(kp, X = X, mem = mem, debug = debug, indent = indent + 2))
+    gp[[1]] = g[-dup]
+    return(psi1G(gp, X = X, mem = mem, debug = debug, indent = indent + 2))
   }
 
   # Any pair unrelated -> 0
@@ -155,7 +155,7 @@ psi1G = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
     return(debugReturn(0, debug = debug, indent = indent, comment = " (B3)"))
 
   # Sort: a > b > ..
-  kp[[1]] = g = .mysort(g, decreasing = TRUE)
+  gp[[1]] = g = .mysort(g, decreasing = TRUE)
 
   # Lookup -> early return if previously computed
   s = paste(g, collapse = "-")
@@ -173,13 +173,13 @@ psi1G = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
   if(X && apar == 1L) {
     anc = mem$FIDX[id1]*10L + 2L
-    kpNew = kinpatRepl1(kp, anc)
+    kpNew = gipRepl1(gp, anc)
     res = psi1G(kpNew, X = X, mem = mem, debug = debug, indent = indent + 2)
   }
   else {
     anc = switch(apar, mem$FIDX[id1], mem$MIDX[id1]) * 10L + 1:2 # ancestral alleles
-    kpNew1 = kinpatRepl1(kp, anc[1])
-    kpNew2 = kinpatRepl1(kp, anc[2])
+    kpNew1 = gipRepl1(gp, anc[1])
+    kpNew2 = gipRepl1(gp, anc[2])
     res = (psi1G(kpNew1, X = X, mem = mem, debug = debug, indent = indent + 2) +
              psi1G(kpNew2, X = X, mem = mem, debug = debug, indent = indent + 2))/2
   }
@@ -192,13 +192,13 @@ psi1G = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 # Recursion function for the case of two groups with two gametes each.
 # This is the only one needed for jacquard coeffs.
 # Further generalised gamete probabilities are not currently implemented.
-psi22 = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
+psi22 = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   if(debug)
-    cat(strrep(" ", indent), kinpat2string(kp), "\n", sep = "")
+    cat(strrep(" ", indent), gip2string(gp), "\n", sep = "")
 
   mem$i22 = mem$i22 + 1L
-  g1 = kp[[1]]
-  g2 = kp[[2]]
+  g1 = gp[[1]]
+  g2 = gp[[2]]
 
   ids1 = g1 %/% 10
   ids2 = g2 %/% 10
@@ -212,7 +212,7 @@ psi22 = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   }
 
   if(g1[1] == g1[2] || g2[1] == g2[2]) {
-    kpNew = if(g1[1] == g1[2]) kp[2] else kp[1]
+    kpNew = if(g1[1] == g1[2]) gp[2] else gp[1]
     return(psi1G(kpNew, X = X, mem = mem, debug = debug, indent = indent + 2))
   }
 
@@ -233,18 +233,18 @@ psi22 = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
   # Overlapping groups -> merge and recurse
   if(dup <- anyDuplicated.default(g <- c(g1, g2))) {
-    kpNew = kp[1]
+    kpNew = gp[1]
     kpNew[[1]] = g[-dup]
     return(psi1G(kpNew, X = X, mem = mem, debug = debug, indent = indent + 2))
   }
 
   # sort
   if(g1[1] < g1[2])
-    kp[[1]] = g1 = g1[2:1]
+    gp[[1]] = g1 = g1[2:1]
   if(g2[1] < g2[2])
-    kp[[2]] = g2 = g2[2:1]
+    gp[[2]] = g2 = g2[2:1]
   if(g1[1] < g2[1]) {
-    tmp = g1; kp[[1]] = g1 = g2; kp[[2]] = g2 = tmp
+    tmp = g1; gp[[1]] = g1 = g2; gp[[2]] = g2 = tmp
   }
 
   # Lookup -> early return if previously computed
@@ -263,13 +263,13 @@ psi22 = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
   if(X && apar == 1L) {
     anc = mem$FIDX[id1]*10L + 2L
-    kpNew = kinpatRepl1(kp, anc)
+    kpNew = gipRepl1(gp, anc)
     res = psi22(kpNew, X = X, mem = mem, debug = debug, indent = indent + 2)
   }
   else {
     anc = switch(apar, mem$FIDX[id1], mem$MIDX[id1])*10L + 1:2
-    kpNew1 = kinpatRepl1(kp, anc[1])
-    kpNew2 = kinpatRepl1(kp, anc[2])
+    kpNew1 = gipRepl1(gp, anc[1])
+    kpNew2 = gipRepl1(gp, anc[2])
     res = (psi22(kpNew1, X = X, mem = mem, debug = debug, indent = indent + 2) +
              psi22(kpNew2, X = X, mem = mem, debug = debug, indent = indent + 2))/2
   }

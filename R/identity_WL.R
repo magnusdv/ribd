@@ -15,7 +15,7 @@ identity_WL = function(x, ids, Xchrom = FALSE, self = FALSE, mem = NULL, verbose
 
   # Recursion wrapper to simplify typing
   recu = function(..., debug = FALSE) {
-    recurse_WL(kinpat(x, list(...)), X = Xchrom, mem = mem, debug = debug)
+    recurse_WL(gip(x, list(...)), X = Xchrom, mem = mem, debug = debug)
   }
 
   # Function for computing all Phi's for specific pair
@@ -59,22 +59,22 @@ identity_WL = function(x, ids, Xchrom = FALSE, self = FALSE, mem = NULL, verbose
   jmat2df(j, pairs)
 }
 
-gKinship_WL = function(x, kp, Xchrom = FALSE, mem, debug = FALSE) {
+gKinship_WL = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
   if(Xchrom)
     stop2("X is not implemented in method 'WL' yet")
 
-  recurse_WL(kp, X = Xchrom, mem = mem, debug = debug)
+  recurse_WL(gp, X = Xchrom, mem = mem, debug = debug)
 }
 
 
 # Recursion method of Weeks & Lange
-recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
+recurse_WL = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   if(debug)
-    cat(strrep(" ", indent), kinpat2string(kp), "\n", sep = "")
+    cat(strrep(" ", indent), gip2string(gp), "\n", sep = "")
   mem$i = mem$i + 1
 
-  kp = kinpatReduce(kp)
-  L = lengths(kp)
+  gp = gipReduce(gp)
+  L = lengths(gp)
 
   # B0: Trivial pattern
   if(sum(L) <= 1)  {
@@ -83,8 +83,8 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   }
 
   # B2: Any group with 2 unrelated indivs?
-  uniqList = lapply(kp, unique.default)
-  if(boundaryB2(kp, mem$REL, uniqList)) {
+  uniqList = lapply(gp, unique.default)
+  if(boundaryB2(gp, mem$REL, uniqList)) {
     mem$B2 = mem$B2 + 1
     return(debugReturn(0, debug = debug, indent = indent, comment = " (B2)"))
   }
@@ -101,7 +101,7 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   if(all(mem$isFounder[uniqVec])) {
     mem$B3 = mem$B3 + 1
     INB = mem$INB
-    tabtot = tabulate(unlist(kp, use.names = FALSE))
+    tabtot = tabulate(unlist(gp, use.names = FALSE))
     res = 1
     if(length(one <- which(tab == 1)))  # those in 1 group: may be autozygous
       res = res * prod(INB[one] * 1 + (1 - INB[one]) * .5^(tabtot[one] - 1))
@@ -115,20 +115,20 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   recu = function(k) recurse_WL(k, X = X, mem = mem, debug = debug, indent = indent +2)
 
   # If 2 (for simplicity) unrelated groups: Factorise
-  if(length(kp) == 2) {
+  if(length(gp) == 2) {
     u1 = uniqList[[1]]; u2 = uniqList[[2]]
     interpairs = cbind(rep(u1, each = length(u2)), rep(u2, length(u1)))
     if(!any(mem$REL[interpairs])) { # any pair not related?
-      res = recu(`[[<-`(kp, 2, NULL)) * recu(`[[<-`(kp, 1, NULL))
+      res = recu(`[[<-`(gp, 2, NULL)) * recu(`[[<-`(gp, 1, NULL))
       return(debugReturn(res, debug = debug, indent = indent))
     }
   }
 
   # Sort
-  kp = kinpatSort(kp)
+  gp = gipSort(gp)
 
   # Lookup in array; compute if necessary.
-  kinStr = paste(kp, collapse = ", ")
+  kinStr = paste(gp, collapse = ", ")
   val = mem$MEM[[kinStr]]
 
   if(!is.null(val)) {
@@ -139,25 +139,25 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   # Prepare recursion
   mem$irec = mem$irec + 1
 
-  pivot = kp[[1]][1]
+  pivot = gp[[1]][1]
   fa = mem$FIDX[pivot]
   mo = mem$MIDX[pivot]
 
   # Number of times the pivot occurs in first block (s) and second block (t)
-  s = sum(kp[[1]] == pivot)
-  t = if(length(kp) > 1) sum(kp[[2]] == pivot) else 0
+  s = sum(gp[[1]] == pivot)
+  t = if(length(gp) > 1) sum(gp[[2]] == pivot) else 0
 
   # Recurrence rules 1 (s = 1) and 2
   if(t == 0) {
     A1 = .5^s
     res =
-      A1 * recu(kinpatReplace(kp, id = pivot, rep1 = fa)) +
-      A1 * recu(kinpatReplace(kp, id = pivot, rep1 = mo))
+      A1 * recu(gipReplace(gp, id = pivot, rep1 = fa)) +
+      A1 * recu(gipReplace(gp, id = pivot, rep1 = mo))
 
     if(s > 1) {
       B1 = (1 - 2 * (.5)^s)
       res = res +
-        B1 * recu(kinpatReplace(kp, id = pivot, rep1 = c(fa, mo)))
+        B1 * recu(gipReplace(gp, id = pivot, rep1 = c(fa, mo)))
     }
   }
 
@@ -165,8 +165,8 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   if(t > 0) {
     A2 = .5^(s + t)
     res =
-      A2 * recu(kinpatReplace(kp, id = pivot, rep1 = fa, rep2 = mo)) +
-      A2 * recu(kinpatReplace(kp, id = pivot, rep1 = mo, rep2 = fa))
+      A2 * recu(gipReplace(gp, id = pivot, rep1 = fa, rep2 = mo)) +
+      A2 * recu(gipReplace(gp, id = pivot, rep1 = mo, rep2 = fa))
   }
 
   mem$MEM[[kinStr]] = res
@@ -175,7 +175,7 @@ recurse_WL = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
 
 
 # W&L boundary 2: Group with 2 unrelated --> 0
-boundaryB2 = function(kp, REL, uniqList = lapply(kp, unique.default)) {
+boundaryB2 = function(gp, REL, uniqList = lapply(gp, unique.default)) {
   for(s in uniqList) {
     if(length(s) < 2)
       next

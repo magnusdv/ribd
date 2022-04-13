@@ -1,6 +1,6 @@
 #' @rdname gKinship
 #' @export
-kinpat = function(x, pattern, distinct = TRUE) {
+gip = function(x, pattern, distinct = TRUE) {
   if(!is.ped(x))
     stop2("First argument must be a `ped` object")
 
@@ -24,7 +24,7 @@ kinpat = function(x, pattern, distinct = TRUE) {
   # Group index
   grp = rep(sq <- seq_along(pattern), lengths(pattern))
 
-  # Create kinpat object
+  # Create gip object
   pat = lapply(sq, function(i) {
     idx = grp == i
     g = idsInt[idx]
@@ -33,15 +33,15 @@ kinpat = function(x, pattern, distinct = TRUE) {
     g
   })
 
-  structure(pat, labs = labels(x), deterministic = determ, distinct = distinct, class = "kinpat")
+  structure(pat, labs = labels(x), deterministic = determ, distinct = distinct, class = "gip")
 }
 
 
-kinpat2string = function(kp, deterministic = isDeterministic(kp)) {
+gip2string = function(gp, deterministic = isDeterministic(gp)) {
 
-  labs = attr(kp, "labs")
+  labs = attr(gp, "labs")
 
-  grps = vapply(kp, function(g) {
+  grps = vapply(gp, function(g) {
     if(deterministic) {
       lb = labs[g %/% 10]
       par = g %% 10
@@ -53,20 +53,20 @@ kinpat2string = function(kp, deterministic = isDeterministic(kp)) {
     sprintf("(%s)", paste0(lb, collapse = ","))
   }, FUN.VALUE = "")
 
-  blocksep = if(isDistinct(kp)) " / " else " & "
+  blocksep = if(isDistinct(gp)) " / " else " & "
   paste0(grps, collapse = blocksep)
 }
 
 #' @export
-print.kinpat = function(x, ...) {
-  cat(kinpat2string(x), "\n", sep = "")
+print.gip = function(x, ...) {
+  cat(gip2string(x), "\n", sep = "")
 }
 
-kinpat2list = function(kp) {
-  labs = attr(kp, "labs")
-  determ = isDeterministic(kp)
+gip2list = function(gp) {
+  labs = attr(gp, "labs")
+  determ = isDeterministic(gp)
 
-  lapply(kp, function(g) {
+  lapply(gp, function(g) {
     if(determ) {
       s = labs[g %/% 10]
       names(s) = c("", "p", "m")[g %% 10 + 1]
@@ -77,110 +77,110 @@ kinpat2list = function(kp) {
   })
 }
 
-kinpatSort = function(kp) {
+gipSort = function(gp) {
 
   # Function for sorting a single group
   sortGroup = function(g) .mysort(g, decreasing = TRUE)
 
   # Quick return if just one group
-  if(length(kp) == 1) {
-    kp[[1]] = sortGroup(kp[[1]])
-    return(kp)
+  if(length(gp) == 1) {
+    gp[[1]] = sortGroup(gp[[1]])
+    return(gp)
   }
 
   # Sort each group
-  kp[] = lapply(kp, sortGroup)
+  gp[] = lapply(gp, sortGroup)
 
   # Order groups by first element
-  sortby = vapply(kp, function(g) g[1], 1L)
+  sortby = vapply(gp, function(g) g[1], 1L)
   if(anyDuplicated.default(sortby)) {
-    sum = vapply(kp, function(g) sum(g), 1L)
+    sum = vapply(gp, function(g) sum(g), 1L)
     sortby = 1000L * sortby + sum
   }
 
-  kp[.myorder(sortby, decreasing = TRUE)]
+  gp[.myorder(sortby, decreasing = TRUE)]
 }
 
 
-isDeterministic = function(kp) {
-  det = attr(kp, "deterministic")
+isDeterministic = function(gp) {
+  det = attr(gp, "deterministic")
   !is.null(det) && det
 }
 
-isDistinct = function(kp) {
-  dist = attr(kp, "distinct")
+isDistinct = function(gp) {
+  dist = attr(gp, "distinct")
   !is.null(dist) && dist
 }
 
-kinpatReduce = function(kp, deterministic = isDeterministic(kp)) { # Remove empty groups
+gipReduce = function(gp, deterministic = isDeterministic(gp)) { # Remove empty groups
 
   # Remove empty blocks
-  empty = lengths(kp) == 0
+  empty = lengths(gp) == 0
   if(any(empty))
-    kp[empty] = NULL
+    gp[empty] = NULL
 
   # If non-determ, nothing more to do
   if(!deterministic)
-    return(kp)
+    return(gp)
 
-  vec = unlist(kp, use.names = FALSE)
+  vec = unlist(gp, use.names = FALSE)
 
   # If no parental info, convert to non-determ and return
   random = vec %% 10 == 0
   if(all(random)) {
-    kp[] = lapply(kp, function(g) g %/% 10L)
-    attr(kp, "deterministic") = FALSE
-    return(kp)
+    gp[] = lapply(gp, function(g) g %/% 10L)
+    attr(gp, "deterministic") = FALSE
+    return(gp)
   }
 
   # Remove deterministic repeats in each block
   if(anyDuplicated.default(vec[!random])) {
-    for(i in seq_along(kp)) {
-      g = kp[[i]]
+    for(i in seq_along(gp)) {
+      g = gp[[i]]
       dups = duplicated.default(g) & g %% 10 > 0
       if(any(dups))
-        kp[[i]] = g[!dups]
+        gp[[i]] = g[!dups]
     }
   }
 
-  kp
+  gp
 }
 
 # Replace first element with ancestor
-kinpatRepl1 = function(x, anc) {
+gipRepl1 = function(x, anc) {
   x[[1]] = c(anc, x[[1]][-1])
   x
 }
 
-kinpatReplace = function(kp, id, rep1, rep2 = NULL) {
-  g1 = kp[[1]]
+gipReplace = function(gp, id, rep1, rep2 = NULL) {
+  g1 = gp[[1]]
   keep1 = g1 != id
-  kp[[1]] = c(rep1, g1[keep1])
+  gp[[1]] = c(rep1, g1[keep1])
 
   if(!is.null(rep2)) {
-    g2 = kp[[2]]
+    g2 = gp[[2]]
     keep2 = g2 != id
-    kp[[2]] = c(rep2, g2[keep2])
+    gp[[2]] = c(rep2, g2[keep2])
   }
-  kp
+  gp
 }
 
 
-kinpatReplaceDet = function(kp, id, rep1, rep2 = NULL) {
-  g1 = kp[[1]]
+gipReplaceDet = function(gp, id, rep1, rep2 = NULL) {
+  g1 = gp[[1]]
   keep1 = g1 %/% 10 != id
-  kp[[1]] = c(rep1 * 10L, g1[keep1])
+  gp[[1]] = c(rep1 * 10L, g1[keep1])
 
   if(!is.null(rep2)) {
-    g2 = kp[[2]]
+    g2 = gp[[2]]
     keep2 = g2 %/% 10 != id
-    kp[[2]] = c(rep2 * 10L, g2[keep2])
+    gp[[2]] = c(rep2 * 10L, g2[keep2])
   }
-  kp
+  gp
 }
 
 #' @export
-`[.kinpat` = function(x, idx, ...) {
+`[.gip` = function(x, idx, ...) {
   y = unclass(x)[idx]
   attributes(y) = attributes(x)
   y
