@@ -126,7 +126,7 @@ identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE,
 
   method = match.arg(method)
   if(method == "auto")
-    method = chooseIdentityMethod(x, ids, detailed, Xchrom)
+    method = chooseIdentityMethod(x, ids = ids, detailed = detailed, Xchrom = Xchrom)
 
   res = switch(method,
     K = {
@@ -211,7 +211,8 @@ prepIds = function(x, ids, self = FALSE, int = FALSE) {
 
 
 # Setup memoisation
-memoIdentity = function(x, Xchrom = FALSE, method = NULL, counters = NULL, maxId = pedsize(x), sparse = 30, verbose = FALSE) {
+memoIdentity = function(x, Xchrom = FALSE, method = NULL, counters = NULL,
+                        maxId = pedsize(x), sparse = 30, verbose = FALSE) {
   mem = new.env()
   mem$st = Sys.time()
   mem$method = method
@@ -286,9 +287,23 @@ memoIdentity = function(x, Xchrom = FALSE, method = NULL, counters = NULL, maxId
   mem
 }
 
-chooseIdentityMethod = function(x, ids, detailed, Xchrom) {
-  if(!detailed)
-    return("K")
+chooseIdentityMethod = function(x, ids = NULL, pattern = NULL, detailed = NULL, Xchrom) {
+
+  if(!is.null(pattern)) {
+    detailed = isDeterministic(pattern)
+    type = paste(lengths(pattern), collapse ="-")
+  }
+
+  if(!detailed) {
+    if(is.null(pattern))
+      return("K")
+    else {
+      if(type %in% c("1", "2", "3", "4", "2-2"))
+        return("K")
+      else
+        return("WL")
+    }
+  }
 
   # Detailed on X: only GC
   if(Xchrom)

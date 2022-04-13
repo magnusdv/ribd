@@ -1,15 +1,4 @@
-#' Generalised kinship pattern
-#'
-#' @param x A `ped` object
-#' @param pattern A list of vectors of ID labels.
-#' @param distinct A logical indicating if different blocks always have distinct
-#'   alleles
-#'
-#' @return An object of class `kinpat`.
-#'
-#' @examples
-#' kinpat(nuclearPed(2), list(1, 3:4))
-#'
+#' @rdname gKinship
 #' @export
 kinpat = function(x, pattern, distinct = TRUE) {
   if(!is.ped(x))
@@ -24,8 +13,8 @@ kinpat = function(x, pattern, distinct = TRUE) {
 
   # Deterministic?
   nms = names(ids)
-  detailed = !is.null(nms)
-  if(detailed) {
+  determ = !is.null(nms)
+  if(determ) {
     nmsNum = match(nms, c("", "p", "m")) - 1L  # 0, 1 and 2
     if(anyNA(nmsNum))
       stop2("Names (to indicate deterministic sampling) must be 'p' or 'm': ",
@@ -39,21 +28,21 @@ kinpat = function(x, pattern, distinct = TRUE) {
   pat = lapply(sq, function(i) {
     idx = grp == i
     g = idsInt[idx]
-    if(detailed)
+    if(determ)
       g = 10L*g + nmsNum[idx]
     g
   })
 
-  structure(pat, labs = labels(x), detailed = detailed, distinct = distinct, class = "kinpat")
+  structure(pat, labs = labels(x), deterministic = determ, distinct = distinct, class = "kinpat")
 }
 
 
-kinpat2string = function(kp, detailed = isDetailed(kp)) {
+kinpat2string = function(kp, deterministic = isDeterministic(kp)) {
 
   labs = attr(kp, "labs")
 
   grps = vapply(kp, function(g) {
-    if(detailed) {
+    if(deterministic) {
       lb = labs[g %/% 10]
       par = g %% 10
       lb[par > 0] = paste(lb[par > 0], c("p", "m")[par], sep = ":")
@@ -64,7 +53,8 @@ kinpat2string = function(kp, detailed = isDetailed(kp)) {
     sprintf("(%s)", paste0(lb, collapse = ","))
   }, FUN.VALUE = "")
 
-  paste0(grps, collapse = if(attr(kp, "distinct")) " | " else " / ")
+  blocksep = if(isDistinct(kp)) " / " else " & "
+  paste0(grps, collapse = blocksep)
 }
 
 #' @export
@@ -74,10 +64,10 @@ print.kinpat = function(x, ...) {
 
 kinpat2list = function(kp) {
   labs = attr(kp, "labs")
-  detailed = isDetailed(kp)
+  determ = isDeterministic(kp)
 
   lapply(kp, function(g) {
-    if(detailed) {
+    if(determ) {
       s = labs[g %/% 10]
       names(s) = c("", "p", "m")[g %% 10 + 1]
       s
@@ -112,30 +102,34 @@ kinpatSort = function(kp) {
 }
 
 
-isDetailed = function(kp) {
-  det = attr(kp, "detailed")
+isDeterministic = function(kp) {
+  det = attr(kp, "deterministic")
   !is.null(det) && det
 }
 
+isDistinct = function(kp) {
+  dist = attr(kp, "distinct")
+  !is.null(dist) && dist
+}
 
-kinpatReduce = function(kp, detailed = isDetailed(kp)) { # Remove empty groups
+kinpatReduce = function(kp, deterministic = isDeterministic(kp)) { # Remove empty groups
 
   # Remove empty blocks
   empty = lengths(kp) == 0
   if(any(empty))
     kp[empty] = NULL
 
-  # If non-detailed, nothing more to do
-  if(!detailed)
+  # If non-determ, nothing more to do
+  if(!deterministic)
     return(kp)
 
   vec = unlist(kp, use.names = FALSE)
 
-  # If no parental info, convert to non-detailed and return
+  # If no parental info, convert to non-determ and return
   random = vec %% 10 == 0
   if(all(random)) {
     kp[] = lapply(kp, function(g) g %/% 10L)
-    attr(kp, "detailed") = FALSE
+    attr(kp, "deterministic") = FALSE
     return(kp)
   }
 

@@ -95,8 +95,8 @@ identity_GC = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
 
 
 gKinship_GC = function(x, kp, Xchrom = FALSE, mem, debug = FALSE) {
-  if(!isDetailed(kp))
-    stop2("Method 'GC' supports detailed kinship patterns only")
+  if(!isDeterministic(kp))
+    stop2("Method 'GC' supports deterministic kinship patterns only")
 
   recurse_GC(kp, X = Xchrom, mem = mem, debug = debug)
 }

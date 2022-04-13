@@ -59,10 +59,10 @@ gKinship_LS = function(x, kp, Xchrom = FALSE, mem, debug = FALSE) {
 # Recursion method of Lange & Sinsheimer
 recurse_LS = function(kp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   mem$i = mem$i + 1
-  kp = kinpatReduce(kp, detailed = TRUE)
+  kp = kinpatReduce(kp, deterministic = TRUE)
 
   # If no longer deterministic, switch to random algorithm (WL)
-  if(!isDetailed(kp))
+  if(!isDeterministic(kp))
     return(recurse_WL(kp, X = X, mem, debug = debug, indent = indent))
 
   if(debug)

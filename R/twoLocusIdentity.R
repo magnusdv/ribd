@@ -116,7 +116,7 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose
   g.mei = sprintf("%s>%s", g, 100*b + 1)
   n.mei = sprintf("%s>%s", n, 100*b + 2)
 
-  # Detailed single-locus identity states, described as generalised kinship patterns
+  # Detailed single-locus identity states, described as generalised IBD patterns
   S = c(
     sprintf("%s = %s = %s = %s", f.mei, g.mei, m.mei, n.mei), # 1
     sprintf("%s = %s = %s , %s", f.mei, g.mei, m.mei, n.mei), # 2

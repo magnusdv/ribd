@@ -63,16 +63,16 @@ identity_Karigl = function(x, ids, Xchrom = FALSE, sparse = 30, self = FALSE, ve
 # Generalised kinship coefficients
 # NB: Only limited patterns supported by Karigl
 gKinship_Karigl = function(x, pattern, mem, Xchrom = FALSE, debug = FALSE) {
-  if(isDetailed(pattern))
-    stop2("Method 'K' does not support detailed kinship patterns")
+  if(isDeterministic(pattern))
+    stop2("Method 'K' does not support deterministic kinship patterns")
 
-  type = match(lengths(pattern), list(1L, 2L, 3L, 4L, c(2L, 2L)))
+  type = match(paste(lengths(pattern), collapse ="-"),
+               c("1", "2", "3", "4", "2-2"))
   if(is.na(type))
     stop2("Method 'K' does not support this pattern")
 
-  x = prepPed(x)
+  als = unlist(pattern, use.names = FALSE)
 
-  als = unlist(pattern)
   switch(type,
     1,
     phi2(als[1], als[2], X = Xchrom, mem = mem),
