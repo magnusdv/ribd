@@ -38,8 +38,8 @@
 #' closely linked to that of *generalised kinship coefficients*, which is
 #' further described in the documentation of [gKinship()].
 #'
-#' \[For each algorithm below, it is indicated in brackets how to enforce its
-#' usage in `identityCoefs()`.\]
+#' For each algorithm below, it is indicated in brackets how to enforce it in
+#' `identityCoefs()`.
 #'
 #' * Karigl (1981) gave the first recursive algorithm for the 9 condensed
 #' Jacqaurd coefficients. \[`method = "K"`\]
@@ -62,7 +62,16 @@
 #' "idcoefs"`\]
 #'
 #' * The R package `identity` provides an R interface for `IdCoefs`, avoiding
-#' calls to `system()`. \[`method = "identity"\]`
+#' calls to `system()`. \[`method = "identity"`\]
+#'
+#' * The MERLIN software (Abecasis et al, 2002) offers an option "--extended"
+#' for computing detailed identity coefficients. This option requires MERLIN to
+#' be installed on the system. The function then writes the necessary files to
+#' disk and calls MERLIN via [system()]. If `detailed = FALSE`, the coefficients
+#' are transformed with `detailed2condensed()` before returning. Note: MERLIN
+#' rounds all numbers to 3 decimal places. Since this rounding is done on the
+#' detailed coefficients, rounding errors may happen when converting to the
+#' condensed ones. \[`method = "merlin"`\]
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A vector of two ID labels.
@@ -71,7 +80,8 @@
 #' @param Xchrom A logical, by default FALSE.
 #' @param self A logical indicating if self-relationships (e.g., between a
 #'   pedigree member and itself) should be included. FALSE by default.
-#' @param method Either "auto", "K", "WL", "LS", "GC", "identity" or "idcoefs".
+#' @param method Either "auto", "K", "WL", "LS", "GC", "idcoefs", "identity" or
+#'   "merlin".
 #' @param simplify Simplify the output (to a numeric of length 9) if `ids` has
 #'   length 2. Default: TRUE.
 #' @param verbose A logical.
@@ -102,7 +112,7 @@
 #' * Abney, Mark (2009). A graphical algorithm for fast computation of identity
 #' coefficients and generalized kinship coefficients. Bioinformatics, 25,
 #' 1561-1563. <https://home.uchicago.edu/~abney/abney_web/Software.html>
-
+#'
 #' @examples
 #' x = fullSibMating(1)
 #' ids = 1:6
@@ -113,29 +123,38 @@
 #' j3 = identityCoefs(x, ids, method = "LS")
 #' j4 = identityCoefs(x, ids, method = "GC")
 #' j5 = condensedIdentity(x, ids) # legacy version
-#' # j6 = identityCoefs(x, ids, method = "idcoefs") # requires IdCoefs installed
 #'
 #' stopifnot(all.equal(j1,j2), all.equal(j1,j3), all.equal(j1,j4), all.equal(j1,j5))
 #'
 #' ### Detailed coefficients
 #' jdet1 = identityCoefs(x, ids, detailed = TRUE, method = "LS")
 #' jdet2 = identityCoefs(x, ids, detailed = TRUE, method = "GC")
+#'
 #' stopifnot(all.equal(jdet1,jdet2))
 #'
-#' ### X chromosomal coefficients
-#' jx1 = identityCoefs(x, ids, method = "K", Xchrom = TRUE)
-#' jx2 = identityCoefs(x, ids, method = "GC", Xchrom = TRUE)
+#' ### X-chromosomal coefficients
+#' jx1 = identityCoefs(x, ids, Xchrom = TRUE, method = "K")
+#' jx2 = identityCoefs(x, ids, Xchrom = TRUE, method = "GC")
 #' jx3 = condensedIdentityX(x, ids)  # legacy
+#'
 #' stopifnot(all.equal(jx1,jx2), all.equal(jx1,jx3))
+#'
+#' ### Detailed X-chromosomal coefficients
+#' jdx = identityCoefs(x, ids, detailed = TRUE, Xchrom = TRUE, method = "GC")
+#'
+#' stopifnot(all.equal(detailed2condensed(jdx), jx1))
 #'
 #' @export
 identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE, simplify = TRUE,
-                    method = c("auto", "K", "WL", "LS", "GC", "identity", "idcoefs"),
+                    method = c("auto", "K", "WL", "LS", "GC", "idcoefs", "identity", "merlin"),
                     verbose = FALSE, ...) {
 
   method = match.arg(method)
-  if(method == "auto")
+  if(method == "auto") {
     method = chooseIdentityMethod(x, ids = ids, detailed = detailed, Xchrom = Xchrom)
+    if(verbose)
+      message("Method chosen automatically: '", method, "'")
+  }
 
   res = switch(method,
     K = {
@@ -156,6 +175,13 @@ identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE,
     GC = {
       identity_GC(x, ids, detailed = detailed, Xchrom = Xchrom, self = self, verbose = verbose)
       },
+    idcoefs = {
+      if(Xchrom)
+        stop2("The 'IdCoefs' program does not support X-chromosomal coefficients.")
+      if(detailed)
+        stop2("The 'IdCoefs' program does not support detailed coefficients.")
+      identity_idcoefs(x, ids, self = self, verbose = verbose, ...)
+    },
     identity = {
       if(Xchrom)
         stop2("The 'identity' package does not support X-chromosomal coefficients.")
@@ -163,13 +189,11 @@ identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE,
         stop2("The 'identity' package does not support detailed coefficients.")
       identity_identity(x, ids, self = self, verbose = verbose)
     },
-    idcoefs = {
+    merlin = {
       if(Xchrom)
-        stop2("The 'IdCoefs' program does not support X-chromosomal coefficients.")
-      if(detailed)
-        stop2("The 'IdCoefs' program does not support detailed coefficients.")
-      identity_idcoefs(x, ids, self = self, verbose = verbose, ...)
-    }
+        stop2("The MERLIN (MINX) software does not compute X-chromosomal identity coefficients.")
+      identity_merlin(x, ids, detailed = detailed, self = self, verbose = verbose, ...)
+    },
   )
 
   # For single pair: By default simplify to unnamed vector
@@ -296,7 +320,7 @@ memoIdentity = function(x, Xchrom = FALSE, method = NULL, counters = NULL,
   mem
 }
 
-chooseIdentityMethod = function(x, ids = NULL, pattern = NULL, detailed = NULL, Xchrom) {
+chooseIdentityMethod = function(x, ids = NULL, pattern = NULL, detailed = NULL, Xchrom = FALSE) {
 
   if(!is.null(pattern)) {
     detailed = isDeterministic(pattern)

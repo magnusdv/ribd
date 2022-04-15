@@ -12,7 +12,7 @@ identityCoefs(
   Xchrom = FALSE,
   self = FALSE,
   simplify = TRUE,
-  method = c("auto", "K", "WL", "LS", "GC", "identity", "idcoefs"),
+  method = c("auto", "K", "WL", "LS", "GC", "idcoefs", "identity", "merlin"),
   verbose = FALSE,
   ...
 )
@@ -35,7 +35,8 @@ pedigree member and itself) should be included. FALSE by default.}
 \item{simplify}{Simplify the output (to a numeric of length 9) if \code{ids} has
 length 2. Default: TRUE.}
 
-\item{method}{Either "auto", "K", "WL", "LS", "GC", "identity" or "idcoefs".}
+\item{method}{Either "auto", "K", "WL", "LS", "GC", "idcoefs", "identity" or
+"merlin".}
 
 \item{verbose}{A logical.}
 
@@ -80,8 +81,8 @@ The following is a brief overview of various algorithms for computing
 closely linked to that of \emph{generalised kinship coefficients}, which is
 further described in the documentation of \code{\link[=gKinship]{gKinship()}}.
 
-[For each algorithm below, it is indicated in brackets how to enforce its
-usage in \code{identityCoefs()}.]
+For each algorithm below, it is indicated in brackets how to enforce it in
+\code{identityCoefs()}.
 \itemize{
 \item Karigl (1981) gave the first recursive algorithm for the 9 condensed
 Jacqaurd coefficients. [\code{method = "K"}]
@@ -98,7 +99,15 @@ This requires \code{IdCoefs} to be installed on the computer (see link under
 References) and available on the system search path. The function then writes
 the necessary files to disk and calls \code{IdCoefs} via \code{\link[=system]{system()}}. [\code{method = "idcoefs"}]
 \item The R package \code{identity} provides an R interface for \code{IdCoefs}, avoiding
-calls to \code{system()}. [\verb{method = "identity"\]}
+calls to \code{system()}. [\code{method = "identity"}]
+\item The MERLIN software (Abecasis et al, 2002) offers an option "--extended"
+for computing detailed identity coefficients. This option requires MERLIN to
+be installed on the system. The function then writes the necessary files to
+disk and calls MERLIN via \code{\link[=system]{system()}}. If \code{detailed = FALSE}, the coefficients
+are transformed with \code{detailed2condensed()} before returning. Note: MERLIN
+rounds all numbers to 3 decimal places. Since this rounding is done on the
+detailed coefficients, rounding errors may happen when converting to the
+condensed ones. [\code{method = "merlin"}]
 }
 }
 }
@@ -112,20 +121,26 @@ j2 = identityCoefs(x, ids, method = "WL")
 j3 = identityCoefs(x, ids, method = "LS")
 j4 = identityCoefs(x, ids, method = "GC")
 j5 = condensedIdentity(x, ids) # legacy version
-# j6 = identityCoefs(x, ids, method = "idcoefs") # requires IdCoefs installed
 
 stopifnot(all.equal(j1,j2), all.equal(j1,j3), all.equal(j1,j4), all.equal(j1,j5))
 
 ### Detailed coefficients
 jdet1 = identityCoefs(x, ids, detailed = TRUE, method = "LS")
 jdet2 = identityCoefs(x, ids, detailed = TRUE, method = "GC")
+
 stopifnot(all.equal(jdet1,jdet2))
 
-### X chromosomal coefficients
-jx1 = identityCoefs(x, ids, method = "K", Xchrom = TRUE)
-jx2 = identityCoefs(x, ids, method = "GC", Xchrom = TRUE)
+### X-chromosomal coefficients
+jx1 = identityCoefs(x, ids, Xchrom = TRUE, method = "K")
+jx2 = identityCoefs(x, ids, Xchrom = TRUE, method = "GC")
 jx3 = condensedIdentityX(x, ids)  # legacy
+
 stopifnot(all.equal(jx1,jx2), all.equal(jx1,jx3))
+
+### Detailed X-chromosomal coefficients
+jdx = identityCoefs(x, ids, detailed = TRUE, Xchrom = TRUE, method = "GC")
+
+stopifnot(all.equal(detailed2condensed(jdx), jx1))
 
 }
 \references{

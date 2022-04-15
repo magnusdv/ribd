@@ -80,7 +80,8 @@ identity_idcoefs = function(x, ids, self = FALSE, execPath = "idcoefs", verbose 
 
 
 
-identity_merlin = function(x, ids = labels(x), self = FALSE, detailed = FALSE, execPath = "merlin", verbose = FALSE, cleanup = TRUE) {
+identity_merlin = function(x, ids = labels(x), detailed = FALSE, self = FALSE,
+                           execPath = "merlin", verbose = FALSE, cleanup = TRUE) {
 
   # Check merlin availability
   if(!nzchar(pth <- Sys.which(execPath))) {
