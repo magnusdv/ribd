@@ -10,8 +10,7 @@ condensedIdentity(
   sparse = NA,
   simplify = TRUE,
   self = FALSE,
-  verbose = FALSE,
-  checkAnswer = verbose && length(ids) == 2L
+  verbose = FALSE
 )
 }
 \arguments{
@@ -32,11 +31,6 @@ length 2. Default: TRUE.}
 pedigree member and itself) should be included. FALSE by default.}
 
 \item{verbose}{A logical}
-
-\item{checkAnswer}{A logical. If TRUE, and the \code{identity} package is
-installed, the result is checked against the output of
-\code{\link[identity:identity.coefs]{identity::identity.coefs()}}. This option is ignored if any of the founders
-are inbred, or if \code{ids} has length greater than 2.}
 }
 \value{
 If \code{ids} has length 2 and \code{simplify = TRUE}: A vector of length 9,
@@ -73,5 +67,5 @@ G. Karigl (1981). \emph{A recursive algorithm for the calculation of
 identity coefficients} Annals of Human Genetics, vol. 45.
 }
 \seealso{
-\code{\link[=kappa]{kappa()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
+\code{\link[=kappa]{kappa()}}, \code{\link[=identityCoefs]{identityCoefs()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
 }

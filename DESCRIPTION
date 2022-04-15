@@ -31,7 +31,6 @@ Imports:
     kinship2,
     slam
 Suggests: 
-    identity,
     testthat
 Encoding: UTF-8
 Language: en-GB

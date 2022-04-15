@@ -19,10 +19,6 @@
 #' @param self A logical indicating if self-relationships (e.g., between a
 #'   pedigree member and itself) should be included. FALSE by default.
 #' @param verbose A logical
-#' @param checkAnswer A logical. If TRUE, and the `identity` package is
-#'   installed, the result is checked against the output of
-#'   [identity::identity.coefs()]. This option is ignored if any of the founders
-#'   are inbred, or if `ids` has length greater than 2.
 #'
 #' @return If `ids` has length 2 and `simplify = TRUE`: A vector of length 9,
 #'   containing the condensed identity coefficients.
@@ -34,7 +30,7 @@
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
 #'   identity coefficients_ Annals of Human Genetics, vol. 45.
 #'
-#' @seealso [kappa()], [condensedIdentityX()], [pedtools::founderInbreeding()]
+#' @seealso [kappa()], [identityCoefs()], [pedtools::founderInbreeding()]
 #'
 #' @examples
 #' # One generation of full sib mating.
@@ -50,8 +46,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE, verbose = FALSE,
-                             checkAnswer = verbose && length(ids) == 2L) {
+condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE, verbose = FALSE) {
   if(!is.ped(x))
     stop2("Input is not a `ped` object")
 
@@ -94,12 +89,6 @@ condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE,
     if(verbose)
       printCounts(mem)
 
-    if(checkAnswer) {
-      chk = compare_with_identity(x, ids, j)
-      if(!is.null(chk))
-        return(chk)
-    }
-
     if(simplify)
       return(j)
     else {
@@ -110,10 +99,6 @@ condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE,
   }
 
   # More than 2 individuals: Do all unordered pairs; return data.frame.
-  if(checkAnswer) {
-    warning("`checkAnswer = TRUE` is ignored when `length(ids) > 2`")
-  }
-
   pairs = .idPairs(ids_int, self = self, as = "integer")
 
   RHS = vapply(pairs, function(p) {
@@ -148,27 +133,6 @@ condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE,
   res
 }
 
-compare_with_identity = function(x, ids, j) {
-  message("Comparison with `identity` package: ", appendLF = FALSE)
-
-  if(hasInbredFounders(x)) {
-    message("NA (pedigree has inbred founders)")
-    return()
-  }
-
-  if(!requireNamespace("identity", quietly = TRUE)) {
-    message("NA (package `identity` is not installed)")
-    return()
-  }
-
-  jj = identity_identity(x, ids)
-  if(isTRUE(all.equal(j, jj)))
-    message("OK!")
-  else {
-    message("*** MISMATCH! ***")
-    rbind(`identity:` = jj, `ribd:` = j)
-  }
-}
 
 # Define double bracket extract/replace operators to accommodate the impossibility of zero-values (-1 used instead)
 `[[.simple_sparse_array` = function(x, ...) {
@@ -325,7 +289,7 @@ printCounts = function(mem) {
 #'   individuals. The first two columns contain the ID labels, and columns 3-11
 #'   contain the condensed identity coefficients.
 #'
-#' @seealso [kinship()], [condensedIdentity()], [pedtools::founderInbreeding()]
+#' @seealso [kinship()], [identityCoefs()], [pedtools::founderInbreeding()]
 #'
 #' @examples
 #'

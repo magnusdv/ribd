@@ -183,11 +183,12 @@ identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE,
       identity_idcoefs(x, ids, self = self, verbose = verbose, ...)
     },
     identity = {
+      stop2("The 'identity' package is temporarily unavailable")
       if(Xchrom)
         stop2("The 'identity' package does not support X-chromosomal coefficients.")
       if(detailed)
         stop2("The 'identity' package does not support detailed coefficients.")
-      identity_identity(x, ids, self = self, verbose = verbose)
+      #identity_identity(x, ids, self = self, verbose = verbose)
     },
     merlin = {
       if(Xchrom)
