@@ -36,7 +36,7 @@ pedigree member and itself) should be included. FALSE by default.}
 length 2. Default: TRUE.}
 
 \item{method}{Either "auto", "K", "WL", "LS", "GC", "idcoefs", "identity" or
-"merlin".}
+"merlin". By default ("auto") a suitable algorithm is chosen automatically.}
 
 \item{verbose}{A logical.}
 
@@ -85,9 +85,10 @@ For each algorithm below, it is indicated in brackets how to enforce it in
 \code{identityCoefs()}.
 \itemize{
 \item Karigl (1981) gave the first recursive algorithm for the 9 condensed
-Jacqaurd coefficients. [\code{method = "K"}]
+identity coefficients. [\code{method = "K"}]
 \item Weeks & Lange (1988) suggested a broader and more natural generalisation of
-kinship coefficients, and a recursive algorithm for computing them. [\code{method = "WL"}]
+kinship coefficients, leading to a slightly different algorithm for condensed
+coefficients. [\code{method = "WL"}]
 \item Lange & Sinsheimer (1992) described an even further generalisation of
 kinship coefficients, allowing a mix of deterministic and random sampling of
 alleles. They used this to give (i) an alternative algorithm for the 9

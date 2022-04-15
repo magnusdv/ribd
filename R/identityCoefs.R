@@ -42,11 +42,11 @@
 #' `identityCoefs()`.
 #'
 #' * Karigl (1981) gave the first recursive algorithm for the 9 condensed
-#' Jacqaurd coefficients. \[`method = "K"`\]
+#' identity coefficients. \[`method = "K"`\]
 #'
 #' * Weeks & Lange (1988) suggested a broader and more natural generalisation of
-#' kinship coefficients, and a recursive algorithm for computing them. \[`method
-#' = "WL"`\]
+#' kinship coefficients, leading to a slightly different algorithm for condensed
+#' coefficients. \[`method = "WL"`\]
 #'
 #' * Lange & Sinsheimer (1992) described an even further generalisation of
 #' kinship coefficients, allowing a mix of deterministic and random sampling of
@@ -81,7 +81,7 @@
 #' @param self A logical indicating if self-relationships (e.g., between a
 #'   pedigree member and itself) should be included. FALSE by default.
 #' @param method Either "auto", "K", "WL", "LS", "GC", "idcoefs", "identity" or
-#'   "merlin".
+#'   "merlin". By default ("auto") a suitable algorithm is chosen automatically.
 #' @param simplify Simplify the output (to a numeric of length 9) if `ids` has
 #'   length 2. Default: TRUE.
 #' @param verbose A logical.
