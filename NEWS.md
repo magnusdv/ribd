@@ -1,3 +1,31 @@
+# ribd 1.4.0
+
+## Breaking changes
+
+* The function `idcoefs()` was removed, since it relied on the no-longer-available package `identity`.
+
+* The deprecated functions `kinshipX()`, `inbreedingX()` and `kappaIbdX()` are removed, and replaced with an argument `Xchrom` in `kinship()`, `inbreeding()` and `kappaIBD()`.
+
+## New features
+
+* New function `identityCoefs()` for computing condensed and detailed identity coefficients ("Jacquard coefficients"). Both autosomal and X-chromosomal versions are supported. This function supersedes `condensedIdentity()` and `condensedIdentityX()`, which will continue to exist, nonetheless. 
+
+* `condensedIdentity()` gains arguments `simplify` and `self`, to match the new `identityCoefs()`.
+
+* Computation of identity coefficients by MERLIN (via the "--extended" feature) is implemented in `identityCoefs()` with the option  `method = "merlin"`. Note that MERLIN rounds the output to 3 decimals, reducing its utility somewhat.
+
+* New function `gKinship()` for computing generalised kinship coefficients. Several algorithms are implemented, supporting various flavours (random vs. deterministic; distinct vs. non-distinct groups; autosomal vs. X).
+
+* New container class `gip` for generalised IBD patterns. Includes a print method.
+
+* New function `coeffTable()` collecting various pedigree coefficients in a single table.
+
+* New function `kin2deg()` computing the degree of relatedness, as used e.g. by the software KING.
+
+## Bug fixes
+* Fixed bug in `kinship(x, ids)` affecting pedigrees in nonstandard order.
+
+
 # ribd 1.3.1
 
 * `kinship()` now accepts a list of pedigrees as input.
