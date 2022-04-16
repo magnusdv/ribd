@@ -73,12 +73,12 @@
 #'
 #' ## Internal structure of `gip` objects
 #'
-#' (Note: This section is included only for completeness; `gip` objects
-#' should not be directly manipulated by end users.)
+#' (Note: This section is included only for completeness; `gip` objects should
+#' not be directly manipulated by end users.)
 #'
-#' Internally, a GIP is stored as a list of integer vectors, each vector
-#' giving the indices of pedigree members constituting an IBD block. In
-#' addition, the object has three attributes:
+#' Internally, a GIP is stored as a list of integer vectors, each vector giving
+#' the indices of pedigree members constituting an IBD block. In addition, the
+#' object has three attributes:
 #'
 #' * `labs`: A character vector containing the names of all pedigree members
 #'
@@ -87,9 +87,9 @@
 #'
 #' * `distinct`: A logical.
 #'
-#' If `deterministic = TRUE`, a slight hack is used to preserve the additional
-#' information. The parental origin is then encoded in the last digit (0 =
-#' unknown; 1 = paternal; 2 = maternal), so that, e.g.:
+#' If `deterministic = TRUE`, the last digit of each integer encodes the
+#' parental origin of the allele (0 = unknown; 1 = paternal; 2 = maternal). For
+#' example:
 #'
 #' * 12 = the maternal origin of individual 1
 #'
@@ -129,7 +129,7 @@
 #'
 #' * `K`: Karigl's algorithm for random, non-distinct patterns. Only a few cases
 #' are supported, namely single groups up to length 4, and two groups of length
-#' 2. (These were the ones considered by Karigl.) Extended to support
+#' tw (these were the ones considered by Karigl.) Extended to support
 #' X-chromosomal patterns and inbred founders.
 #'
 #' * `WL`: Weeks & Lange's algorithm for random, distinct patterns of any size.
@@ -142,7 +142,7 @@
 #' * `GC`: Garcia-Cortes' algorithm for fully deterministic, non-distinct
 #' patterns. The current implementation only supports the patterns needed to
 #' compute identity coefficients, namely single blocks and two blocks of length
-#' 2. Extended to support X-chromosomal patterns and inbreed founders.
+#' two. Extended to support X-chromosomal patterns and inbreed founders.
 #'
 #' @param x A `ped` object.
 #' @param pattern A `gip` object, or a list of vectors to be passed onto

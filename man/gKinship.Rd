@@ -120,12 +120,12 @@ elements with "p" or "m". See Examples for how to create the above patterns.
 
 \subsection{Internal structure of \code{gip} objects}{
 
-(Note: This section is included only for completeness; \code{gip} objects
-should not be directly manipulated by end users.)
+(Note: This section is included only for completeness; \code{gip} objects should
+not be directly manipulated by end users.)
 
-Internally, a GIP is stored as a list of integer vectors, each vector
-giving the indices of pedigree members constituting an IBD block. In
-addition, the object has three attributes:
+Internally, a GIP is stored as a list of integer vectors, each vector giving
+the indices of pedigree members constituting an IBD block. In addition, the
+object has three attributes:
 \itemize{
 \item \code{labs}: A character vector containing the names of all pedigree members
 \item \code{deterministic}: A logical, which is TRUE if the pattern is (partially or
@@ -133,9 +133,9 @@ fully) deterministic
 \item \code{distinct}: A logical.
 }
 
-If \code{deterministic = TRUE}, a slight hack is used to preserve the additional
-information. The parental origin is then encoded in the last digit (0 =
-unknown; 1 = paternal; 2 = maternal), so that, e.g.:
+If \code{deterministic = TRUE}, the last digit of each integer encodes the
+parental origin of the allele (0 = unknown; 1 = paternal; 2 = maternal). For
+example:
 \itemize{
 \item 12 = the maternal origin of individual 1
 \item 231 = the paternal allele of individual 23
@@ -173,12 +173,8 @@ implement.
 \item \code{auto}: Chooses method automatically, based on the pattern type.
 \item \code{K}: Karigl's algorithm for random, non-distinct patterns. Only a few cases
 are supported, namely single groups up to length 4, and two groups of length
-}
-\enumerate{
-\item (These were the ones considered by Karigl.) Extended to support
+tw (these were the ones considered by Karigl.) Extended to support
 X-chromosomal patterns and inbred founders.
-}
-\itemize{
 \item \code{WL}: Weeks & Lange's algorithm for random, distinct patterns of any size.
 [TODO: Include the extension to X by Weeks et al. (1995).]
 \item \code{LS}: Lange & Sinsheimer's algorithm for partially deterministic, distinct
@@ -187,9 +183,7 @@ founders.
 \item \code{GC}: Garcia-Cortes' algorithm for fully deterministic, non-distinct
 patterns. The current implementation only supports the patterns needed to
 compute identity coefficients, namely single blocks and two blocks of length
-}
-\enumerate{
-\item Extended to support X-chromosomal patterns and inbreed founders.
+two. Extended to support X-chromosomal patterns and inbreed founders.
 }
 }
 }
