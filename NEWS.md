@@ -4,7 +4,9 @@
 
 * The function `idcoefs()` was removed, since it relied on the no-longer-available package `identity`.
 
-* The deprecated functions `kinshipX()`, `inbreedingX()` and `kappaIbdX()` are removed, and replaced with an argument `Xchrom` in `kinship()`, `inbreeding()` and `kappaIBD()`.
+* The deprecated `kinshipX()`, `inbreedingX()` and `kappaIbdX()` were removed, and replaced with an argument `Xchrom` in `kinship()`, `inbreeding()` and `kappaIBD()`.
+
+* The function `generalisedKinship()` has been replaced with the much more versatile `gKinship()` (see below). 
 
 ## New features
 

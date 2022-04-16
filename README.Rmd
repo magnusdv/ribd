@@ -31,13 +31,13 @@ The main functions in **ribd** are the following, all of which support both auto
 * `kinship()` : Kinship coefficients
 * `inbreeding()` : Inbreeding coefficients
 * `kappaIBD()` : IBD coefficients `kappa = (k0, k1, k2)` between noninbred individuals
-* `condensedIdentity()` : Jacquard's condensed identity coefficients
+* `identityCoefs()` : Jacquard's condensed identity coefficients
 
 A unique feature of **ribd** is the ability to handle pedigrees with inbred founders in all of the above calculations. More about this below!
 
 The package also computes a variety of lesser-known pedigree coefficients:
 
-* `generalisedKinship()` : Generalised kinship coefficients, as defined by Weeks and Lange (1988)
+* `gKinship()` : Generalised kinship coefficients of various kinds, including those defined by Karigl (1981), Weeks & Lange (1988), Lange & Sinsheimer (1992) and García-Cortés (2015).
 * `multiPersonIBD()` : Multi-person IBD coefficients (noninbred individuals only)
 * `twoLocusKinship()` : Two-locus kinship coefficients, as defined by Thompson (1988)
 * `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of individuals)
@@ -83,14 +83,14 @@ inbreeding(x, ids = 9)
 ```
 
 #### Kinship coefficient 
-By theory, the above inbreeding coefficient should equal the *kinship coefficient* between the parents, i.e., the two cousins `7` and `8`:
+By theory, the above inbreeding coefficient should equal the *kinship coefficient* between the parents, i.e., the cousins `7` and `8`:
 ```{r}
 kinship(x, ids = 7:8)
 ```
 As expected, the result was again 1/16.
 
 #### Kappa coefficients and the IBD triangle
-For a pair of noninbred individuals, the three `kappa` coefficients are defined as the probability that they have exactly 0, 1 or 2 alleles IBD, respectively, at a random autosomal locus. For example, for a pair of full siblings, this works out to be 1/4, 1/2 and 1/4, respectively.
+For a pair of noninbred individuals, the three kappa coefficients are defined as the probability that they have exactly 0, 1 or 2 alleles IBD, respectively, at a random autosomal locus. For example, for a pair of full siblings, this works out to be 1/4, 1/2 and 1/4, respectively.
 
 Since the three kappa's always sum to 1, any two of them are sufficient, forming the coordinates of a point in the plane. This gives rise to the *IBD triangle*, which is a useful tools for visualising (noninbred) relationships. The implementation in **ribd** uses `kappa0` on the first axis and `kappa2` on the second. In the example below, we place all pairs of pedigree members in the triangle.
 
@@ -109,7 +109,7 @@ k = kappaIBD(y)
 showInTriangle(k, labels = T, cexLab = 1.3, pos = c(3,2,3,4,4,3))
 ```
 
-As shown by [Thompson (1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all relationships of noninbred individuals satisfy a certain quadratic inequality in the kappa's, resulting in an unattainable region of the triangle (shown in gray above).
+As shown by [Thompson (1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all relationships of noninbred individuals satisfy a certain quadratic inequality in the kappa's, resulting in an unattainable region of the triangle (shown in grey above).
 
 #### A more complex example
 Here is a relationship in the *interior* of the attainable region of the IBD triangle:
@@ -144,13 +144,19 @@ x = fullSibMating(1)
 plot(x, hatched = 5:6, margin = c(1,1,.1,1))
 ```
 
-The function `condensedIdentity()` returns the nine coefficients in the order given above.
+The function `identityCoefs()` by default returns the nine coefficients in the order given above.
 ```{r}
-condensedIdentity(x, ids = 5:6)
+identityCoefs(x, ids = 5:6)
 ```
 
 ## Identity states on X
-The X chromosomal version of `condensedIdentity()` is called `condensedIdentityX()`. What this function computes requires some explanation, which we offer here.
+The X-chromosomal version of Jacquard's identity coefficients can be computed by adding `Xchrom = TRUE` in the call to `identityCoefs()`. Here is the output for all pairs in the above pedigree:
+
+```{r}
+identityCoefs(x, Xchrom = TRUE)
+```
+
+A precise definition of these X-chromosomal coefficients requires some explanation, which we give here.
 
 As in the autosomal case, the identity coefficients on X are the expected proportions of the possible IBD states involving the alleles at a random locus (on X). The challenge is that the set of states depends on the individual's sex: F/F, F/M, M/F or M/M (were F = female and M = male). The easiest case is F/F: When both are female, the states are just as in the autosomal case.
 
@@ -177,14 +183,15 @@ founderInbreeding(z, id = 6) = 0.5 * sqrt(2)
 Note that founder inbreeding is by default included in the pedigree plot:
 ```{r, eval = F}
 # Plot pedigree
-plot(z, hatched = 7:8)
+plot(z, hatched = 7:8, labs = 7:8)
 
 # IBD triangle
 showInTriangle(kappaIBD(z, 7:8))
 ```
 
 
-```{r coef-construct, echo = F, fig.show = "hold", fig.width = c(3.5, 3.9), fig.height = c(3.5, 3.9), out.width = c("42%", "47%"), fig.cap = "A relationship with kappa = (1/8, 6/8, 1/8)"}
+```{r coef-construct, echo = F, fig.show = "hold", fig.width = c(3.5, 3.9), fig.height = c(3.5, 3.9), out.width = c("42%", "46%"), fig.cap = "A relationship with kappa = (1/8, 6/8, 1/8)"}
+
 plot(z, hatched = leaves, margins = c(3.5,2,3,2), 
      align = c(0, 0.15), cex = 1.2, labs = 7:8)
 

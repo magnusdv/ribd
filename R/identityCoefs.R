@@ -115,37 +115,36 @@
 #'
 #' @examples
 #' x = fullSibMating(1)
-#' ids = 1:6
 #'
 #' ### Condensed coefficients
-#' j1 = identityCoefs(x, ids, method = "K")
-#' j2 = identityCoefs(x, ids, method = "WL")
-#' j3 = identityCoefs(x, ids, method = "LS")
-#' j4 = identityCoefs(x, ids, method = "GC")
-#' j5 = condensedIdentity(x, ids) # legacy version
+#' j1 = identityCoefs(x, method = "K")
+#' j2 = identityCoefs(x, method = "WL")
+#' j3 = identityCoefs(x, method = "LS")
+#' j4 = identityCoefs(x, method = "GC")
+#' j5 = condensedIdentity(x, ids = 1:6) # legacy version
 #'
 #' stopifnot(all.equal(j1,j2), all.equal(j1,j3), all.equal(j1,j4), all.equal(j1,j5))
 #'
 #' ### Detailed coefficients
-#' jdet1 = identityCoefs(x, ids, detailed = TRUE, method = "LS")
-#' jdet2 = identityCoefs(x, ids, detailed = TRUE, method = "GC")
+#' jdet1 = identityCoefs(x, detailed = TRUE, method = "LS")
+#' jdet2 = identityCoefs(x, detailed = TRUE, method = "GC")
 #'
 #' stopifnot(all.equal(jdet1,jdet2))
 #'
 #' ### X-chromosomal coefficients
-#' jx1 = identityCoefs(x, ids, Xchrom = TRUE, method = "K")
-#' jx2 = identityCoefs(x, ids, Xchrom = TRUE, method = "GC")
-#' jx3 = condensedIdentityX(x, ids)  # legacy
+#' jx1 = identityCoefs(x, Xchrom = TRUE, method = "K")
+#' jx2 = identityCoefs(x, Xchrom = TRUE, method = "GC")
+#' jx3 = condensedIdentityX(x, ids = 1:6)  # legacy version
 #'
 #' stopifnot(all.equal(jx1,jx2), all.equal(jx1,jx3))
 #'
 #' ### Detailed X-chromosomal coefficients
-#' jdx = identityCoefs(x, ids, detailed = TRUE, Xchrom = TRUE, method = "GC")
+#' jdx = identityCoefs(x, detailed = TRUE, Xchrom = TRUE, method = "GC")
 #'
 #' stopifnot(all.equal(detailed2condensed(jdx), jx1))
 #'
 #' @export
-identityCoefs = function(x, ids, detailed = FALSE, Xchrom = FALSE, self = FALSE, simplify = TRUE,
+identityCoefs = function(x, ids = labels(x), detailed = FALSE, Xchrom = FALSE, self = FALSE, simplify = TRUE,
                     method = c("auto", "K", "WL", "LS", "GC", "idcoefs", "identity", "merlin"),
                     verbose = FALSE, ...) {
 
