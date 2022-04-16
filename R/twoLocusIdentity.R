@@ -116,7 +116,7 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose
   g.mei = sprintf("%s>%s", g, 100*b + 1)
   n.mei = sprintf("%s>%s", n, 100*b + 2)
 
-  # Detailed single-locus identity states, described as generalised kinship patterns
+  # Detailed single-locus identity states, described as generalised IBD patterns
   S = c(
     sprintf("%s = %s = %s = %s", f.mei, g.mei, m.mei, n.mei), # 1
     sprintf("%s = %s = %s , %s", f.mei, g.mei, m.mei, n.mei), # 2
@@ -179,21 +179,4 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose
   RES
 }
 
-# TODO: Fix for selfing
-addFounderParents = function(x, ids) {
-  id1 = ids[1]
-  id2 = ids[2]
-  fou = founders(x)
 
-  if(id1 %in% fou) {
-    if(founderInbreeding(x, id1) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
-    x = addParents(x, id1, verbose = FALSE)
-  }
-
-  if(id2 %in% fou) {
-    if(founderInbreeding(x, id2) > 0) stop2("This case of founder inbreeding is not implemented. Please contact MDV")
-    x = addParents(x, id2, verbose = FALSE)
-  }
-
-  x
-}

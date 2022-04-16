@@ -244,7 +244,7 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   mem = new.env()
 
   # Start timing
-  st = Sys.time()
+  mem$st = Sys.time()
 
   mem$FIDX = ped$FIDX
   mem$MIDX = ped$MIDX
@@ -291,10 +291,6 @@ initialiseTwoLocusMemo = function(ped, rho, recomb = NULL, chromType = "autosoma
   # Counters
   for(cou in counters)
     assign(cou, 0, envir = mem)
-
-  # Start time
-  mem$st = st
-  mem$initTime = Sys.time() - st
 
   mem
 }

@@ -47,11 +47,6 @@
 #'   length 2. Default: TRUE.
 #' @param Xchrom A logical, indicating if the autosomal (default) or
 #'   X-chromosomal kappa coefficients should be computed.
-#' @param sparse A positive integer, indicating the pedigree size limit for
-#'   using sparse arrays (as implemented by the
-#'   [slam](https://CRAN.R-project.org/package=slam) package) instead of
-#'   ordinary arrays.
-#' @param verbose A logical.
 #'
 #' @return If `ids` has length 2 and `simplify = TRUE`: A numeric vector of
 #'   length 3: \eqn{(\kappa0, \kappa1, \kappa2)}.
@@ -65,7 +60,7 @@
 #'   Furthermore, the X-chromosomal \eqn{\kappa2} is NA whenever at least one of
 #'   the two individuals is male.
 #'
-#' @seealso [kinship()], [condensedIdentity()]
+#' @seealso [kinship()], [identityCoefs()]
 #'
 #' @examples
 #' ### Siblings
@@ -281,78 +276,3 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchro
   res
 }
 
-
-
-#' @rdname kappaIBD
-#' @export
-kappaIbdX = function(x, ids, sparse = NA, verbose = FALSE) {
-  message("This function is deprecated. Use `kappaIBD(..., Xchrom = TRUE)` instead.")
-
-  if(!is.ped(x))
-    stop2("Input is not a `ped` object")
-
-  # Enforce parents to precede their children
-  if(!hasParentsBeforeChildren(x))
-    x = parentsBeforeChildren(x)
-
-  ids_int = internalID(x, ids)
-
-  # Setup memoisation
-  mem = initialiseMemo(x, ids_int, sparse = sparse, chromType = "x", verbose = verbose)
-  KIN2 = mem$KIN2
-  INB = 2*diag(KIN2) - 1 # inbreeding coeffs
-  SEX = mem$SEX
-
-  if(verbose && any(INB[SEX == 2] > .Machine$double.eps)) {
-    message("Warning: X-kappas involving inbred females are undefined:")
-    inbred = females(x)[INB[SEX == 2] > .Machine$double.eps]
-    for(id in inbred)
-      message(sprintf("  %s: f = %f", id, INB[id]))
-    message("")
-  }
-
-  # All unordered pairs
-  pairs = combn(ids_int, 2, simplify = FALSE)
-
-  # System of equations:
-  # k0 + k1 +   k2 = 1
-  #      k1 + 2*k2 = 4*phi_{ab}
-  #      k1 + 4*k2 = 16*phi_{ab,ab}
-  # ==> Solve for k0, k1, k2
-
-  # Compute kappa coefficients
-  kappas = vapply(pairs, function(p) {
-
-    # If the pair includes an inbred female, return NA's
-    if(any(SEX[p] == 2 & INB[p] > .Machine$double.eps))
-      c(NA_real_, NA_real_, NA_real_)
-    else {
-      id1 = p[1]; id2 = p[2]
-      u = KIN2[[id1, id2]]
-      switch(sum(SEX[p] == 2) + 1,
-             c(1 - u, u, NA), # both males
-             c(1 - 2*u, 2*u, NA), # one male, one female
-             { # both female
-               v = phi22(id1, id2, id1, id2, chromType = "x", mem = mem)
-               c(1 - 6*u + 8*v, 8*u - 16*v, 8*v - 2*u)
-             })
-    }
-  }, FUN.VALUE = numeric(3))
-
-  if(verbose)
-    printCounts(mem)
-
-  if(length(ids) == 2)
-    return(kappas[,1])
-
-  # Build result data frame
-  labs = labels(x)
-  idcols = do.call(rbind, pairs)
-  res = data.frame(id1 = labs[idcols[, 1]],
-                   id2 = labs[idcols[, 2]],
-                   t.default(kappas),
-                   stringsAsFactors = FALSE)
-  names(res)[3:5] = paste0("kappa", 0:2)
-
-  res
-}

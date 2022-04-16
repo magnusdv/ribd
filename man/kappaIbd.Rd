@@ -2,12 +2,9 @@
 % Please edit documentation in R/kappaIbd.R
 \name{kappaIBD}
 \alias{kappaIBD}
-\alias{kappaIbdX}
 \title{IBD (kappa) coefficients}
 \usage{
 kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE)
-
-kappaIbdX(x, ids, sparse = NA, verbose = FALSE)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{ped} object (or a list of such).}
@@ -25,13 +22,6 @@ length 2. Default: TRUE.}
 
 \item{Xchrom}{A logical, indicating if the autosomal (default) or
 X-chromosomal kappa coefficients should be computed.}
-
-\item{sparse}{A positive integer, indicating the pedigree size limit for
-using sparse arrays (as implemented by the
-\href{https://CRAN.R-project.org/package=slam}{slam} package) instead of
-ordinary arrays.}
-
-\item{verbose}{A logical.}
 }
 \value{
 If \code{ids} has length 2 and \code{simplify = TRUE}: A numeric vector of
@@ -113,5 +103,5 @@ kappaIBD(y, Xchrom = TRUE)
 
 }
 \seealso{
-\code{\link[=kinship]{kinship()}}, \code{\link[=condensedIdentity]{condensedIdentity()}}
+\code{\link[=kinship]{kinship()}}, \code{\link[=identityCoefs]{identityCoefs()}}
 }

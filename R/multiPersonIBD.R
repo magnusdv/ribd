@@ -93,7 +93,7 @@ multiPersonIBD = function(x, ids, complete = FALSE, verbose = FALSE) {
   x = foundersFirst(x)
 
   # Setup memoisation
-  mem = initialiseGKMemo(x, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
+  mem = memoIdentity(x, method = "WL")
 
   allPatterns = MULTIPATTERNS_NONINBRED[[N]]
   usePatterns = removeImpossiblePatterns(allPatterns, x, ids, verbose = verbose)
@@ -104,13 +104,13 @@ multiPersonIBD = function(x, ids, complete = FALSE, verbose = FALSE) {
   coefs = apply(usePatterns, 1, function(r) {
     kp = r[1:(2*N)]
     weight = r[2*N + 1]
-    g = generalisedKinship(x, split(ids2, kp), mem = mem)
+    g = gKinship(x, split(ids2, kp), mem = mem, method = "WL")
     2^N * weight * g
   })
 
   # Print computational summary
   if(verbose)
-    printCounts2(mem)
+    printMemInfo(mem)
 
   # Collect into data frame
   glist = lapply(seq(1, 2*N, by = 2), function(i)

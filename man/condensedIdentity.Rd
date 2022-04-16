@@ -9,8 +9,8 @@ condensedIdentity(
   ids,
   sparse = NA,
   simplify = TRUE,
-  verbose = FALSE,
-  checkAnswer = verbose && length(ids) == 2L
+  self = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -27,12 +27,10 @@ ordinary arrays.}
 \item{simplify}{Simplify the output (to a numeric of length 9) if \code{ids} has
 length 2. Default: TRUE.}
 
-\item{verbose}{A logical}
+\item{self}{A logical indicating if self-relationships (e.g., between a
+pedigree member and itself) should be included. FALSE by default.}
 
-\item{checkAnswer}{A logical. If TRUE, and the \code{identity} package is
-installed, the result is checked against the output of
-\code{\link[identity:identity.coefs]{identity::identity.coefs()}}. This option is ignored if any of the founders
-are inbred, or if \code{ids} has length greater than 2.}
+\item{verbose}{A logical}
 }
 \value{
 If \code{ids} has length 2 and \code{simplify = TRUE}: A vector of length 9,
@@ -69,5 +67,5 @@ G. Karigl (1981). \emph{A recursive algorithm for the calculation of
 identity coefficients} Annals of Human Genetics, vol. 45.
 }
 \seealso{
-\code{\link[=kappa]{kappa()}}, \code{\link[=condensedIdentityX]{condensedIdentityX()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
+\code{\link[=kappa]{kappa()}}, \code{\link[=identityCoefs]{identityCoefs()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}
 }

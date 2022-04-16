@@ -112,7 +112,6 @@ twoLocusKinship = function(x, ids, rho, recombinants = NULL, verbose = FALSE, de
 
     # Print info
     if(verbose) {
-      init_time = format(mem$initTime, digits = 4)
       tot_time = format(Sys.time()-mem$st, digits = 4)
       message(glue::glue("
         Calls = {mem$i}
@@ -299,7 +298,8 @@ printMess = function(plist, indent) {
                   strrep(" ", indent), pp[1], pp[2], pp[3], pp[4]))
 }
 
-printAndReturn = function(res, indent, comment = NULL) {
+# TODO: Merge with debugReturn
+printAndReturn = function(res, indent = NA, comment = NULL) {
   if(!is.na(indent))
     message(strrep(" ", indent), res, comment)
   res
