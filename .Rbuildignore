@@ -8,3 +8,4 @@
 ^CRAN-RELEASE$
 ^revdep$
 ^Rprof\.out$
+^CRAN-SUBMISSION$
