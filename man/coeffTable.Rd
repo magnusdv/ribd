@@ -14,6 +14,9 @@ two or more pedigree members.}
 
 \item{coeffs}{A character vector containing one or more of the keywords "f",
 "phi", "deg", "kappa", "Delta".}
+\item{Xchrom}{A logical indicating if the coefficients should be autosomal
+(default) or X-chromosomal. If \code{Xchrom = NA}, both sets are included.}
+
 }
 \value{
 A data frame.
@@ -46,4 +49,10 @@ coeffTable(x, coeffs = c("phi", "deg", "kappa"))
 
 # Only the uncle-nephew pair
 coeffTable(x, ids = c(3, 6), coeffs = c("phi", "deg", "kappa"))
+# X-chromosomal coefficients
+coeffTable(x, Xchrom = TRUE)
+
+# Both autosomal and X
+coeffTable(x, Xchrom = NA)
+
 }

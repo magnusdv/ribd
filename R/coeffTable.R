@@ -24,6 +24,8 @@
 #'   "phi", "deg", "kappa", "Delta".
 #'
 #' @return A data frame.
+#' @param Xchrom A logical indicating if the coefficients should be autosomal
+#'   (default) or X-chromosomal. If `Xchrom = NA`, both sets are included.
 #'
 #' @examples
 #' # Uncle-nephew pedigree
@@ -41,39 +43,50 @@
 coeffTable = function(x, ids = labels(x), coeffs = c("f", "phi", "deg", "kappa", "Delta")) {
   coeffs = match.arg(coeffs, several.ok = TRUE)
 
-  kappa = kappaIBD(x, ids = ids, simplify = FALSE, inbredAction = 0)
+  # Xchrom = NA --> both
+  if(is.na(Xchrom)) {
+    aut = coeffTable(x, ids, coeff = coeff, Xchrom = FALSE, self = self)
+    xchr = coeffTable(x, ids, coeff = coeff, Xchrom = TRUE, self = self)
+    return(cbind(aut, xchr[, -(1:2)]))
+  }
+
+  kappa = kappaIBD(x, ids = ids, simplify = FALSE, inbredAction = 0, Xchrom = Xchrom)
   id1 = kappa$id1
   id2 = kappa$id2
 
   # Initialise output data frame
   res = data.frame(id1 = id1, id2 = id2)
 
-  if("f" %in% coeffs) {
-    inb = inbreeding(x, ids = ids)
+  if("f" %in% coeff) {
+    inb = inbreeding(x, ids = ids, Xchrom = Xchrom)
     res = cbind(res, f1 = inb[id1], f2 = inb[id2])
   }
 
-  if("phi" %in% coeffs || "deg" %in% coeffs) {
-    phiMat = kinship(x)
+  if("phi" %in% coeff || "deg" %in% coeffs) {
+    phiMat = kinship(x, Xchrom = Xchrom)
     phi = phiMat[cbind(id1, id2)]
   }
 
-  if("phi" %in% coeffs) {
+  if("phi" %in% coeff) {
     res = cbind(res, phi = phi)
   }
 
-  if("deg" %in% coeffs) {
+  if("deg" %in% coeff) {
     res = cbind(res, deg = kin2deg(phi, unrelated = NA_integer_))
   }
 
-  if("kappa" %in% coeffs) {
+  if("kappa" %in% coeff) {
     res = cbind(res, kappa[, -(1:2)])
   }
 
   if("Delta" %in% coeffs) {
-    delta = condensedIdentity(x, ids = ids, simplify = FALSE, verbose = FALSE)
+    delta = identityCoefs(x, ids = ids, detailed = FALSE, simplify = FALSE, Xchrom = Xchrom, verbose = FALSE)
     res = cbind(res, delta[, -(1:2)])
   }
+
+
+  if(Xchrom)
+    names(res)[-(1:2)] = paste0("X-", names(res)[-(1:2)])
 
   res
 }
