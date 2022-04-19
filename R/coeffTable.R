@@ -13,7 +13,7 @@
 #' * `deg`: The degree of relationship, as computed by [kin2deg]. Column: `deg`
 #'
 #' * `kappa`: The IBD coefficients computed by [kappaIBD]. (These are NA for
-#' pairs involving inbred individuals.) Columns: `kappa0`, `kappa1`, `kappa2`.
+#' pairs involving inbred individuals.) Columns: `k0`, `k1`, `k2`.
 #'
 #' * `identity`: The 9 condensed identity coefficients of Jacquard, computed by
 #' [identityCoefs()]. Columns: `D1`, ..., `D9`.
@@ -132,6 +132,7 @@ coeffTable = function(x, ids = labels(x), coeff = c("f", "phi", "deg", "kappa", 
 
   if("kappa" %in% coeff) {
     kappa = kappaIBD(x, ids = ids, simplify = FALSE, inbredAction = 0, Xchrom = Xchrom)
+    names(kappa)[3:5] = paste0("k", 0:2) # abbreviate prefix from "kappa" to "k"
     res = merge(res, kappa, by = 1:2, all.x = TRUE)
   }
 

@@ -51,7 +51,7 @@ Available coefficients (indicated in \code{coeff}) include:
 \item \code{phi}: The kinship coefficient. Column: \code{phi}.
 \item \code{deg}: The degree of relationship, as computed by \link{kin2deg}. Column: \code{deg}
 \item \code{kappa}: The IBD coefficients computed by \link{kappaIBD}. (These are NA for
-pairs involving inbred individuals.) Columns: \code{kappa0}, \code{kappa1}, \code{kappa2}.
+pairs involving inbred individuals.) Columns: \code{k0}, \code{k1}, \code{k2}.
 \item \code{identity}: The 9 condensed identity coefficients of Jacquard, computed by
 \code{\link[=identityCoefs]{identityCoefs()}}. Columns: \code{D1}, ..., \code{D9}.
 \item \code{detailed}: The detailed identity coefficients of Jacquard, computed by
