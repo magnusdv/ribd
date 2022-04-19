@@ -141,7 +141,7 @@ kinship = function(x, ids = NULL, Xchrom = FALSE) {
     stop2("Input is not a `ped` object")
 
   if(any(x$SEX == 0))
-    stop2("Members with unknown gender not allowed in X-kinship algorithm: ",
+    stop2("Cannot compute X-kinship in pedigrees with members of unknown sex: ",
           labels(x)[x$SEX == 0])
 
   # Ensure standard order of pedigree members
