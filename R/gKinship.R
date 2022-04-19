@@ -62,13 +62,14 @@
 #' random alleles of from A and B, respectively. The two pairs are not
 #' necessarily different. \[Partially deterministic, non-distinct\]
 #'
-#' * `(A:p, A, A)`: Here we have just one group, specifying that paternal allele
-#' of A is IBD with two other alleles sampled randomly from A. (If A is
+#' * `(A:p, A, A)`: Here we have just one group, specifying that the paternal
+#' allele of A is IBD with two other alleles sampled randomly from A. (If A is
 #' non-inbred, this must have probability 1/4.) \[Partially deterministic,
 #' single-block\]
 #'
-#' In the `gip()` constructor, deterministic sampling are indicated by naming
-#' elements with "p" or "m". See Examples for how to create the above patterns.
+#' In the `gip()` constructor, deterministic sampling is indicated by naming
+#' elements with "p" or "m", e.g., `c(p = A)` produces `(A:p)`. See Examples for
+#' how to create the example patterns listed above.
 #'
 #'
 #' ## Internal structure of `gip` objects
@@ -127,10 +128,10 @@
 #'
 #' * `auto`: Chooses method automatically, based on the pattern type.
 #'
-#' * `K`: Karigl's algorithm for random, non-distinct patterns. Only a few cases
-#' are supported, namely single groups up to length 4, and two groups of length
-#' tw (these were the ones considered by Karigl.) Extended to support
-#' X-chromosomal patterns and inbred founders.
+#' * `K`: Karigl's algorithm for random, non-distinct patterns. Only the cases
+#' considered by Karigl are currently supported, namely single groups up to
+#' length 4, and two groups of length two. The implementation in **ribd**
+#' includes an X-chromosomal version, and allows inbred founders.
 #'
 #' * `WL`: Weeks & Lange's algorithm for random, distinct patterns of any size.
 #' \[TODO: Include the extension to X by Weeks et al. (1995).\]
@@ -140,9 +141,10 @@
 #' founders.
 #'
 #' * `GC`: Garcia-Cortes' algorithm for fully deterministic, non-distinct
-#' patterns. The current implementation only supports the patterns needed to
+#' patterns. The current implementation only covers the patterns needed to
 #' compute identity coefficients, namely single blocks and two blocks of length
-#' two. Extended to support X-chromosomal patterns and inbreed founders.
+#' two. The original algorithm has been extended to an X-chromosomal version,
+#' and to pedigrees with inbred founders.
 #'
 #' @param x A `ped` object.
 #' @param pattern A `gip` object, or a list of vectors to be passed onto

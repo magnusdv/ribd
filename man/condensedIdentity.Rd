@@ -64,7 +64,7 @@ condensedIdentity(x, ids = 5:6)
 }
 \references{
 G. Karigl (1981). \emph{A recursive algorithm for the calculation of
-identity coefficients} Annals of Human Genetics, vol. 45.
+identity coefficients.} Annals of Human Genetics, vol. 45.
 }
 \seealso{
 \code{\link[=kappa]{kappa()}}, \code{\link[=identityCoefs]{identityCoefs()}}, \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}}

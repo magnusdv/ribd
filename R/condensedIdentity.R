@@ -28,7 +28,7 @@
 #'   contain the condensed identity coefficients.
 #'
 #' @references G. Karigl (1981). _A recursive algorithm for the calculation of
-#'   identity coefficients_ Annals of Human Genetics, vol. 45.
+#'   identity coefficients._ Annals of Human Genetics, vol. 45.
 #'
 #' @seealso [kappa()], [identityCoefs()], [pedtools::founderInbreeding()]
 #'

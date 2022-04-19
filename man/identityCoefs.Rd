@@ -61,7 +61,7 @@ X-chromosomal coefficients.
 \details{
 Both the condensed and detailed coefficients are given in the orders used by
 Jacquard (1974). The function \code{detailed2condensed()} converts from detailed
-coefficients (d1, ... d15) to condensed ones (D1, ..., D9) using the
+coefficients (d1, ..., d15) to condensed ones (D1, ..., D9) using the
 following relations:
 \itemize{
 \item D1 = d1

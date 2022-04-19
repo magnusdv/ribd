@@ -108,14 +108,15 @@ different from the maternal allele of C. [Deterministic, distinct]
 \item \verb{(A, C:p) & (B, C:m)}: The paternal and maternal alleles of C are IBD with
 random alleles of from A and B, respectively. The two pairs are not
 necessarily different. [Partially deterministic, non-distinct]
-\item \verb{(A:p, A, A)}: Here we have just one group, specifying that paternal allele
-of A is IBD with two other alleles sampled randomly from A. (If A is
+\item \verb{(A:p, A, A)}: Here we have just one group, specifying that the paternal
+allele of A is IBD with two other alleles sampled randomly from A. (If A is
 non-inbred, this must have probability 1/4.) [Partially deterministic,
 single-block]
 }
 
-In the \code{gip()} constructor, deterministic sampling are indicated by naming
-elements with "p" or "m". See Examples for how to create the above patterns.
+In the \code{gip()} constructor, deterministic sampling is indicated by naming
+elements with "p" or "m", e.g., \code{c(p = A)} produces \code{(A:p)}. See Examples for
+how to create the example patterns listed above.
 }
 
 \subsection{Internal structure of \code{gip} objects}{
@@ -171,19 +172,20 @@ The following are valid options for the \code{methods} parameters, and what they
 implement.
 \itemize{
 \item \code{auto}: Chooses method automatically, based on the pattern type.
-\item \code{K}: Karigl's algorithm for random, non-distinct patterns. Only a few cases
-are supported, namely single groups up to length 4, and two groups of length
-tw (these were the ones considered by Karigl.) Extended to support
-X-chromosomal patterns and inbred founders.
+\item \code{K}: Karigl's algorithm for random, non-distinct patterns. Only the cases
+considered by Karigl are currently supported, namely single groups up to
+length 4, and two groups of length two. The implementation in \strong{ribd}
+includes an X-chromosomal version, and allows inbred founders.
 \item \code{WL}: Weeks & Lange's algorithm for random, distinct patterns of any size.
 [TODO: Include the extension to X by Weeks et al. (1995).]
 \item \code{LS}: Lange & Sinsheimer's algorithm for partially deterministic, distinct
 patterns of any size. Does not support X, nor patterns involving inbred
 founders.
 \item \code{GC}: Garcia-Cortes' algorithm for fully deterministic, non-distinct
-patterns. The current implementation only supports the patterns needed to
+patterns. The current implementation only covers the patterns needed to
 compute identity coefficients, namely single blocks and two blocks of length
-two. Extended to support X-chromosomal patterns and inbreed founders.
+two. The original algorithm has been extended to an X-chromosomal version,
+and to pedigrees with inbred founders.
 }
 }
 }
