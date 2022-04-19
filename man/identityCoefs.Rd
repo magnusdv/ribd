@@ -29,7 +29,7 @@ are computed; otherwise the 15 detailed identity coefficients.}
 
 \item{Xchrom}{A logical, by default FALSE.}
 
-\item{self}{A logical indicating if self-relationships (e.g., between a
+\item{self}{A logical indicating if self-relationships (i.e., between a
 pedigree member and itself) should be included. FALSE by default.}
 
 \item{simplify}{Simplify the output (to a numeric of length 9) if \code{ids} has

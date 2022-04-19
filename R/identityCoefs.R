@@ -78,7 +78,7 @@
 #' @param detailed A logical. If FALSE (default), the 9 condensed coefficients
 #'   are computed; otherwise the 15 detailed identity coefficients.
 #' @param Xchrom A logical, by default FALSE.
-#' @param self A logical indicating if self-relationships (e.g., between a
+#' @param self A logical indicating if self-relationships (i.e., between a
 #'   pedigree member and itself) should be included. FALSE by default.
 #' @param method Either "auto", "K", "WL", "LS", "GC", "idcoefs", "identity" or
 #'   "merlin". By default ("auto") a suitable algorithm is chosen automatically.
