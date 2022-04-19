@@ -91,19 +91,24 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 }
 
 # List pairs of IDs
-.idPairs = function(v, self = FALSE, as = "character") {
+.idPairs = function(v, self = FALSE, as = "character", returnList = TRUE) {
   v = switch(as, character = as.character(v), integer = as.integer(v))
   n = length(v)
   sq = seq_along(v)
 
   # 2-column matrix
-  if(self)
+  if(self) {
     mat = cbind(v[rep.int(sq, times = n:1)],
                 v[unlist(lapply(sq, function(i) i:n))])
-  else
+  }
+  else {
     mat = comb2(v, vec = TRUE)
+  }
 
-  lapply(1:nrow(mat), function(i) mat[i, ])
+  if(returnList)
+    lapply(1:nrow(mat), function(i) mat[i, ])
+  else
+    mat
 }
 
 

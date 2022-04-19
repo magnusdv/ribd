@@ -8,8 +8,8 @@ coeffTable(
   x,
   ids = labels(x),
   coeff = c("f", "phi", "deg", "kappa", "identity", "detailed"),
-  Xchrom = FALSE,
-  self = FALSE
+  self = FALSE,
+  Xchrom = FALSE
 )
 }
 \arguments{
@@ -21,16 +21,23 @@ two or more pedigree members.}
 \item{coeff}{A character vector containing one or more of the keywords "f",
 "phi", "deg", "kappa", "identity", "detailed".}
 
+\item{self}{A logical indicating if self-relationships should be included.
+Default: FALSE.}
+
 \item{Xchrom}{A logical indicating if the coefficients should be autosomal
 (default) or X-chromosomal. If \code{Xchrom = NA}, both sets are included.}
-
-\item{self}{A logical.}
 }
 \value{
 A data frame with one row for each pair of individuals. The first two
 columns are characters named \code{id1} and \code{id2}, while remaining columns are
-numeric. For the columnms containing X-chromosomal coefficients, names are
+numeric. For columns containing X-chromosomal coefficients, their names are
 prefixed with "X-".
+
+If "f" (inbreeding) is the only coefficient, the data frame has one row per
+individual, and the first column is named \code{id}.
+
+Note: If \code{x} has members with unknown members, all X-chromosomal
+coefficients are NA.
 }
 \description{
 Creates a data frame containing various relatedness coefficients between all
@@ -39,14 +46,15 @@ pairs of individuals in a given pedigree.
 \details{
 Available coefficients (indicated in \code{coeff}) include:
 \itemize{
-\item f: The inbreeding coefficient of each pair member. Columns: \code{f1} and \code{f2}.
-\item phi: The kinship coefficient. Column: \code{phi}.
-\item deg: The degree of relationship, as computed by \link{kin2deg}. Column: \code{deg}
-\item kappa: The IBD coefficients computed by \link{kappaIBD}. (These are NA for pairs
-involving inbred individuals.) Columns: \code{kappa0}, \code{kappa1}, \code{kappa2}.
-\item identity: The 9 condensed identity coefficients of Jacquard, computed by
+\item \code{f}: The inbreeding coefficient of each pair member. Columns: \code{f1} and
+\code{f2}.
+\item \code{phi}: The kinship coefficient. Column: \code{phi}.
+\item \code{deg}: The degree of relationship, as computed by \link{kin2deg}. Column: \code{deg}
+\item \code{kappa}: The IBD coefficients computed by \link{kappaIBD}. (These are NA for
+pairs involving inbred individuals.) Columns: \code{kappa0}, \code{kappa1}, \code{kappa2}.
+\item \code{identity}: The 9 condensed identity coefficients of Jacquard, computed by
 \code{\link[=identityCoefs]{identityCoefs()}}. Columns: \code{D1}, ..., \code{D9}.
-\item detailed: The detailed identity coefficients of Jacquard, computed by
+\item \code{detailed}: The detailed identity coefficients of Jacquard, computed by
 \code{identityCoefs(..., detailed = TRUE)}. Columns: \code{d1}, ..., \code{d15}.
 }
 }
