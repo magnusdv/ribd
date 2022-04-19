@@ -410,6 +410,9 @@ detailed2condensed = function(d) {
     idcols = d[, 1:2]
     d = d[,-(1:2)] # coefficient columns
 
+    if(!all(rowSums(d, na.rm = TRUE) == 1))
+      stop2("Detailed coefficients do not sum to 1")
+
     return(cbind(idcols,
       D1 = d[[1]],
       D2 = d[[6]],
@@ -423,6 +426,9 @@ detailed2condensed = function(d) {
   }
 
   # Else: Numeric vector
+  if(!isTRUE(all.equal(sum(d, na.rm = TRUE), 1)))
+    stop2("Detailed coefficients do not sum to 1")
+
   c(d[[1]],
     d[[6]],
     d[[2]] + d[[3]],
