@@ -94,7 +94,7 @@ coeffTable = function(x, ids = labels(x), coeff = c("f", "phi", "deg", "kappa", 
   if(is.na(Xchrom)) {
     aut = coeffTable(x, ids, coeff = coeff, Xchrom = FALSE, self = self)
     xchr = coeffTable(x, ids, coeff = coeff, Xchrom = TRUE, self = self)
-    return(cbind(aut, xchr[, -(1:2)]))
+    return(cbind(aut, xchr[, -(1:2), drop = FALSE]))
   }
 
 
