@@ -30,14 +30,14 @@ Default: FALSE.}
 \value{
 A data frame with one row for each pair of individuals. The first two
 columns are characters named \code{id1} and \code{id2}, while remaining columns are
-numeric. For columns containing X-chromosomal coefficients, their names are
-prefixed with "X-".
+numeric. Columns containing X-chromosomal coefficients are suffixed with
+".X".
 
 If "f" (inbreeding) is the only coefficient, the data frame has one row per
 individual, and the first column is named \code{id}.
 
-Note: If \code{x} has members with unknown members, all X-chromosomal
-coefficients are NA.
+Note: If \code{x} has members with unknown sex, all X-chromosomal coefficients
+are NA.
 }
 \description{
 Creates a data frame containing various relatedness coefficients between all
