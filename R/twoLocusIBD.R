@@ -296,7 +296,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALS
           if(all(RELATED[parents(x, id1, internal = TRUE), id2])) {
             k11.cc = k11.tc = 0.5 * k11
           }
-          else if(all(RELATED[parents(x, id1, internal = TRUE), id2])) {
+          else if(all(RELATED[parents(x, id2, internal = TRUE), id1])) {
             k11.cc = k11.ct = 0.5 * k11
           }
           else {
