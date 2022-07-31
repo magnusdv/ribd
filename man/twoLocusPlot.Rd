@@ -7,10 +7,12 @@
 twoLocusPlot(
   peds,
   coeff = "k11",
+  rseq = seq(0, 0.5, length = 11),
   xlab = "Recombination rate",
   ylab = NA,
   col = seq_along(peds),
   lty = 1,
+  lwd = 1,
   ...
 )
 }
@@ -20,9 +22,13 @@ twoLocusPlot(
 \item{coeff}{A string identifying which coefficient to compute. See Details
 for legal values.}
 
-\item{xlab, ylab, col, lty}{Plotting parameters}
+\item{rseq}{A numeric vector of recombination rates. By default \code{seq(from = 0, by = 0.5, length = 11)}.}
 
-\item{...}{Further parameters passed on to \code{\link[=matplot]{matplot()}}}
+\item{xlab, ylab}{Axis labels.}
+
+\item{col, lty, lwd}{Plotting parameters.}
+
+\item{...}{Further parameters passed on to \code{\link[=matplot]{matplot()}}.}
 }
 \description{
 Plot two-locus kinship or IBD coefficients as function of the recombination
@@ -37,7 +43,7 @@ Each entry of \code{peds} must be a list with the following (named) entries:
 
 The \code{coeff} parameter must be either a character naming the coefficient to
 compute, or a function. If a character, it must be one of the following
-names: "kinship", "phi", "phi11", "k00", "k01", "k02", "k10", "k11", "k12",
+names: "inb", "kinship", "phi", "phi11", "k00", "k01", "k02", "k10", "k11", "k12",
 "k20", "k21" or "k22".
 
 If \code{coeff} is a function, it must take three arguments named \code{ped}, \code{ids} and
