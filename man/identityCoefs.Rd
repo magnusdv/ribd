@@ -152,7 +152,7 @@ coefficients. Ann. Hum. Genet.
 linkage analysis. Am. J. Hum. Genet
 \item Lange, K. & Sinsheimer, J.s. (1992). Calculation of genetic identity
 coefficients. Ann. Hum. Genet.
-\item Abney, Mark (2009). A graphical algorithm for fast computation of identity
+\item Abney, M. (2009). A graphical algorithm for fast computation of identity
 coefficients and generalized kinship coefficients. Bioinformatics, 25,
 1561-1563. \url{https://home.uchicago.edu/~abney/abney_web/Software.html}
 }
