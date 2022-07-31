@@ -16,7 +16,7 @@ two pedigree members.}
 between the two loci.}
 
 \item{coefs}{A character indicating which coefficient(s) to compute. A subset
-of \code{c('d00', 'd01', ..., 'd99')}. By default, all coefficients are
+of \code{c('D00', 'D01', ..., 'D99')}. By default, all coefficients are
 computed.}
 
 \item{detailed}{A logical, indicating whether the condensed (default) or
@@ -36,37 +36,43 @@ pair of pedigree members, for a given recombination rate.
 }
 \details{
 Let A, B be two pedigree members, and L1, L2 two loci with a given
-recombination rate \eqn{\rho}. The two-locus identity coefficients
-\eqn{\Delta_{i,j}(\rho)}{\Delta_ij(\rho)}, for \eqn{1 \le i,j \le 9} are
+recombination rate \eqn{\rho}. The two-locus identity coefficient
+\eqn{\Delta_{i,j}(\rho)}{\Delta_ij(\rho)}, for \eqn{1 \le i,j \le 9} is
 defined as the probability that the identity state of the alleles of A and B
 are \eqn{\Sigma_i} at L1 and \eqn{\Sigma_j} at L2 simultaneously. (The
 ordering of the 9 states follows Jacquard (1974).)
 
-For details about the algorithm, see Vigeland (2019).
+For details about the algorithm, see Vigeland (2022).
 }
 \examples{
 ### Full sibs ###
 x = nuclearPed(2)
 kapp = twoLocusIBD(x, ids = 3:4, rho = 0.25)
 jacq = twoLocusIdentity(x, ids = 3:4, rho = 0.25)
+
 stopifnot(all.equal(jacq[9:7,9:7], kapp, check.attributes = FALSE))
 
-#' ### Parent-child ###
+### Parent-child ###
 x = nuclearPed(1)
 jacq = twoLocusIdentity(x, ids = c(1,3), rho = 0.25)
+
 stopifnot(jacq[8,8] == 1)
 
 ### Full sib mating ###
 x = fullSibMating(1)
 j = condensedIdentity(x, ids = 5:6)
 j2 = twoLocusIdentity(x, ids = 5:6, rho = 0.25)
+
 stopifnot(identical(unname(rowSums(j2)), j))
 
 
 }
 \references{
-M. D. Vigeland (2019) \emph{A recursive algorithm for two-locus identity coefficients} (In progress)
+\itemize{
+\item Jacquard (1974). The Genetic Structure of Populations. Springer.
+\item Vigeland (2022) \emph{Two-locus identity coefficients in pedigrees} (In progress)
+}
 }
 \seealso{
-\code{\link[=twoLocusIBD]{twoLocusIBD()}}
+\code{\link[=twoLocusIBD]{twoLocusIBD()}}, \code{\link[=identityCoefs]{identityCoefs()}}
 }

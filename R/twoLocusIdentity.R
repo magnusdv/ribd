@@ -4,13 +4,13 @@
 #' pair of pedigree members, for a given recombination rate.
 #'
 #' Let A, B be two pedigree members, and L1, L2 two loci with a given
-#' recombination rate \eqn{\rho}. The two-locus identity coefficients
-#' \eqn{\Delta_{i,j}(\rho)}{\Delta_ij(\rho)}, for \eqn{1 \le i,j \le 9} are
+#' recombination rate \eqn{\rho}. The two-locus identity coefficient
+#' \eqn{\Delta_{i,j}(\rho)}{\Delta_ij(\rho)}, for \eqn{1 \le i,j \le 9} is
 #' defined as the probability that the identity state of the alleles of A and B
 #' are \eqn{\Sigma_i} at L1 and \eqn{\Sigma_j} at L2 simultaneously. (The
 #' ordering of the 9 states follows Jacquard (1974).)
 #'
-#' For details about the algorithm, see Vigeland (2019).
+#' For details about the algorithm, see Vigeland (2022).
 #'
 #' @param x A pedigree in the form of a [`pedtools::ped`] object.
 #' @param ids A character (or coercible to character) containing ID labels of
@@ -18,7 +18,7 @@
 #' @param rho A number in the interval \eqn{[0, 0.5]}; the recombination rate
 #'   between the two loci.
 #' @param coefs A character indicating which coefficient(s) to compute. A subset
-#'   of `c('d00', 'd01', ..., 'd99')`. By default, all coefficients are
+#'   of `c('D00', 'D01', ..., 'D99')`. By default, all coefficients are
 #'   computed.
 #' @param detailed A logical, indicating whether the condensed (default) or
 #'   detailed coefficients should be returned.
@@ -30,26 +30,33 @@
 #'   If either `coefs` is explicitly given (i.e., not NULL), or `detailed =
 #'   TRUE`, the computed coefficients are returned as a named vector.
 #'
-#' @seealso [twoLocusIBD()]
+#' @seealso [twoLocusIBD()], [identityCoefs()]
 #'
-#' @references M. D. Vigeland (2019) _A recursive algorithm for two-locus identity coefficients_ (In progress)
+#' @references
+#'
+#' * Jacquard (1974). The Genetic Structure of Populations. Springer.
+#'
+#' * Vigeland (2022) _Two-locus identity coefficients in pedigrees_ (In progress)
 #'
 #' @examples
 #' ### Full sibs ###
 #' x = nuclearPed(2)
 #' kapp = twoLocusIBD(x, ids = 3:4, rho = 0.25)
 #' jacq = twoLocusIdentity(x, ids = 3:4, rho = 0.25)
+#'
 #' stopifnot(all.equal(jacq[9:7,9:7], kapp, check.attributes = FALSE))
 #'
-#' #' ### Parent-child ###
+#' ### Parent-child ###
 #' x = nuclearPed(1)
 #' jacq = twoLocusIdentity(x, ids = c(1,3), rho = 0.25)
+#'
 #' stopifnot(jacq[8,8] == 1)
 #'
 #' ### Full sib mating ###
 #' x = fullSibMating(1)
 #' j = condensedIdentity(x, ids = 5:6)
 #' j2 = twoLocusIdentity(x, ids = 5:6, rho = 0.25)
+#'
 #' stopifnot(identical(unname(rowSums(j2)), j))
 #'
 #'
@@ -61,14 +68,7 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose
   if(!is.null(coefs)) stop2("Argument `coefs` is not implemented yet")
   if(detailed) stop2("Argument `detailed` is not implemented yet")
 
-  if(any(ids %in% founders(x)))
-    x = addFounderParents(x, ids)
-
-  # Enforce parents to precede their children
-  if(!hasParentsBeforeChildren(x))
-    x = parentsBeforeChildren(x)
-
-  x = foundersFirst(x)
+  x = prepPed(x, addpar = ids)
 
   # Setup memoisation
   mem = initialiseTwoLocusMemo(x, rho, counters = c("i", "itriv", "iimp", "ifound", "ilook", "irec"))
@@ -90,13 +90,13 @@ twoLocusIdentity = function(x, ids, rho, coefs = NULL, detailed = FALSE, verbose
   # If unrelated, return early
   if(mem$k1[a, b] == 0) {
     RES = matrix(0, ncol = 9, nrow = 9, dimnames = list(paste0("D", 1:9), paste0("D", 1:9)))
-    if(mem$isCompletelyInbred[a] && mem$isCompletelyInbred[b])
-      RES[2,2] = 1
-    else if(mem$isCompletelyInbred[a])
-      RES[4,4] = 1
-    else if(mem$isCompletelyInbred[b])
-      RES[6,6] = 1
-    else
+    # if(mem$isCompletelyInbred[a] && mem$isCompletelyInbred[b])
+    #   RES[2,2] = 1
+    # else if(mem$isCompletelyInbred[a])
+    #   RES[4,4] = 1
+    # else if(mem$isCompletelyInbred[b])
+    #   RES[6,6] = 1
+    # else
       RES[9,9] = 1
 
     return(RES)
