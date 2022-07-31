@@ -201,6 +201,45 @@ stopifnot(identical(
   twoLocusIBD(x2, ids = leaves(x2), rho = 0.25)))
 
 
+###########################################################
+# Example 7: Detailed coefficients of double first cousins.
+# Compare with exact formulas by Denniston (1975).
+###########################################################
+
+x = doubleFirstCousins()
+ids = leaves(x)
+rho = 0.25
+
+kapDetailed = twoLocusIBD(x, ids, rho, detailed = TRUE)
+
+# Example 1 of Denniston (1975)
+denn = function(rho) {
+  F = (1-rho)^2 * (rho^2 + (1-rho)^2)/4 + rho^2/8
+  U = 1 + 2*F
+  V = 1 - 4*F
+
+  # Note that some of Denniston's definitions differ slightly;
+  # some coefficients must be multiplied with 2
+  c(k00 = U^2/4,
+    k01 = U*V/8  *2,
+    k02 = V^2/16,
+    k10 = U*V/8  *2,
+    k11.cc = F*U/2  *2,
+    k11.ct = 0,
+    k11.tc = 0,
+    k11.tt = V^2/16  *2,
+    k12.h = F*V/4  *2,
+    k12.r = 0,
+    k20 = V^2/16,
+    k21.h = F*V/4  *2,
+    k21.r = 0,
+    k22.h = F^2,
+    k22.r = 0)
+}
+
+stopifnot(all.equal(kapDetailed, denn(rho)))
+
+
 }
 \seealso{
 \code{\link[=twoLocusKinship]{twoLocusKinship()}}, \code{\link[=twoLocusIdentity]{twoLocusIdentity()}}, \code{\link[=twoLocusPlot]{twoLocusPlot()}}
