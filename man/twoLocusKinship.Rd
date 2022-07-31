@@ -65,7 +65,7 @@ stopifnot(k_0 == 1/4, k_0.5 == 1/16)
 
 # Pedigrees (a) - (d)
 ped.a = linearPed(3)
-ped.b = halfCousinPed(0, removal = 1)
+ped.b = avuncularPed(half = TRUE)
 ped.c = cousinPed(1)
 ped.d = doubleCousins(1, 1, half1 = TRUE, half2 = TRUE)
 
@@ -76,15 +76,7 @@ peds = list(
   d = list(ped = ped.d, ids = leaves(ped.d))
 )
 
-# Recombination values
-rseq = seq(0, 0.5, length = 20)
-
-# Compute two-locus kinship coefficients
-kvals = sapply(peds, function(x) twoLocusKinship(x$ped, x$ids, rseq))
-
-# Plot
-matplot(rseq, kvals, type = "l", lwd = 2)
-legend("topright", names(peds), col = 1:4, lty = 1:4, lwd = 2)
+twoLocusPlot(peds, coeff = "kinship", lty = 1:4)
 
 }
 \references{

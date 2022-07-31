@@ -61,10 +61,7 @@ two-locus kinship} coefficients. This is implemented in the function
 \code{twoLocusGeneralisedKinship()}, which is not exported yet.
 }
 \examples{
-# Some variables used in several examples below
-rseq = seq(0, 0.5, length = 11)  # recombination values
-
-xlab = "Recombination rate"
+# Plot title used in several examples below
 main = expression(paste("Two-locus IBD:  ", kappa[`1,1`]))
 
 ###################################################################
@@ -75,17 +72,11 @@ main = expression(paste("Two-locus IBD:  ", kappa[`1,1`]))
 # markers.
 ###################################################################
 peds = list(
-    GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
-    HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
-    Uncle       = list(ped = cousinPed(0, 1), ids = c(3, 6)))
+    GrandParent = list(ped = linearPed(2),   ids = c(1, 5)),
+    HalfSib     = list(ped = halfSibPed(),   ids = c(4, 5)),
+    Uncle       = list(ped = avuncularPed(), ids = c(3, 6)))
 
-# Compute `k11` for each rho
-kvals = sapply(peds, function(x)
-  sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
-
-# Plot
-matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
-legend("topright", names(peds), col = 1:3, lty = 1:3)
+twoLocusPlot(peds, coeff = "k11", main = main, lty = 1:3, col = 1)
 
 
 ############################################################
@@ -98,34 +89,25 @@ legend("topright", names(peds), col = 1:3, lty = 1:3)
 # two-locus IBD coefficients.
 ############################################################
 
-# List of pedigrees and ID pairs
-GG = linearPed(3)
-HU = halfCousinPed(0, removal = 1)
 peds = list(
-  GreatGrand = list(ped = GG, ids = c(1, 7)),
-  HalfUncle  = list(ped = HU, ids = leaves(HU))
+  GreatGrand = list(ped = linearPed(3),              ids = c(1, 7)),
+  HalfUncle  = list(ped = avuncularPed(half = TRUE), ids = c(4, 7))
 )
 
-# Compute `k11` for each rho
-kvals = sapply(peds, function(x)
-  sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
-
-# Plot
-matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
-legend("topright", names(peds), col = 1:2, lty = 1:2)
+twoLocusPlot(peds, coeff = "k11", main = main, lty = 1:2, col = 1)
 
 
-######################################################################
-# Example 3: Two-locus IBD of two half sisters whose mother have
-# inbreeding coefficient 1/4. We compare two different realisations
-# of this:
+########################################################################
+# Example 3: Fig. 15 of Vigeland (2021).
+# Two-locus IBD of two half sisters whose mother have inbreeding
+# coefficient 1/4. We compare two different realisations of this:
 #   PO: the mother is the child of parent-offspring
 #  SIB: the mother is the child of full siblings
 #
-# We show below that these relationships have different two-locus
-# coefficients. This exemplifies that a single-locus inbreeding
-# coefficient cannot replace the genealogy in analyses of linked loci.
-######################################################################
+# The fact that these relationships have different two-locus coefficients
+# exemplifies that a single-locus inbreeding coefficient cannot replace
+# the genealogy in analyses of linked loci.
+########################################################################
 
 po = addChildren(nuclearPed(1, sex = 2), 1, 3, nch = 1, sex = 2)
 po = addDaughter(addDaughter(po, 4), 4)
@@ -133,28 +115,26 @@ po = addDaughter(addDaughter(po, 4), 4)
 sib = addChildren(nuclearPed(2, sex = 1:2), 3, 4, nch = 1)
 sib = addDaughter(addDaughter(sib, 5), 5)
 
-plotPedList(list(po, sib), new = TRUE, title = c("PO", "SIB"))
+# plotPedList(list(po, sib), new = TRUE, title = c("PO", "SIB"))
 
 # List of pedigrees and ID pairs
 peds = list(PO =  list(ped = po,  ids = leaves(po)),
             SIB = list(ped = sib, ids = leaves(sib)))
 
-# Compute `k11` for each rho
+twoLocusPlot(peds, coeff = "k11", main = main, lty = 1:2, col = 1)
+
+
+### Check against exact formulas
+rho = seq(0, 0.5, length = 11)  # recombination values
+
 kvals = sapply(peds, function(x)
-  sapply(rseq, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
+  sapply(rho, function(r) twoLocusIBD(x$ped, x$ids, r, coefs = "k11")))
 
-# Plot
-dev.off()
-matplot(rseq, kvals, type = "l", xlab = xlab, ylab = "", main = main)
-legend("topright", names(peds), col = 1:2, lty = 1:2)
+k11.po = 1/8*(-4*rho^5 + 12*rho^4 - 16*rho^3 + 16*rho^2 - 9*rho + 5)
+stopifnot(all.equal(kvals[, "PO"], k11.po, check.names = FALSE))
 
-# Check against exact formula
-r = rseq
-k11_PO = 1/8*(-4*r^5 + 12*r^4 - 16*r^3 + 16*r^2 - 9*r + 5)
-stopifnot(all.equal(kvals[, "PO"], k11_PO, check.names = FALSE))
-
-k11_S = 1/16*(8*r^6 - 32*r^5 + 58*r^4 - 58*r^3 + 43*r^2 - 20*r + 10)
-stopifnot(all.equal(kvals[, "SIB"], k11_S, check.names = FALSE))
+k11.s = 1/16*(8*rho^6 - 32*rho^5 + 58*rho^4 - 58*rho^3 + 43*rho^2 - 20*rho + 10)
+stopifnot(all.equal(kvals[, "SIB"], k11.s, check.names = FALSE))
 
 
 ################################################
@@ -166,7 +146,7 @@ x = nuclearPed(2)
 k2_mat = twoLocusIBD(x, ids = 3:4, rho = 0.25)
 k2_mat
 
-# Compare with explicit formulas
+### Compare with exact formulas
 IBDSibs = function(rho) {
   R = rho^2 + (1-rho)^2
   nms = c("ibd0", "ibd1", "ibd2")
@@ -223,5 +203,5 @@ stopifnot(identical(
 
 }
 \seealso{
-\code{\link[=twoLocusKinship]{twoLocusKinship()}}
+\code{\link[=twoLocusKinship]{twoLocusKinship()}}, \code{\link[=twoLocusIdentity]{twoLocusIdentity()}}, \code{\link[=twoLocusPlot]{twoLocusPlot()}}
 }
