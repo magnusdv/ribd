@@ -73,8 +73,8 @@ coeffTable = function(x, ids = labels(x), coeff = c("f", "phi", "deg", "kappa", 
       stop2("Illegal input. Expected `ped`, received: ", class(x))
   }
 
-  if(anyDuplicated(ids))
-    stop2("Duplicated ID label: ", unique.default(ids[duplicated(ids)]))
+  if(anyDuplicated.default(ids))
+    stop2("Duplicated ID label: ", unique(ids[duplicated(ids)]))
 
   coeff = match.arg(coeff, several.ok = TRUE)
 

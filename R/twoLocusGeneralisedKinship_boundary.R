@@ -22,7 +22,7 @@ kinImpossible = function(kin, mem) {
     }
 
     # Boundary condition 1: Anyone in >2 groups?
-    tab = tabulate(unlist(uniq_sources))
+    tab = tabulate(unlist(uniq_sources, use.names = FALSE))
     if(any(tab > 2)) {
       mem$iimp = mem$iimp + 1
       return(TRUE)
@@ -30,7 +30,7 @@ kinImpossible = function(kin, mem) {
 
     # Boundary condition 0: Any identical from>to in different groups?
     meioses = lapply(locusGroups, function(g) 1000*g$to + g$from)
-    if(anyDuplicated.default(unlist(meioses))) {
+    if(anyDuplicated.default(unlist(meioses, use.names = FALSE))) {
       mem$iimp = mem$iimp + 1
       return(TRUE)
     }
@@ -43,8 +43,8 @@ kinImpossible = function(kin, mem) {
 
 # Boundary condition: Are all sources founders?
 boundary_test = function(kin, mem) {
-  loc1 = unlist(lapply(kin$locus1, function(g) g$from))
-  loc2 = unlist(lapply(kin$locus2, function(g) g$from))
+  loc1 = unlist(lapply(kin$locus1, function(g) g$from), use.names = FALSE)
+  loc2 = unlist(lapply(kin$locus2, function(g) g$from), use.names = FALSE)
   if(all(mem$isFounder[c(loc1, loc2)])) {
     mem$ifound = mem$ifound + 1
     return(TRUE)
@@ -86,13 +86,13 @@ boundary_value = function(kin, mem) {
 
     # Only present in locus1
     if(length(L2a) == 0) {
-      res = res * 0.5 ^ (length(unlist(L1a))/2 - 1) # dividing by 2: counting both from/to
+      res = res * 0.5 ^ (length(unlist(L1a, use.names = FALSE))/2 - 1) # dividing by 2: counting both from/to
       next
     }
 
     # Only present in locus2
     if(length(L1a) == 0) {
-      res = res * 0.5 ^ (length(unlist(L2a))/2 - 1)
+      res = res * 0.5 ^ (length(unlist(L2a, use.names = FALSE))/2 - 1)
       next
     }
 
@@ -130,8 +130,13 @@ parityCounts = function(x) {
   loc1.g2 = x[[2]]
   loc2.g1 = x[[3]]
   loc2.g2 = x[[4]]
-  even = c(intersect(loc1.g1, loc2.g1), intersect(loc1.g2, loc2.g2))
-  odd  = c(intersect(loc1.g1, loc2.g2), intersect(loc1.g2, loc2.g1))
+
+  # TODO: Presumably this never happens after kinReduce.
+  if(any(sapply(x, anyDuplicated.default) > 0))
+    stop2("Duplicated targets! Please contact maintainer")
+
+  even = c(.myintersect(loc1.g1, loc2.g1), .myintersect(loc1.g2, loc2.g2))
+  odd  = c(.myintersect(loc1.g1, loc2.g2), .myintersect(loc1.g2, loc2.g1))
 
   list(n = nAll, even = length(even), odd = length(odd))
 }

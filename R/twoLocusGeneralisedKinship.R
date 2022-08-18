@@ -78,12 +78,15 @@ genKin2L = function(kin, mem, indent = 0) {
   t = length(pivTargets[[3]])
   u = length(pivTargets[[4]])
 
+  # TODO: Presumably this never happens after kinReduce.
+  if(any(sapply(pivTargets, anyDuplicated.default) > 0))
+    stop2("Duplicated targets! Please contact maintainer")
 
   un = length(unique.default(unlist(pivTargets, use.names = FALSE)))
-  ev = length(c(intersect(pivTargets[[1]], pivTargets[[3]]),
-           intersect(pivTargets[[2]], pivTargets[[4]])))
-  od = length(c(intersect(pivTargets[[1]], pivTargets[[4]]),
-         intersect(pivTargets[[2]], pivTargets[[3]])))
+  ev = length(c(.myintersect(pivTargets[[1]], pivTargets[[3]]),
+           .myintersect(pivTargets[[2]], pivTargets[[4]])))
+  od = length(c(.myintersect(pivTargets[[1]], pivTargets[[4]]),
+         .myintersect(pivTargets[[2]], pivTargets[[3]])))
 
   if(!is.na(indent)) {
     message(sprintf("%sRecurse: a = %d; father = %d; mother = %d",

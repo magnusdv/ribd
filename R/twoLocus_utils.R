@@ -46,8 +46,6 @@ validateKin2L = function(x, ped = NULL) {
     for(g in loc) {
       if(!is.list(g) || length(g) != 2)
         printAndStop(g, "Allele group is not a list of length 2")
-      if(!setequal(names(g), c("from", "to")))
-        printAndStop(g, "Allele group must have names 'from' and 'to'")
       if(!is.integer(g$from) || !is.integer(g$to) || length(g$from) != length(g$to))
         printAndStop(g, "Entries 'from' and 'to' must be numeric vectors (internal labels) of the same length")
 
@@ -95,10 +93,10 @@ sort_kin2L = function(x) {
 
   # Sort pivot groups and put them first
   x1[piv1] = lapply(x1[piv1], sortGroup)
-  x1 = x1[order(piv1, decreasing = TRUE, method = "shell")]
+  x1 = x1[.myorder(piv1, decreasing = TRUE)]
 
   x2[piv2] = lapply(x2[piv2], sortGroup)
-  x2 = x2[order(piv2, decreasing = TRUE, method = "shell")]
+  x2 = x2[.myorder(piv2, decreasing = TRUE)]
 
   # Ensure locus 1 has max number of pivot groups (either 1 or 2)
   if(sum(piv1) < sum(piv2))
@@ -111,23 +109,31 @@ sort_kin2L = function(x) {
 
 
 kinReduce = function(kin) {
-  # Do a quick test first; usually this will pass
-  hasDup = vapply(c(kin[[1]], kin[[2]]),
-                function(g) anyDuplicated.default(1000*g$to + g$from),
-                FUN.VALUE = 0L)
+  kin1 = kin[[1]]
+  kin2 = kin[[2]]
 
-  if(sum(hasDup) == 0)
-    return(kin)
-
-  # If any dups: do it the old, slow way.
-  for(i in 1:2) for(j in seq_along(kin[[i]])) {
-    g = kin[[i]][[j]]
-    concat = 1000*g$to + g$from
-    if(anyDuplicated.default(concat)) { # usually no dups
-      dups = duplicated.default(concat)
-      kin[[i]][[j]] = list(from = g$from[!dups], to = g$to[!dups])
+  # Loc1
+  hasDup1 = vapply(kin1, function(g) anyDuplicated.default(1000*g$to + g$from), 0L)
+  if(any(hasDup1 > 0)) {
+    for(j in which(hasDup1 > 0)) {
+      g = kin1[[j]]
+      dups = duplicated.default(1000*g$to + g$from)
+      kin1[[j]] = list(from = g$from[!dups], to = g$to[!dups])
     }
+    kin[[1]] = kin1
   }
+
+  # Loc2
+  hasDup2 = vapply(kin2, function(g) anyDuplicated.default(1000*g$to + g$from), 0L)
+  if(any(hasDup2 > 0)) {
+    for(j in which(hasDup2 > 0)) {
+      g = kin2[[j]]
+      dups = duplicated.default(1000*g$to + g$from)
+      kin2[[j]] = list(from = g$from[!dups], to = g$to[!dups])
+    }
+    kin[[2]] = kin2
+  }
+
   kin
 }
 
@@ -142,33 +148,36 @@ kinReplace = function(kin, id, loc1Rep, loc2Rep = NULL) {#par1, gr1 = 1, par2 = 
   if(!is.null(loc2Rep))
     kin$locus2 = kinRepl_1L(kin$locus2, id, loc2Rep$from1, loc2Rep$to1, loc2Rep$from2, loc2Rep$to2)
 
-  validateKin2L(kin) # TODO: remove validate (coded to be unnecessary)
+  # Validation should not be necessary!
+  #validateKin2L(kin)
+
+  kin
 }
 
 # Replacement at 1 locus
-# G = list of kinship gorups ( = a pair of vectors (from, to) of same length)
+# G = list of kinship groups ( = a pair of vectors (from, to) of same length)
 # `id` is assumed to be present only in the first (one or two) group(s) of G
 kinRepl_1L = function(G, id, from1, to1, from2 = NULL, to2 = NULL) {
   id = as.integer(id)
-  from1 = as.integer(from1)
-  to1 = as.integer(to1)
-  from2 = as.integer(from2)
-  to2 = as.integer(to2)
-  if(length(id) != 1) stop2("Argument `id` must have length 1: ", id)
-  if(length(from1) != length(to1)) stop2("Incompatible lengths of source vs indices: ", from1, " vs. ", to1)
-  if(length(from2) != length(to2)) stop2("Incompatible lengths of source vs indices: ", from2, " vs. ", to2)
-  if(anyNA(c(id, from1, to1, from2, to2))) stop2("NA's detected in recursion step: ", c(id, from1, to1, from2, to2))
+
+  # Checks should not be needed
+  # if(length(id) != 1) stop2("Argument `id` must have length 1: ", id)
+  # if(length(from1) != length(to1)) stop2("Incompatible lengths of source vs indices: ", from1, " vs. ", to1)
+  # if(length(from2) != length(to2)) stop2("Incompatible lengths of source vs indices: ", from2, " vs. ", to2)
+  # if(anyNA(c(id, from1, to1, from2, to2))) stop2("NA's detected in recursion step: ", c(id, from1, to1, from2, to2))
 
   # Group 1: Replace id with `from1`, and corresponding entries in `to` with `to1`
   g = G[[1]]
   idx = g$from == id
-  G[[1]] = list(from = c(from1, g$from[!idx]), to = c(to1, g$to[!idx]))
+  G[[1]] = list(from = c(as.integer(from1), g$from[!idx]),
+                to   = c(as.integer(to1),   g$to[!idx]))
 
   # Group 2, if given
-  if(length(from2)) {
+  if(!is.null(from2)) {
     g = G[[2]]
     idx = g$from == id
-    G[[2]] = list(from = c(from2, g$from[!idx]), to = c(to2, g$to[!idx]))
+    G[[2]] = list(from = c(as.integer(from2), g$from[!idx]),
+                  to   = c(as.integer(to2),   g$to[!idx]))
   }
 
   # Return modified G
@@ -193,7 +202,8 @@ char2kinList = function(x) {
   # Fix missing meiosis indicators
   USED.IDX = list()
   for(i in seq_along(kinList)) {
-    from = kinList[[i]]$from; to = kinList[[i]]$to
+    from = kinList[[i]]$from
+    to = kinList[[i]]$to
     if(anyNA(to)) {
       for(j in which(is.na(to))) {
         a = as.character(from[j])
