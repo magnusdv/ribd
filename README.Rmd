@@ -30,7 +30,7 @@ The main functions in **ribd** are the following, all of which support both auto
 
 * `kinship()` : Kinship coefficients
 * `inbreeding()` : Inbreeding coefficients
-* `kappaIBD()` : IBD coefficients `kappa = (k0, k1, k2)` between noninbred individuals
+* `kappaIBD()` : IBD coefficients $\kappa = (\kappa_0, \kappa_1, \kappa_2)$ between noninbred individuals
 * `identityCoefs()` : Jacquard's condensed identity coefficients
 
 A unique feature of **ribd** is the ability to handle pedigrees with inbred founders in all of the above calculations. More about this below!

@@ -23,8 +23,9 @@ both autosomal and X-chromosomal modes:
 
 -   `kinship()` : Kinship coefficients
 -   `inbreeding()` : Inbreeding coefficients
--   `kappaIBD()` : IBD coefficients `kappa = (k0, k1, k2)` between
-    noninbred individuals
+-   `kappaIBD()` : IBD coefficients
+    $\kappa = (\kappa_0, \kappa_1, \kappa_2)$ between noninbred
+    individuals
 -   `identityCoefs()` : Jacquard’s condensed identity coefficients
 
 A unique feature of **ribd** is the ability to handle pedigrees with
