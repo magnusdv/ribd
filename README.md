@@ -21,15 +21,18 @@ construction and manipulation.
 The main functions in **ribd** are the following, all of which support
 both autosomal and X-chromosomal modes:
 
--   `kinship()` : Kinship coefficients
--   `inbreeding()` : Inbreeding coefficients
--   `kappaIBD()` : IBD coefficients
-    $\kappa = (\kappa_0, \kappa_1, \kappa_2)$ between noninbred
-    individuals
+-   `kinship()` : The kinship coefficient $\varphi$ between two pedigree
+    members (or full matrix)
+-   `inbreeding()` : The inbreeding coefficient $f$ of all (or a subset
+    of) pedigree members
+-   `kappaIBD()` : IBD coefficients $\kappa_0, \kappa_1, \kappa_2$
+    between noninbred individuals
 -   `identityCoefs()` : Jacquard’s condensed identity coefficients
+    $\Delta_1, \dotsc, \Delta_9$
 
 A unique feature of **ribd** is the ability to handle pedigrees with
-inbred founders in all of the above calculations. More about this below!
+inbred founders in all of the above calculations. More about this
+[below](#pedigrees-with-inbred-founders).
 
 The package also computes a variety of lesser-known pedigree
 coefficients:
@@ -279,9 +282,9 @@ If you wonder how the weird-looking inbreeding coefficients above were
 chosen, you can check out my paper [Relatedness coefficients in
 pedigrees with inbred
 founders](https://doi.org/10.1007/s00285-020-01505-x) (J Math Biol,
-2020). In it I show that *any* point in the white region of the IBD
-triangle can be constructed as a double half cousin relationship with
-suitable founder inbreeding.
+2020). In it I show that *any* point in the white region (including its
+boundary) of the IBD triangle can be constructed as a double half cousin
+relationship with suitable founder inbreeding.
 
 The construction described in the paper is implemented in the function
 `constructPedigree()` in **ribd**. For example, the following command
