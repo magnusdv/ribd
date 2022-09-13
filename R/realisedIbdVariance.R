@@ -18,7 +18,7 @@
 #'
 #' * "inb" (inbreeding coefficient)
 #'
-#' * "kinship", "phi" (synonymes for the kinship coefficient)
+#' * "kinship", "phi" (synonyms for the kinship coefficient)
 #'
 #' * "k0", "k1", "k2" (kappa coefficients of noninbred individuals)
 #'
@@ -101,6 +101,14 @@ realisedIbdVariance = function(x, ids = leaves(x), coeff, L = 1) {
          kinship =, phi = {
            mu = kinship(x, ids)
            twoLocFun = function(rho) twoLocusKinship(x, ids, rho = rho)
+         },
+         R = { # "actual relationship" (Hill & Weir, 2011)
+           kap = kappaIBD(x, ids) # raise error if inbreding
+           mu = kap[2]/2 + kap[3]  # = 2*phi
+           twoLocFun = function(rho) {
+             K = twoLocusIBD(x, ids, rho = rho)
+             K[2,2]/4 + K[2,3] + K[3,3]
+           }
          },
          k0 = {
            mu = kappaIBD(x, ids)[1]

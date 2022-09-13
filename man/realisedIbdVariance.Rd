@@ -38,7 +38,7 @@ compute, or a function. If a character, it must be one of the following
 names:
 \itemize{
 \item "inb" (inbreeding coefficient)
-\item "kinship", "phi" (synonymes for the kinship coefficient)
+\item "kinship", "phi" (synonyms for the kinship coefficient)
 \item "k0", "k1", "k2" (kappa coefficients of noninbred individuals)
 \item "D1", "D2", ... "D9" (condensed identity coefficients)
 }

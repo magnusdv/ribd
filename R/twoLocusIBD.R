@@ -369,6 +369,13 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALS
 
         m = round(solve(M, bvec), 15) # ad hoc rounding to avoid tiny errors. Better alternatives?
 
+        # Minv = matrix(c(rb^4,      -rb^2*rho, -rb^2*rho,  rho^2,
+        #                -rb^2*rho^2, rb^3,      rho^3,    -rb*rho,
+        #                -rb^2*rho^2, rho^3,     rb^3,     -rb*rho,
+        #                 rho^4,     -rb*rho^2, -rb*rho^2,  rb^2),
+        #               byrow = TRUE, nrow = 4)/(rb^3 - rho^3)^2
+        # print(round(M %*% Minv, 10))
+
         k11.cc = m[1]; k11.ct = m[2]; k11.tc = m[3]; k11.tt = m[4]
 
         # Total

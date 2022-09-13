@@ -11,7 +11,7 @@ kinImpossible = function(kin, mem) {
     # List unique source indivs in each group
     uniq_sources = lapply(locusGroups, function(g) unique.default(g$from))
 
-    # Boundary condition 2: Any group with 2 unrelated indivs?
+    # Boundary condition: Any group with 2 unrelated indivs?
     k1 = mem$k1
     for(s in uniq_sources[lengths(uniq_sources) > 1]) {
       pairs_mat = comb2(s, vec = TRUE)
@@ -21,7 +21,7 @@ kinImpossible = function(kin, mem) {
       }
     }
 
-    # Boundary condition 1: Anyone in >2 groups?
+    # Boundary condition: Anyone in >2 groups?
     tab = tabulate(unlist(uniq_sources, use.names = FALSE))
     if(any(tab > 2)) {
       mem$iimp = mem$iimp + 1
@@ -41,15 +41,20 @@ kinImpossible = function(kin, mem) {
 }
 
 
-# Boundary condition: Are all sources founders?
+# Check: Are all sources founders?
 boundary_test = function(kin, mem) {
+  isFou = mem$isFounder
+
   loc1 = unlist(lapply(kin$locus1, function(g) g$from), use.names = FALSE)
+  if(!all(isFou[loc1]))
+    return(FALSE)
+
   loc2 = unlist(lapply(kin$locus2, function(g) g$from), use.names = FALSE)
-  if(all(mem$isFounder[c(loc1, loc2)])) {
-    mem$ifound = mem$ifound + 1
-    return(TRUE)
-  }
-  return(FALSE)
+  if(!all(isFou[loc2]))
+    return(FALSE)
+
+  mem$ifound = mem$ifound + 1
+  return(TRUE)
 }
 
 # Return value in boundary case

@@ -4,7 +4,7 @@
 #' given recombination rate.
 #'
 #' Let A be a pedigree member, and L1, L2 two autosomal loci with recombination
-#' rate `rho`. The two-locus inbreeding coefficient \eqn{\f_{11}(rho)} is
+#' rate \eqn{\rho}. The two-locus inbreeding coefficient \eqn{f_{11}(\rho)} is
 #' defined as the probability that A is autozygous at both L1 and L2
 #' simultaneously.
 #'
@@ -18,6 +18,8 @@
 #' @param verbose A logical.
 #' @param debug A logical. If TRUE, detailed messages are printed during the
 #'   recursion process.
+#'
+#' @seealso [twoLocusKinship()], [twoLocusIBD()], [twoLocusIdentity()]
 #'
 #' @references Weir & Cockerham (1969). _Pedigree mating with two linked loci_.
 #'   Genetics, 61:923-940.
