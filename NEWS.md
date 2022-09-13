@@ -1,3 +1,26 @@
+# ribd 1.5.0
+
+## Breaking changes
+
+* In the output of `coeffTable()` several columns have been renamed.
+
+## New features
+
+* New function `twoLocusInbreeding()`.
+
+* New function: `realisedIbdVariance()`.
+
+* New function `ELR()`, implementing method of Egeland & Slooten (2016).
+
+* All two-locus functions have been cleaned up and improved, and new examples have been added.
+
+## Bug fixes
+
+* Check that the input vector to `detailed2condensed()` has sum 1 (#14).
+
+* Fixed edge-case bug in `twoLocusIdentity()` (#9).
+
+
 # ribd 1.4.0
 
 ## Breaking changes
