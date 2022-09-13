@@ -32,6 +32,7 @@ Imports:
     kinship2,
     slam
 Suggests: 
+    spelling,
     testthat
 Encoding: UTF-8
 Language: en-GB
