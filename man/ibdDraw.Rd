@@ -11,12 +11,12 @@ ibdDraw(
   pos = 1,
   cols = NULL,
   cex = NA,
-  sep = NULL,
+  sep = 1,
   dist = 1,
   labs = FALSE,
   checkFounders = TRUE,
   checkParents = TRUE,
-  margin = c(1, 1, 1, 1),
+  margin = 1,
   ...
 )
 }
@@ -39,9 +39,9 @@ left; 3 = above; 4 = right. By default, all are placed below.}
 \item{cex}{An expansion factor for the allele points/letters. Default: 3 for
 points and 2 for text.}
 
-\item{sep}{The separation between haplotypes within a pair, given as a
-multiple of the width of a pedigree symbol. Default: 0.5 when \code{pos = 0} and
-1 otherwise.}
+\item{sep}{The separation between alleles within a pair, given as a multiple
+of the width of a pedigree symbol. Default is 1 when \code{pos > 0} and 0.5 for
+\code{pos = 0}.}
 
 \item{dist}{The distance between pedigree symbols and the alleles, given as a
 multiple of the height of a pedigree symbol. Default: 1. Ignored when \code{pos = 0}.}
@@ -63,10 +63,10 @@ and does not catch all Mendelian errors.}
 The plot structure is returned invisibly.
 }
 \description{
-This is a pedagogical tools for illustrating the concept of
+This is a pedagogical tool for illustrating the concept of
 identity-by-descent, by representing the alleles in a pedigree by coloured
 points or letters. By default, the alleles are placed below each pedigree
-symbols, but any positions are possible, including inside. (See examples.)
+symbol, but this may be modified. (See examples.)
 }
 \examples{
 op = par(no.readonly = TRUE)
@@ -88,12 +88,11 @@ ibdDraw(x, als, cols = cols)
 # Inside the pedigree symbols
 ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2.5)
 
-# Other placements (margins depend on device - may need adjustment)
-ibdDraw(x, als, cols = cols, pos = c(2, 4, 1, 1),
-        margin = c(2, 6, 2, 6))
+# Other placements
+ibdDraw(x, als, cols = cols, pos = c(2, 3, 1, 4))
 
 # Letters instead of points
-ibdDraw(x, als, cols = cols, symbol = "text", cex = 2)
+ibdDraw(x, als, cols = cols, symbol = "text")
 
 # Further arguments (note that `col` is an argument of `ped.plot()`)
 ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
@@ -107,7 +106,7 @@ ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
 # Example 2: Cousin pedigree #
 ##############################
 
-x = swapSex(cousinPed(1), 3)
+x = cousinPed(1) |> swapSex(3) |> relabel()
 als = list(1:2, 3:4, NULL, c(1,3), c(2,3), NULL, 3, 3)
 
 cols = c(7, 3, 2, 4)
