@@ -64,14 +64,20 @@ validateKin2L = function(x, ped = NULL) {
   x
 }
 
-print.kin2L = function(x, ...,  indent = 0) {
-  if(is.na(indent)) return()
+formatKin2L = function(x) {
   labs = attr(x, "labels")
 
   mess1 = kinList2char(x$locus1, labs = labs)
   mess2 = kinList2char(x$locus2, labs = labs)
 
-  message(sprintf("%s[%s ::: %s]", strrep(" ", indent), mess1, mess2))
+  sprintf("[%s] ::: [%s]", mess1, mess2)
+}
+
+#' @export
+print.kin2L = function(x, ..., indent = 0) {
+  if(is.na(indent))
+    return()
+  cat(sprintf("%s%s\n", strrep(" ", indent), formatKin2L(x)))
 }
 
 

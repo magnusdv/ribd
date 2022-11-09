@@ -249,12 +249,14 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = FALSE, uniMethod = 
 
   # If kappa2 == 0: Use unilineal method
   if(kap[3] == 0) {
+    if(verbose) message(sprintf("Unilineal relationship\n%s coefficients", if(detailed) "Detailed" else "Condensed"))
     RES = twoLocusIBD_unilineal(x, ids, rho, mem = mem, coefs = coefs,
                                detailed = detailed, uniMethod = uniMethod, verbose = verbose)
   }
 
   # If kappa2 > 0: Use bilineal method
   if(kap[3] > 0) {
+    if(verbose) message(sprintf("Bilineal relationship\n%s coefficients", if(detailed) "Detailed" else "Condensed"))
     RES = twoLocusIBD_bilineal(x, ids, rho, mem = mem, coefs = coefs,
                                 detailed = detailed, verbose = verbose)
   }
@@ -333,7 +335,7 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALS
         H = kin2L(x, locus1 = sprintf("%s>1 = %s>1 = %s>2 = %s>2", id1, id2, id1, id2),
                      locus2 = sprintf("%s>1 = %s>1,  %s>2,  %s>2", id1, id2, id1, id2), internal = TRUE)
         if(verbose)
-          message("Computing `k11` via the generalised kinship pattern H = ", H)
+          message("Unilineal method 1: Computing `k11` via generalised kinship pattern\n  ", formatKin2L(H))
 
         # Compute k11 via H
         h = genKin2L(H, mem, indent = NA)
@@ -384,6 +386,10 @@ twoLocusIBD_unilineal = function(x, ids, rho, mem = NULL, coefs, detailed = FALS
     }
   } ### uniMethod 1 done
   else if(uniMethod == 2) {
+
+    if(verbose)
+      message("Unilineal method 2: Phased two-locus kinship coefficients")
+
     k11.cc = twoLocusKinship(x, ids, rho, recombinants = c(FALSE,FALSE)) * 4/(rb^2)
 
     if(rho > 0) {

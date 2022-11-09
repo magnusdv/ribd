@@ -16,7 +16,6 @@ ibdDraw(
   labs = FALSE,
   checkFounders = TRUE,
   checkParents = TRUE,
-  margin = 1,
   ...
 )
 }
@@ -44,7 +43,7 @@ of the width of a pedigree symbol. Default is 1 when \code{pos > 0} and 0.5 for
 \code{pos = 0}.}
 
 \item{dist}{The distance between pedigree symbols and the alleles, given as a
-multiple of the height of a pedigree symbol. Default: 1. Ignored when \code{pos = 0}.}
+multiple of symbol size. Default: 1. Ignored when \code{pos = 0}.}
 
 \item{labs}{A logical indicating if labels should be included.}
 
@@ -54,8 +53,6 @@ founder has two equal alleles other than 0.}
 \item{checkParents}{A logical. If TRUE (default), a warning is issued if
 someone's alleles don't match those of the parents. This a superficial test
 and does not catch all Mendelian errors.}
-
-\item{margin}{Plot margins (bottom, left, top, right).}
 
 \item{...}{Further arguments passed on to \code{plot.ped()}.}
 }

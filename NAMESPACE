@@ -2,6 +2,7 @@
 
 S3method("[",gip)
 S3method(print,gip)
+S3method(print,kin2L)
 export(ELR)
 export(coeffTable)
 export(condensedIdentity)
