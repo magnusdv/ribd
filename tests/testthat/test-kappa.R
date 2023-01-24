@@ -33,3 +33,14 @@ test_that("kappa allows for rounding errors in the detection of inbreeding", {
   # Results are not identical (due to rounding), but should be *equal*
   expect_equal(kappa_ribd, kappa_exact)
 })
+
+
+test_that("kappaIBD simplifies output when input is a single pair", {
+  x = nuclearPed(1)
+  expect_length(kappaIBD(x, 1:2), 3)
+  expect_length(kappaIBD(x, 1:3), 5)
+
+  y = list(x, singleton(4))
+  expect_length(kappaIBD(y, 3:4), 3)
+  expect_length(kappaIBD(y, 2:4), 5)
+})

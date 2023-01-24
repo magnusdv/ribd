@@ -109,14 +109,17 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchro
     # Within-component coefficients
     kapComp = lapply(which(lengths(idsComp) > 1), function(i)
       kappaIBD(x[[i]], idsComp[[i]], inbredAction = inbredAction, simplify = FALSE, Xchrom = Xchrom))
-    kapTot = do.call(rbind, kapComp)
+    res = do.call(rbind, kapComp)
 
     # Between-components
     for(i in seq_len(nPed - 1)) for(j in seq(i+1, nPed)) for(a in idsComp[[i]])
-      kapTot = rbind(kapTot, data.frame(id1 = a, id2 = idsComp[[j]],
-                                        kappa0 = 1, kappa1 = 0, kappa2 = 0,
-                                        stringsAsFactors = FALSE))
-    return(kapTot)
+      res = rbind(res, data.frame(id1 = a, id2 = idsComp[[j]], kappa0 = 1, kappa1 = 0, kappa2 = 0, stringsAsFactors = FALSE))
+
+    # Simplify output for a single pair
+    if(simplify && length(ids) == 2)
+      res = as.numeric(res[1, 3:5])
+
+    return(res)
   }
 
   # If X, delegate to X version
