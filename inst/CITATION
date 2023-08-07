@@ -1,0 +1,19 @@
+bibentry(
+  bibtype = "Article",
+  author  = "Magnus Dehli Vigeland",
+  journal = "Journal of Mathematical Biology",
+  title   = "Relatedness coefficients in pedigrees with inbred founders",
+  year    = "2020",
+  pages   = "185--207",
+  volume  = "81",
+  doi     = "10.1007/s00285-020-01505-x",
+)
+
+bibentry(
+  bibtype  = "Book",
+  title    = "Pedigree Analysis in {R}",
+  author   = "Magnus Dehli Vigeland",
+  year     = "2021",
+  publisher= "Academic Press",
+  isbn     = "978-0128244302",
+)
