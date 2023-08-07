@@ -13,7 +13,7 @@ coeffTable(
 )
 }
 \arguments{
-\item{x}{A pedigree in the form of a pedtools::ped object.}
+\item{x}{A pedigree in the form of a \code{pedtools::ped} object.}
 
 \item{ids}{A character (or coercible to character) containing ID labels of
 two or more pedigree members.}
@@ -60,21 +60,21 @@ pairs involving inbred individuals.) Columns: \code{k0}, \code{k1}, \code{k2}.
 }
 \examples{
 # Uncle-nephew pedigree
-x = addSon(nuclearPed(2), 4)
+x = avuncularPed()
 
 # Complete table
 coeffTable(x)
 
-# Only relevant coefficients
+# Only selected coefficients
 coeffTable(x, coeff = c("phi", "deg", "kappa"))
 
 # Only the uncle-nephew pair
 coeffTable(x, ids = c(3, 6), coeff = c("phi", "deg", "kappa"))
 
 # X-chromosomal coefficients
-coeffTable(x, Xchrom = TRUE)
+coeffTable(x, Xchrom = TRUE, coeff = "kappa")
 
 # Both autosomal and X
-coeffTable(x, Xchrom = NA)
+coeffTable(x, Xchrom = NA, coeff = "phi")
 
 }

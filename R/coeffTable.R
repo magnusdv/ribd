@@ -21,7 +21,7 @@
 #' * `detailed`: The detailed identity coefficients of Jacquard, computed by
 #' `identityCoefs(..., detailed = TRUE)`. Columns: `d1`, ..., `d15`.
 #'
-#' @param x A pedigree in the form of a pedtools::ped object.
+#' @param x A pedigree in the form of a `pedtools::ped` object.
 #' @param ids A character (or coercible to character) containing ID labels of
 #'   two or more pedigree members.
 #' @param coeff A character vector containing one or more of the keywords "f",
@@ -45,22 +45,22 @@
 #'
 #' @examples
 #' # Uncle-nephew pedigree
-#' x = addSon(nuclearPed(2), 4)
+#' x = avuncularPed()
 #'
 #' # Complete table
 #' coeffTable(x)
 #'
-#' # Only relevant coefficients
+#' # Only selected coefficients
 #' coeffTable(x, coeff = c("phi", "deg", "kappa"))
 #'
 #' # Only the uncle-nephew pair
 #' coeffTable(x, ids = c(3, 6), coeff = c("phi", "deg", "kappa"))
 #'
 #' # X-chromosomal coefficients
-#' coeffTable(x, Xchrom = TRUE)
+#' coeffTable(x, Xchrom = TRUE, coeff = "kappa")
 #'
 #' # Both autosomal and X
-#' coeffTable(x, Xchrom = NA)
+#' coeffTable(x, Xchrom = NA, coeff = "phi")
 #'
 #' @export
 coeffTable = function(x, ids = labels(x), coeff = c("f", "phi", "deg", "kappa", "identity", "detailed"),

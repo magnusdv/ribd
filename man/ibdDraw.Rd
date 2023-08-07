@@ -92,8 +92,8 @@ ibdDraw(x, als, cols = cols, pos = c(2, 3, 1, 4))
 ibdDraw(x, als, cols = cols, symbol = "text")
 
 # Further arguments (note that `col` is an argument of `ped.plot()`)
-ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2,
-        labs = TRUE, hatched = 3:4, col = "blue")
+ibdDraw(x, als, cols = cols, pos = 0, symbolsize = 2.5,
+        labs = TRUE, fill = "lightgray")
 
 # Mutations are warned about (unless `checkParents = FALSE`)
 ibdDraw(x, alleles = list(1:2, 3:4, 5, 6))
@@ -131,7 +131,7 @@ ibdDraw(x, als, cols = c(3, 7, 2))
 #################################
 
 x = linearPed(2, sex = 2)
-als = list(1, 2, 2, 3, 2)
+als = list(1, 2, 3, 2, 2)
 ibdDraw(x, als, cols = 2:4)
 
 

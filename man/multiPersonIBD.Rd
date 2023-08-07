@@ -57,7 +57,7 @@ ids = 1:3
 multiPersonIBD(x, ids, complete = TRUE)
 
 ### Example due to Peter Green ###
-# Three (pariwise) cousins arranged in two different ways,
+# Three (pairwise) cousins arranged in two different ways,
 # with different 3-way IBD coefficients.
 
 threeCousins1 = ped(

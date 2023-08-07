@@ -35,7 +35,7 @@ Wrappers for functions in other packages or external programs.
 }
 \examples{
 # A random pedigree with 2 founders and 5 matings
-p = randomPed(g = 5, founders = 2, seed = 123)
+p = randomPed(n = 7, f = 2, seed = 123)
 
 ### Kinship matrix
 
@@ -43,7 +43,6 @@ p = randomPed(g = 5, founders = 2, seed = 123)
 stopifnot(identical(
   kinship(p),          # ribd
   kinship2_kinship(p)  # kinship2
-
 ))
 
 # X chromosomal kinship
@@ -59,7 +58,6 @@ stopifnot(identical(
 stopifnot(identical(
   inbreeding(p),          # ribd
   kinship2_inbreeding(p)  # kinship2
-
 ))
 
 # X chromosomal

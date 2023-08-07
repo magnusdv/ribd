@@ -37,9 +37,9 @@
 #' ###############################
 #' # Classic example of three relationships with equal one-locus coeffs
 #' peds = list(
-#'     GrandParent = list(ped = linearPed(2),    ids = c(1, 5)),
-#'     HalfSib     = list(ped = halfSibPed(),    ids = c(4, 5)),
-#'     Uncle       = list(ped = cousinPed(0, 1), ids = c(3, 6)))
+#'     GrandParent = list(ped = linearPed(2),   ids = c(1, 5)),
+#'     HalfSib     = list(ped = halfSibPed(),   ids = c(4, 5)),
+#'     Uncle       = list(ped = avuncularPed(), ids = c(3, 6)))
 #'
 #' twoLocusPlot(peds, coeff = "kinship")
 #' twoLocusPlot(peds, coeff = "k11")
@@ -56,8 +56,8 @@
 #' ###############################
 #'
 #' ped1 = addChildren(halfSibPed(sex2 = 2), 4, 5, nch = 2)
-#' ped2 = addChildren(addDaughter(nuclearPed(1), 3), 1, 5, nch = 2)
-#' ped3 = addChildren(addDaughter(nuclearPed(2), 4), 3, 6, nch = 2)
+#' ped2 = addChildren(linearPed(2, sex = 1:2), 1, 5, nch = 2)
+#' ped3 = addChildren(avuncularPed("uncle", "niece"), 3, 6, nch = 2)
 #'
 #' peds = list(
 #'    `H-sibs` = list(ped = ped1, ids = leaves(ped1)),
@@ -77,7 +77,7 @@
 #'
 #' G = linearPed(2)
 #' H = halfSibPed()
-#' U = cousinPed(0, removal = 1)
+#' U = avuncularPed()
 #' FC = cousinPed(1)
 #' FC1R = cousinPed(1, removal = 1)
 #' SC = cousinPed(2)
