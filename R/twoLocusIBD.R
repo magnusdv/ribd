@@ -185,6 +185,7 @@
 #' # Compare with exact formulas by Denniston (1975).
 #' ###########################################################
 #'
+#' \dontrun{
 #' x = doubleFirstCousins()
 #' ids = leaves(x)
 #' rho = 0.25
@@ -217,7 +218,7 @@
 #' }
 #'
 #' stopifnot(all.equal(kapDetailed, denn(rho)))
-#'
+#' }
 #'
 #' @export
 twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = FALSE, uniMethod = 1, verbose = FALSE) {

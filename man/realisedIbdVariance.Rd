@@ -59,12 +59,13 @@ L = 1
 
 ### Full sibs ###
 
+\dontrun{
 x = nuclearPed(2)
 realisedIbdVariance(x, ids = 3:4, coeff = "k2", L = L)
 
 # Hill & Weir (Box 1)
 16*phi(4,L) - 16*phi(3,L) + 8*phi(2,L) - 2*phi(1,L)
-
+}
 
 ### Double first cousins ###
 
@@ -78,14 +79,13 @@ realisedIbdVariance(dfc, coeff = "k2", L = L)
 
 # Hill & Weir, Box 1
 var_k2 = 64*phi(8,L) - 64*phi(7,L) + 40*phi(6,L) - 20*phi(5,L) +
- 33/4*phi(4,L) - 5/2*phi(3,L) + 5/8*phi(2,L)-1/8*phi(1,L)
+  33/4*phi(4,L) - 5/2*phi(3,L) + 5/8*phi(2,L)-1/8*phi(1,L)
 var_k1 = 4*var_k2
 var_k0 = var_k2 + 2 * (4*phi(4,L) - 2*phi(3,L) + 3/4*phi(2,L) - 1/4*phi(1,L))
 
 var_k0
 var_k1
 var_k2
-
 }
 
 }

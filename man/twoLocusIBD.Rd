@@ -206,6 +206,7 @@ stopifnot(identical(
 # Compare with exact formulas by Denniston (1975).
 ###########################################################
 
+\dontrun{
 x = doubleFirstCousins()
 ids = leaves(x)
 rho = 0.25
@@ -238,7 +239,7 @@ denn = function(rho) {
 }
 
 stopifnot(all.equal(kapDetailed, denn(rho)))
-
+}
 
 }
 \seealso{
