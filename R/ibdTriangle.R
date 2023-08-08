@@ -53,6 +53,8 @@
 #' @param relationships A character vector indicating relationships points to be
 #'   included in the plot. See Details for a list of valid entries.
 #' @param kinshipLines A numeric vector (see Details).
+#' @param shortLines A logical indicating if the kinship lines (if present)
+#'   should be restricted to the interior of the triangle.
 #' @param shading The shading colour for the unattainable region.
 #' @param pch Symbol used for the relationship points (see [par()]).
 #' @param cexPoint A number controlling the symbol size for the relationship
@@ -79,7 +81,8 @@
 #' opar = par(no.readonly = TRUE) # store graphical parameters
 #'
 #' ibdTriangle()
-#' ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.8)
+#' ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.7)
+#' ibdTriangle(kinshipLines = c(0.25, 0.125), shortLines = TRUE, pch = 15)
 #'
 #' par(opar) # reset graphical parameters
 #'
@@ -89,57 +92,71 @@
 #' @export
 ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                        pch = 16, cexPoint = 1.2, cexText = 1.2,
-                       kinshipLines = numeric(), shading = "lightgray",
+                       kinshipLines = numeric(), shortLines = FALSE, shading = "lightgray",
                        xlim = c(0, 1), ylim = c(0, 1), axes = FALSE,
                        xlab = expression(kappa[0]), ylab = expression(kappa[2]),
                        cexLab = cexText, mar = c(3.1, 3.1, 1, 1), xpd = TRUE,
                        keep.par = TRUE) {
 
-    opar = par(xpd = xpd, mar = mar, pty = "s")
-    if (!keep.par)
-      on.exit(par(opar))
+  opar = par(xpd = xpd, mar = mar, pty = "s")
+  if (!keep.par)
+    on.exit(par(opar))
 
-    plot(NULL, xlim = xlim, ylim = ylim, axes = axes, ann = FALSE)
+  plot(NULL, xlim = xlim, ylim = ylim, axes = axes, ann = FALSE)
 
-    # Axis labels
-    mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexLab)
+  # Axis labels
+  mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexLab)
 
-    # impossible region shading(do borders afterwards)
-    kk0 = seq(0, 1, length = 501)
-    kk2 = 1 + kk0 - 2 * sqrt(kk0)
-    polygon(kk0, kk2, col = shading, border = NA)
-    # text(.4, .4, 'impossible region', srt = -45)
+  # impossible region shading(do borders afterwards)
+  kk0 = seq(0, 1, length = 501)
+  kk2 = 1 + kk0 - 2 * sqrt(kk0)
+  polygon(kk0, kk2, col = shading, border = NA)
+  # text(.4, .4, 'impossible region', srt = -45)
 
-    # impossible border
-    points(kk0, kk2, type = "l", lty = 3)
+  # impossible border
+  points(kk0, kk2, type = "l", lty = 3)
 
-    # axes
-    segments(c(0, 0, 0), c(0, 0, 1), c(1, 0, 1), c(0, 1, 0))
+  # axes
+  segments(c(0, 0, 0), c(0, 0, 1), c(1, 0, 1), c(0, 1, 0))
 
-    # kinship lines
-    for (phi in kinshipLines) {
-        if (phi < 0 || phi > 0.5)
-            stop2("kinship coefficient not in intervall [0, 0.5]", phi)
-        abline(a = (4 * phi - 1), b = 1, lty = 2)
-        labpos.x = 0.5 * (1.2 - (4 * phi - 1))
-        labpos.y = 1.2 - labpos.x
-        lab = substitute(paste(phi1, " = ", a), list(a = phi))
-        text(labpos.x, labpos.y, labels = lab, pos = 3, srt = 45)
+  # kinship lines
+  for (phi in kinshipLines) {
+    if (phi < 0 || phi > 0.5)
+      stop2("kinship coefficient not in intervall [0, 0.5]", phi)
+
+    if(shortLines) {
+      if(phi > 1/4)
+        segments(x0 = 0, y0 = 4*phi-1, x1 = 1-2*phi, y1 = 2*phi, lty = 2)
+      else
+        segments(x0 = 1-4*phi, y0 = 0, x1 = 1-2*phi, y1 = 2*phi, lty = 2)
+
+      labpos.x = 1-2*phi + 0.025
+      labpos.y = 2*phi + 0.025
+      pos = NULL; adj = c(0, 0.5)
     }
-
-    # relationships
-    RELS = data.frame(
-      label = c("UN", "PO", "MZ", "S", "H,U,G", "FC", "SC", "DFC", "Q"),
-      k0 = c(1, 0, 0, 1/4, 1/2, 3/4, 15/16, 9/16, 17/32),
-      k1 = c(0, 1, 0, 1/2, 1/2, 1/4, 1/16, 6/16, 14/32),
-      k2 = c(0, 0, 1, 1/4, 0, 0, 0, 1/16, 1/32),
-      pos = c(1, 1, 4, 4, 1, 1, 1, 3, 4))
-
-    if (length(relationships) > 0) {
-        rels = RELS[RELS$label %in% relationships, ]
-        points(rels$k0, rels$k2, pch = pch, cex = cexPoint)
-        text(rels$k0, rels$k2, labels = rels$label, pos = rels$pos, cex = cexText, offset = 0.7)
+    else {
+      abline(a = (4 * phi - 1), b = 1, lty = 2)
+      labpos.x = 0.5 * (1.2 - (4 * phi - 1))
+      labpos.y = 1.2 - labpos.x
+      pos = 3; adj = NULL
     }
+    lab = substitute(paste(phi1, " = ", a), list(a = phi))
+    text(labpos.x, labpos.y, labels = lab, pos = pos, adj = adj, srt = 45, cex = cexText)
+  }
+
+  # relationships
+  RELS = data.frame(
+    label = c("UN", "PO", "MZ", "S", "H,U,G", "FC", "SC", "DFC", "Q"),
+    k0 = c(1, 0, 0, 1/4, 1/2, 3/4, 15/16, 9/16, 17/32),
+    k1 = c(0, 1, 0, 1/2, 1/2, 1/4, 1/16, 6/16, 14/32),
+    k2 = c(0, 0, 1, 1/4, 0, 0, 0, 1/16, 1/32),
+    pos = c(1, 1, 4, 4, 1, 1, 1, 3, 4))
+
+  if(length(relationships) > 0) {
+    rels = RELS[RELS$label %in% relationships, ]
+    points(rels$k0, rels$k2, pch = pch, cex = cexPoint)
+    text(rels$k0, rels$k2, labels = rels$label, pos = rels$pos, cex = cexText, offset = 0.7)
+  }
 }
 
 

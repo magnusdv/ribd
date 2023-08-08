@@ -10,6 +10,7 @@ ibdTriangle(
   cexPoint = 1.2,
   cexText = 1.2,
   kinshipLines = numeric(),
+  shortLines = FALSE,
   shading = "lightgray",
   xlim = c(0, 1),
   ylim = c(0, 1),
@@ -35,6 +36,9 @@ points.}
 labels.}
 
 \item{kinshipLines}{A numeric vector (see Details).}
+
+\item{shortLines}{A logical indicating if the kinship lines (if present)
+should be restricted to the interior of the triangle.}
 
 \item{shading}{The shading colour for the unattainable region.}
 
@@ -101,7 +105,8 @@ argument:
 opar = par(no.readonly = TRUE) # store graphical parameters
 
 ibdTriangle()
-ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.8)
+ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.7)
+ibdTriangle(kinshipLines = c(0.25, 0.125), shortLines = TRUE, pch = 15)
 
 par(opar) # reset graphical parameters
 
