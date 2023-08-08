@@ -14,54 +14,76 @@ status](https://www.r-pkg.org/badges/version/ribd)](https://CRAN.R-project.org/p
 ## Overview
 
 The goal of **ribd** is to compute various coefficients of relatedness
-and identity-by-descent (IBD) between pedigree members. It extends the
-`pedtools` package which provides useful utilities for pedigree
-construction and manipulation.
+and identity-by-descent (IBD) between pedigree members. It is part of
+the **pedsuite** collection of R packages for pedigree analysis; see
+<https://magnusdv.github.io/pedsuite/> for details.
 
 The main functions in **ribd** are the following, all of which support
-both autosomal and X-chromosomal modes:
+both autosomal and X-chromosomal modes, and pedigrees with inbred
+founders:
 
--   `kinship()` : The kinship coefficient $\varphi$ between two pedigree
-    members (or full matrix)
--   `inbreeding()` : The inbreeding coefficient $f$ of all (or a subset
-    of) pedigree members
--   `kappaIBD()` : IBD coefficients $\kappa_0, \kappa_1, \kappa_2$
-    between noninbred individuals
--   `identityCoefs()` : Jacquard’s condensed identity coefficients
-    $\Delta_1, \dotsc, \Delta_9$
-
-A unique feature of **ribd** is the ability to handle pedigrees with
-inbred founders in all of the above calculations. More about this
-[below](#pedigrees-with-inbred-founders).
+- `kinship()`: The kinship coefficient $\varphi$ between two pedigree
+  members (or full matrix)
+- `inbreeding()`: The inbreeding coefficient $f$ of all (or a subset of)
+  pedigree members
+- `kappaIBD()`: IBD coefficients $\kappa_0, \kappa_1, \kappa_2$ between
+  noninbred individuals
+- `identityCoefs()`: Jacquard’s condensed identity coefficients
+  $\Delta_1, \dotsc, \Delta_9$
 
 The package also computes a variety of lesser-known pedigree
 coefficients:
 
--   `gKinship()` : Generalised kinship coefficients of various kinds,
-    including those defined by Karigl (1981), Weeks & Lange (1988),
-    Lange & Sinsheimer (1992) and García-Cortés (2015).
--   `multiPersonIBD()` : Multi-person IBD coefficients (noninbred
-    individuals only)
--   `twoLocusKinship()` : Two-locus kinship coefficients, as defined by
-    Thompson (1988)
--   `twoLocusIBD()` : Two-locus IBD coefficients (noninbred pair of
-    individuals)
--   `twoLocusIdentity()` : Two-locus condensed identity coefficients
-    (any pair of individuals)
--   `twoLocusGeneralisedKinship()` : Generalised two-locus kinship
-    coefficients (*not exported*)
+- `gKinship()`: Generalised kinship coefficients of various kinds,
+  including those defined by Karigl (1981), Weeks & Lange (1988), Lange
+  & Sinsheimer (1992) and García-Cortés (2015).
+- `multiPersonIBD()`: Multi-person IBD coefficients (noninbred
+  individuals only)
+- `twoLocusKinship()`: Two-locus kinship coefficients, as defined by
+  Thompson (1988)
+- `twoLocusIBD()`: Two-locus IBD coefficients (noninbred pair of
+  individuals)
+- `twoLocusIdentity()`: Two-locus condensed identity coefficients (any
+  pair of individuals)
+- `twoLocusGeneralisedKinship()`: Generalised two-locus kinship
+  coefficients (*not exported*)
+
+## Citation
+
+If you use **ribd** in a publication, please cite the most appropriate
+of the following works.
+
+***Standard coefficients***  
+Magnus D. Vigeland. Relatedness coefficients in pedigrees with inbred
+founders. *Journal of Mathematical Biology*, **2020**.
+<https://doi.org/10.1007/s00285-020-01505-x>.
+
+***Two-locus coefficients***  
+Magnus D. Vigeland. Two-locus identity coefficients in pedigrees. *G3
+Genes\|Genomes\|Genetics*, **2023**.
+<https://doi.org/10.1093/g3journal/jkac326>.
+
+***General reference***  
+Magnus D. Vigeland. Pedigree analysis in R. Academic Press, **2021**.
+[ISBN
+9780128245606](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
 ## Installation
 
-To get the current official version of **ribd**, install from CRAN as
-follows:
+The easiest way to get started with **ribd** is to install the
+**pedsuite**:
+
+``` r
+install.packages("pedsuite")
+```
+
+If you only want **ribd**, install from CRAN as follows:
 
 ``` r
 install.packages("ribd")
 ```
 
-Alternatively, you can obtain the latest development version from
-GitHub:
+Alternatively, the latest development version is available from GitHub:
 
 ``` r
 # install.packages("devtools") # install devtools if needed
@@ -84,7 +106,7 @@ For a child of related parents, its inbreeding coefficient is defined as
 the probability of autozygosity (i.e., homologous alleles being IBD) in
 a random autosomal locus.
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-cousins-1.png" width="40%" style="display: block; margin: auto;" />
 
 For example, the child of first cousins shown above has inbreeding
 coefficient 1/16. We can compute this with **ribd** as follows:
@@ -92,9 +114,7 @@ coefficient 1/16. We can compute this with **ribd** as follows:
 ``` r
 # Create pedigree
 x = cousinPed(1, child = TRUE)
-
-# Plot pedigree
-plot(x)
+plot(x, hatched = 9)
 
 # Inbreeding coefficient of the child
 inbreeding(x, ids = 9)
@@ -103,8 +123,8 @@ inbreeding(x, ids = 9)
 
 #### Kinship coefficient
 
-By theory, the above inbreeding coefficient should equal the *kinship
-coefficient* between the parents, i.e., the cousins `7` and `8`:
+By definition, the inbreeding coefficient equals the *kinship
+coefficient* of the parents, individuals 7 and 8:
 
 ``` r
 kinship(x, ids = 7:8)
@@ -132,7 +152,7 @@ We validate this with the `kappaIBD()` function of **ribd**:
 ``` r
 # Create and plot pedigree
 y = nuclearPed(2)
-plot(y, margin = rep(4, 4))
+plot(y, margin = 4)
 
 # Compute kappa for all pairs
 k = kappaIBD(y)
@@ -185,7 +205,7 @@ x = fullSibMating(1)
 plot(x, hatched = 5:6)
 ```
 
-<img src="man/figures/README-sibs-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-sibs-1.png" width="30%" style="display: block; margin: auto;" />
 
 The function `identityCoefs()` by default returns the nine coefficients
 in the order given above.
@@ -248,7 +268,7 @@ Hopefully this should all be clear from the following table:
 
 ## Pedigrees with inbred founders
 
-A unique feature of **ribd** (in fact, throughout the **ped suite**
+A unique feature of **ribd** (in fact, throughout the **pedsuite**
 packages) is the support for inbred founders. This greatly expands the
 set of pedigrees we can analyse with a computer.
 
@@ -276,7 +296,7 @@ plot(z, hatched = 7:8, labs = 7:8)
 showInTriangle(kappaIBD(z, 7:8))
 ```
 
-<img src="man/figures/README-coef-construct-1.png" title="A relationship with kappa = (1/8, 6/8, 1/8)" alt="A relationship with kappa = (1/8, 6/8, 1/8)" width="42%" style="display: block; margin: auto;" /><img src="man/figures/README-coef-construct-2.png" title="A relationship with kappa = (1/8, 6/8, 1/8)" alt="A relationship with kappa = (1/8, 6/8, 1/8)" width="46%" style="display: block; margin: auto;" />
+<img src="man/figures/README-coef-construct-1.png" width="42%" style="display: block; margin: auto;" /><img src="man/figures/README-coef-construct-2.png" width="46%" style="display: block; margin: auto;" />
 
 If you wonder how the weird-looking inbreeding coefficients above were
 chosen, you can check out my paper [Relatedness coefficients in
