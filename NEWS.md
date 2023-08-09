@@ -1,3 +1,21 @@
+# ribd 1.6.0
+
+## New features
+
+* `ibdTriangle()` gains argument `shortLines`, restricting kinship lines to the interior of the triangle.
+
+* `ibdDraw()` now automatically calculates sensible plot margins.
+
+* Add citation info.
+
+
+## Bug fixes
+
+* `kappaIBD(x, ids, simplify = TRUE)` now works as intended when `x` is a ped list and `ids` has length 2.
+
+* Fixed printing of two-locus kinship patterns in `twoLocusIBD(..., verbose = TRUE)`.
+
+
 # ribd 1.5.0
 
 ## Breaking changes

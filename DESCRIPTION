@@ -1,7 +1,7 @@
 Type: Package
 Package: ribd
 Title: Pedigree-based Relatedness Coefficients
-Version: 1.5.0.9000
+Version: 1.6.0
 Authors@R: 
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9134-4962"))
@@ -14,19 +14,18 @@ Description: Recursive algorithms for computing various relatedness
     coefficients, 'ribd' also computes a range of lesser-known
     coefficients, including generalised kinship coefficients (Karigl
     (1981) <doi:10.1111/j.1469-1809.1981.tb00341.x>; Weeks and Lange
-    (1988) <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1715269>),
+    (1988) <https://pubmed.ncbi.nlm.nih.gov/3422543/>),
     two-locus coefficients (Thompson (1988) <doi:10.1093/imammb/5.4.261>)
-    and multi-person coefficients. This package is part of the 'ped
-    suite', a collection of packages for pedigree analysis in R. Several
-    methods of 'ribd' are featured in the online app 'QuickPed' available
-    at <https://magnusdv.shinyapps.io/quickped>. See Vigeland (2022)
+    and multi-person coefficients. Many features of 'ribd' are available
+    through the online app 'QuickPed' at
+    <https://magnusdv.shinyapps.io/quickped>; see Vigeland (2022)
     <doi:10.1186/s12859-022-04759-y>.
 License: GPL-3
 URL: https://github.com/magnusdv/ribd,
     https://magnusdv.github.io/pedsuite/
 Depends: 
     pedtools (>= 2.0.0),
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Imports: 
     glue,
     kinship2,
