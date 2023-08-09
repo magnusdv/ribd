@@ -163,10 +163,10 @@ showInTriangle(k, labels = T, cexLab = 1.3, pos = c(3,2,3,4,4,3))
 <img src="man/figures/README-triangle-S-1.png" width="90%" style="display: block; margin: auto;" />
 
 As shown by [Thompson
-(1976)](doi.org/10.1111/j.1469-1809.1976.tb00181.x), all relationships
-of noninbred individuals satisfy a certain quadratic inequality in the
-kappa’s, resulting in an unattainable region of the triangle (shown in
-grey above).
+(1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all
+relationships of noninbred individuals satisfy a certain quadratic
+inequality in the kappa’s, resulting in an unattainable region of the
+triangle (shown in grey above).
 
 #### A more complex example
 
@@ -295,7 +295,7 @@ plot(z, hatched = 7:8, labs = 7:8)
 showInTriangle(kappaIBD(z, 7:8))
 ```
 
-<img src="man/figures/README-coef-construct-1.png" width="42%" style="display: block; margin: auto;" /><img src="man/figures/README-coef-construct-2.png" width="46%" style="display: block; margin: auto;" />
+<img src="man/figures/README-coef-construct-1.png" width="95%" style="display: block; margin: auto;" />
 
 If you wonder how the weird-looking inbreeding coefficients above were
 chosen, you can check out my paper [Relatedness coefficients in
