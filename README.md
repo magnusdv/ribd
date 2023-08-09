@@ -56,17 +56,16 @@ of the following works.
 ***Standard coefficients***  
 Magnus D. Vigeland. Relatedness coefficients in pedigrees with inbred
 founders. *Journal of Mathematical Biology*, **2020**.
-<https://doi.org/10.1007/s00285-020-01505-x>.
+[doi:10.1007/s00285-020-01505-x](https://doi.org/10.1007/s00285-020-01505-x).
 
 ***Two-locus coefficients***  
 Magnus D. Vigeland. Two-locus identity coefficients in pedigrees. *G3
 Genes\|Genomes\|Genetics*, **2023**.
-<https://doi.org/10.1093/g3journal/jkac326>.
+[doi:10.1093/g3journal/jkac326](https://doi.org/10.1093/g3journal/jkac326).
 
 ***General reference***  
 Magnus D. Vigeland. Pedigree analysis in R. Academic Press, **2021**.
-[ISBN
-9780128245606](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
+[ISBN:9780128245606](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
 ## Installation
 
@@ -164,10 +163,10 @@ showInTriangle(k, labels = T, cexLab = 1.3, pos = c(3,2,3,4,4,3))
 <img src="man/figures/README-triangle-S-1.png" width="90%" style="display: block; margin: auto;" />
 
 As shown by [Thompson
-(1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all
-relationships of noninbred individuals satisfy a certain quadratic
-inequality in the kappa’s, resulting in an unattainable region of the
-triangle (shown in grey above).
+(1976)](doi.org/10.1111/j.1469-1809.1976.tb00181.x), all relationships
+of noninbred individuals satisfy a certain quadratic inequality in the
+kappa’s, resulting in an unattainable region of the triangle (shown in
+grey above).
 
 #### A more complex example
 
