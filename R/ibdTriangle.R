@@ -149,7 +149,45 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   }
 }
 
+ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
+                         cexPoint = 1.2, cexText = cexPoint, cexLab = cexText,
+                         shading = "lightgray",
+                         xlab = expression(kappa[0]), ylab = expression(kappa[2]),
+                         ...) {
 
+  if(!requireNamespace("ggplot2", quietly = TRUE))
+    stop2("Package `ggplot2` must be installed for this option to work")
+
+  # Fixed
+  rels = basicRelationships[basicRelationships$label %in% relationships, , drop = FALSE]
+
+  # Tweak label pos
+  adj = 0.02
+  pos = rels$pos
+  rels$x.txt = rels$kappa0 + ifelse(pos == 2, -2*adj, ifelse(pos == 4, 2*adj, 0))
+  rels$y.txt = rels$kappa2 + ifelse(pos == 1, -adj, ifelse(pos == 3, adj, 0))
+  rels$hjust = ifelse(pos == 2, 1, ifelse(pos == 4, 0, 0.5))
+  rels$vjust = ifelse(pos == 1, 1, ifelse(pos == 3, 0, 0.5))
+
+  # Impossible region shading(do borders afterwards)
+  t = seq(0, 1, length = 201)
+  imp = data.frame(kappa0 = t^2, kappa2 = (1 - t)^2)
+
+  # Main triangle
+  p = ggplot2::ggplot(rels, ggplot2::aes(kappa0, kappa2)) +
+    ggplot2::geom_polygon(data = imp, fill = shading, color = "black") +
+    ggplot2::geom_polygon(data = data.frame(kappa0 = c(0, 1, 0), kappa2 = c(0, 0, 1)),
+                          fill = NA, color = "black") +
+    ggplot2::geom_point(size = 2 * cexPoint) +
+    ggplot2::geom_text(ggplot2::aes(x = `x.txt`, y = `y.txt`, label = label, hjust = hjust,
+                                    vjust = vjust), size = 3.88 * cexText) +
+    ggplot2::coord_fixed(ratio = 1, clip = "off") +
+    ggplot2::labs(x = xlab, y = ylab) +
+    ggplot2::theme_void() +
+    ggplot2::theme(axis.title = ggplot2::element_text(size = 11 * cexLab))
+
+  p
+}
 
 #' Add points to the IBD triangle
 #'

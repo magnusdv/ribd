@@ -31,6 +31,7 @@ Imports:
     kinship2,
     slam
 Suggests: 
+    ggplot2,
     spelling,
     testthat
 Encoding: UTF-8
