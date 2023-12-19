@@ -107,14 +107,11 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   # Axis labels
   mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexLab)
 
-  # impossible region shading(do borders afterwards)
-  kk0 = seq(0, 1, length = 501)
-  kk2 = 1 + kk0 - 2 * sqrt(kk0)
-  polygon(kk0, kk2, col = shading, border = NA)
+  # Impossible region shading with dotted border
+  t = seq(0, 1, length = 201)
+  polygon(t^2, (1-t)^2, col = shading, border = NA)
+  points(t^2, (1-t)^2, type = "l", lty = 3)
   # text(.4, .4, 'impossible region', srt = -45)
-
-  # impossible border
-  points(kk0, kk2, type = "l", lty = 3)
 
   # axes
   segments(c(0, 0, 0), c(0, 0, 1), c(1, 0, 1), c(0, 1, 0))
