@@ -141,18 +141,11 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
     text(labpos.x, labpos.y, labels = lab, pos = pos, adj = adj, srt = 45, cex = cexText)
   }
 
-  # relationships
-  RELS = data.frame(
-    label = c("UN", "PO", "MZ", "S", "H,U,G", "FC", "SC", "DFC", "Q"),
-    k0 = c(1, 0, 0, 1/4, 1/2, 3/4, 15/16, 9/16, 17/32),
-    k1 = c(0, 1, 0, 1/2, 1/2, 1/4, 1/16, 6/16, 14/32),
-    k2 = c(0, 0, 1, 1/4, 0, 0, 0, 1/16, 1/32),
-    pos = c(1, 1, 4, 4, 1, 1, 1, 3, 4))
-
-  if(length(relationships) > 0) {
-    rels = RELS[RELS$label %in% relationships, ]
-    points(rels$k0, rels$k2, pch = pch, cex = cexPoint)
-    text(rels$k0, rels$k2, labels = rels$label, pos = rels$pos, cex = cexText, offset = 0.7)
+  # Fixed relationships
+  rels = basicRelationships[basicRelationships$label %in% relationships, , drop = FALSE]
+  if(nrow(rels)) {
+    points(rels$kappa0, rels$kappa2, pch = pch, cex = cexPoint)
+    text(rels$kappa0, rels$kappa2, labels = rels$label, pos = rels$pos, cex = cexText, offset = 0.7)
   }
 }
 

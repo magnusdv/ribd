@@ -1,3 +1,13 @@
+#' Basic relationships
+#'
+#' A data frame containing kinship and kappa coefficients for some commonly used
+#' relationships.
+#'
+#' @format A data frame with 12 rows and 7 columns. The last column (`pos`) is
+#'   used internally for placing labels on triangle plots.
+#'
+"basicRelationships"
+
 #' Jicaque pedigree
 #'
 #' A data frame describing a pedigree from the Jicaque tribe, studied by Chapman
