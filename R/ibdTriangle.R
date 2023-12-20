@@ -33,21 +33,16 @@
 #' argument:
 #'
 #' * UN = unrelated
-#'
 #' * PO = parent/offspring
-#'
 #' * MZ = monozygotic twins
-#'
 #' * S = full siblings
-#'
-#' * H,U,G = half sibling/avuncular (\strong{u}ncle)/grandparent
-#'
+#' * H = half siblings
+#' * A or U = avuncular (uncle/aunt)
+#' * G = grandparent-grandchild
+#' * H,U,G = half sibling/avuncular/grandparent
 #' * FC = first cousins
-#'
 #' * SC = second cousins
-#'
 #' * DFC = double first cousins
-#'
 #' * Q = quadruple first half cousins
 #'
 #' @param relationships A character vector indicating relationships points to be
@@ -63,12 +58,13 @@
 #'   labels.
 #' @param axes A logical: Draw surrounding axis box? Default: `FALSE`.
 #' @param xlab,ylab Axis labels.
-#' @param cexLab A number controlling the font size for the axis labels.
+#' @param cexAxis A number controlling the font size for the axis labels.
+#' @param cexLab Deprecated; use `cexAxis` instead.
 #' @param xlim,ylim,mar,xpd Graphical parameters; see [par()].
 #' @param keep.par A logical. If TRUE, the graphical parameters are not reset
 #'   after plotting, which may be useful for adding additional annotation.
 #' @return None
-#' @author Magnus Dehli Vigeland
+#'
 #' @references
 #'
 #' * E. A. Thompson (1975). _The estimation of pairwise relationships._ Annals
@@ -95,8 +91,13 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                        kinshipLines = numeric(), shortLines = FALSE, shading = "lightgray",
                        xlim = c(0, 1), ylim = c(0, 1), axes = FALSE,
                        xlab = expression(kappa[0]), ylab = expression(kappa[2]),
-                       cexLab = cexText, mar = c(3.1, 3.1, 1, 1), xpd = TRUE,
-                       keep.par = TRUE) {
+                       cexAxis = cexText, mar = c(3.1, 3.1, 1, 1), xpd = TRUE,
+                       keep.par = TRUE, cexLab = NULL) {
+
+  if(!is.null(cexLab)) {
+    message("Argument `cexLab` of `ibdTriangle()` has been renamed to `cexAxis`")
+    cexAxis = cexLab
+  }
 
   opar = par(xpd = xpd, mar = mar, pty = "s")
   if (!keep.par)
@@ -105,7 +106,7 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   plot(NULL, xlim = xlim, ylim = ylim, axes = axes, ann = FALSE)
 
   # Axis labels
-  mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexLab)
+  mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexAxis)
 
   # Impossible region shading with dotted border
   t = seq(0, 1, length = 201)
@@ -142,15 +143,17 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   }
 
   # Fixed relationships
-  rels = basicRelationships[basicRelationships$label %in% relationships, , drop = FALSE]
+  allrels = ribd::basicRelationships
+  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
   if(nrow(rels)) {
     points(rels$kappa0, rels$kappa2, pch = pch, cex = cexPoint)
-    text(rels$kappa0, rels$kappa2, labels = rels$label, pos = rels$pos, cex = cexText, offset = 0.7)
+    text(rels$kappa0, rels$kappa2, labels = rels$label, pos = rels$pos,
+         cex = cexText, offset = 0.7)
   }
 }
 
 ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
-                         cexPoint = 1.2, cexText = cexPoint, cexLab = cexText,
+                         cexPoint = 1.2, cexText = cexPoint, cexAxis = cexText,
                          shading = "lightgray",
                          xlab = expression(kappa[0]), ylab = expression(kappa[2]),
                          ...) {
@@ -159,7 +162,8 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
     stop2("Package `ggplot2` must be installed for this option to work")
 
   # Fixed
-  rels = basicRelationships[basicRelationships$label %in% relationships, , drop = FALSE]
+  allrels = ribd::basicRelationships
+  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
 
   # Tweak label pos
   adj = 0.02
@@ -184,7 +188,11 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
     ggplot2::coord_fixed(ratio = 1, clip = "off") +
     ggplot2::labs(x = xlab, y = ylab) +
     ggplot2::theme_void() +
-    ggplot2::theme(axis.title = ggplot2::element_text(size = 11 * cexLab))
+    ggplot2::theme(axis.title = ggplot2::element_text(size = 11 * cexAxis))
+
+  p
+}
+
 
 ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                          cexPoint = 1.2, cexText = cexPoint, cexAxis = cexText,
@@ -231,9 +239,17 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
   p
 }
 
+
+
+
 #' Add points to the IBD triangle
 #'
-#' Utility function for plotting points in the IBD triangle.
+#' Utility function for plotting kappa coefficients in the IBD triangle. This
+#' was previously only implemented as a base R plot Astonishingly, this is now
+#' implemented both in base R, ggplot2 and plotly, controlled by the argument
+#' `plotType`. Labels are often easier to read in the two latter versions: The
+#' `ggplot2` version uses `ggrepel` to separate labels, while `plotly` enables
+#' interactive exploration of the plot.
 #'
 #' @param kappa Coordinates of points to be plotted in the IBD triangle. Valid
 #'   input types are:
@@ -247,29 +263,54 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #'   * A list (and not a data frame), in which case an attempt is made to bind
 #'   the elements row-wise.
 #'
+#' @param plotType Either `base` (default), `ggplot2` or `plotly`. Abbreviations
+#'   are allowed.
 #' @param new A logical indicating if a new triangle should be drawn.
-#' @param col,cex,pch,lwd Parameters passed onto [points()].
+#' @param col,cex,pch,lwd Parameters controlling the appearance of points.
+#' @param jitter A logical. If NULL (default), jittering is disabled for
+#'   `plotType`'s "base" or "ggplot2" and enabled for "plotly".
 #' @param labels A character of same length as the number of points, or a single
-#'   logical `TRUE` or `FALSE`. If `TRUE`, an attempt is made to create labels
-#'   by pasting columns `ID1` and `ID2` in `kappa`, if these exist. By default,
-#'   no labels are plotted.
-#' @param colLab,cexLab,pos,adj Parameters passed onto [text()] (if `labels` is
-#'   non-NULL).
+#'   logical `TRUE` or `FALSE`. If `TRUE`, labels are created by pasting columns
+#'   `id1` and `id2` in `kappa` (if these exist) separated by `labSep`. By
+#'   default, labels are disabled when `plotType = "base"`, enabled if `plotType
+#'   = "ggplot2"` and enabled (interactively) if `plotType = "plotly"`.
+#' @param labSep A string, by default "-".
+#' @param colLab,cexLab,pos,adj Parameters controlling the appearance of labels.
+#'   Ignored when `plotType = "plotly"`.
 #' @param keep.par A logical. If TRUE, the graphical parameters are not reset
 #'   after plotting, which may be useful for adding additional annotation.
 #' @param \dots Plot arguments passed on to `ibdTriangle()`.
 #'
-#' @return None
-#' @author Magnus Dehli Vigeland
+#' @return If `plotType = 'base'`, NULL; otherwise the plot object.
 #'
 #' @examples
 #' showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 #'
+#' x = doubleCousins(1, 0, half2 = TRUE)
+#' k = kappaIBD(x)
+#' showInTriangle(k, labels = TRUE, pos = 1:4)
+#'
+#' # Separate labels with ggplot2
+#' # showInTriangle(k, plot = "gg", col = 2:8)
+#'
+#' # Interactive plot with plotly
+#' showInTriangle(k, plot = "plotly", col = 2:8, pch = 0)
+#'
+#' @importFrom grDevices col2rgb rgb
+#' @importFrom stats runif
 #' @export
-showInTriangle = function(kappa, new = TRUE, col = 6,
-                          cex = 1, pch = 4, lwd = 2, labels = FALSE,
-                          colLab = col, cexLab = 0.8,
+showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
+                          new = TRUE, col = 6, cex = 1, pch = 4, lwd = 2,
+                          jitter = NULL, labels = NULL, colLab = col,
+                          cexLab = 0.8, labSep = "-",
                           pos = 1, adj = NULL, keep.par = TRUE, ...) {
+
+  plotType = match.arg(plotType)
+  if(is.null(labels))
+    labels = switch(plotType, base = FALSE, ggplot2 = TRUE, plotly = TRUE)
+
+  if(is.null(jitter))
+    jitter = switch(plotType, base = FALSE, ggplot2 = FALSE, plotly = TRUE)
 
   if(is.vector(kappa) && !is.list(kappa)) {
     if(!is.numeric(kappa))
@@ -289,48 +330,144 @@ showInTriangle = function(kappa, new = TRUE, col = 6,
     stop2("Wrong input format of `kappa`: ", class(kappa))
 
   ### `kappa` is now a data frame
-  df = kappa
+  df = as.data.frame(kappa)
+  nms = names(df)
 
-  # Extract k0 and k2
-  allowedColnames = list(c("kappa0", "kappa2"),
-                         c("k0", "k2"),
-                         c("ibd0", "ibd2"))
-  nms = names(kappa)
-  k0 = k2 = NULL
-  for (colnms in allowedColnames) {
-    if(all(colnms %in% nms)) {
-      k0 = df[[colnms[1]]]
-      k2 = df[[colnms[2]]]
+  # Columns with coordinates --> copy to .k0, .k2
+  for (kcols in list(c("k0", "k2"), c("kappa0", "kappa2"), c("ibd0", "ibd2"))) {
+    if (all(kcols %in% nms)) {
+      df$.k0 = df[[kcols[1]]]
+      df$.k2 = df[[kcols[2]]]
       break
     }
   }
-  if(is.null(k0))
-    stop2("Columns names not recognised.")
+  if(is.null(df$.k0))
+    stop2("Columns names not recognised")
 
-  # Labels
-  if(isTRUE(labels)) {
-    id1 = if("ID1" %in% nms) df$ID1 else if ("id1" %in% nms) df$id1 else NULL
-    id2 = if("ID2" %in% nms) df$ID2 else if ("id2" %in% nms) df$id2 else NULL
-    if(is.null(id1) || is.null(id2))
-      stop2("Trying to create labels, but cannot find column `id1` and `id2`")
-    labels = paste(id1, id2, sep = "-")
+  # Jitter?
+  if(jitter) {
+    df$.k0 = df$.k0 + runif(nrow(df), -0.015, 0.015)
+    df$.k2 = df$.k2 + runif(nrow(df), -0.015, 0.015)
   }
 
+  df$col = col2hex(col)
+  df$pch = pch
 
-  if(is.character(labels) && length(labels) != length(k0))
-    stop2("When `labels` is a character, it must have the same length as `k0`")
-
-  if(new) {
-    if(!keep.par) {
-      opar = par(no.readonly = TRUE) # store graphical parameters
-      on.exit(par(opar))
+  # Create labels from ID columns
+  if (isTRUE(labels)) {
+    for (idcols in list(c("id1", "id2"), c("ID1", "ID2"))) {
+      if (all(idcols %in% nms)) {
+        df$.id1 = df[[idcols[1]]]
+        df$.id2 = df[[idcols[2]]]
+        labels = paste(df[[idcols[1]]], df[[idcols[2]]], sep = labSep)
+        break
+      }
     }
-
-    ibdTriangle(...)
   }
-
-  points(k0, k2, col = col, pch = pch, lwd = lwd, cex = cex)
 
   if(is.character(labels))
-    text(k0, k2, labels = labels, col = colLab, cex = cexLab, pos = pos, adj = adj)
+    df$.labs = labels
+
+
+  if(plotType == "base") {
+
+    if(new) {
+      # New triangle
+      if(!keep.par) {
+        opar = par(no.readonly = TRUE) # store graphical parameters
+        on.exit(par(opar))
+      }
+      ibdTriangle(...)
+    }
+
+    # Points to be drawn onto the triangle
+    points(df$.k0, df$.k2, col = col, pch = pch, lwd = lwd, cex = cex)
+
+    # Labels
+    if(!isFALSE(labels))
+      text(df$.k0, df$.k2, labels = df$.labs, col = colLab, cex = cexLab, pos = pos, adj = adj)
+
+    return(invisible())
+  }
+
+  if (plotType == "ggplot2") {
+    if(!requireNamespace("ggplot2", quietly = TRUE))
+      stop2("Package `ggplot2` must be installed for this option to work")
+
+    if(!new)
+      stop2("Argument `new = FALSE` does not work for `plotType = 'ggplot2'")
+
+    # Triangle
+    p = ibdTriangleGG(...) +
+      ggplot2::geom_point(data = df, ggplot2::aes(.k0, .k2), color = df$col,
+                          size = 2 * cex, shape = pch, stroke = sqrt(lwd))
+
+    if(!isFALSE(labels)) {
+
+      # Use ggrepel to add labels
+      if(!requireNamespace("ggrepel", quietly = TRUE))
+        stop2("Package `ggrepel` must be installed for this option to work")
+
+      # We want the labels to repel away from each other, but also from the triangle itself.
+      # The following compiles a data frame of "dummy" points tracing the static triangle data
+
+      vec01 = seq(0, 1, length = 50)
+      traceParts = list(
+        cbind(.k0 = vec01, .k2 = 0),                   # x axis
+        cbind(.k0 = 0, .k2 = vec01),                   # y axis
+        cbind(.k0 = vec01, .k2 = 1-vec01),             # diagonal
+        cbind(.k0 = vec01^2, .k2 = (1-vec01)^2),       # curve
+        cbind(.k0 = c(-0.03, 0, 0.03,  0.45, 0.5, 0.55,  0.72, 0.75, 0.78,
+                        0.91, 0.94, 0.97, 1, 1.03) |> rep(2),
+              .k2 = rep(c(-0.02, -0.04), each = 14)),  # PO, HUG, UN
+        cbind(.k0 = rep(c(0.25, 0.28, 0.31), 2),
+              .k2 = c(0.24, 0.26))                     # S
+      )
+
+      traceTriangle = do.call(rbind, traceParts) |> as.data.frame()
+
+      dfRepel = rbind(df[c(".k0", ".k2", ".labs", "col")],
+                      cbind(traceTriangle, .labs = "", col = ""))
+
+      # To see the dummy repellent points:
+       # p = p + ggplot2::geom_point(data = traceTriangle, ggplot2::aes(.k0, .k2), col = 3)
+
+      p = p +
+        ggrepel::geom_text_repel(ggplot2::aes(.k0, .k2, label = .labs), color = dfRepel$col,
+                                 size = 3.88 * cex, data = dfRepel, max.overlaps = Inf)
+    }
+
+    return(p)
+  }
+
+  if(plotType == "plotly") {
+    if(!requireNamespace("plotly", quietly = TRUE))
+      stop2("Package `plotly` must be installed for this option to work")
+
+    if(!new)
+      stop2("Argument `new = FALSE` does not work for `plotType = 'plotly'")
+
+    # Add row number
+    df$idx = seq_len(nrow(df))
+
+    # Triangle
+    p = ibdTrianglePlotly(...)
+
+    # Add interactive points
+    p = p |>
+      plotly::add_markers(data = df, x = ~.k0, y = ~.k2, customdata = ~idx,
+                          marker = list(symbol = ~pch, color = ~col, size = 10*cex,
+                                        line = list(color = ~col, width = sqrt(lwd))),
+                          text= ~paste0("ID1: ", .id1, "<br>", "ID2: ", .id2),
+                          hoverinfo = "text")
+    p
+  }
+
 }
+
+col2hex = function(col) {
+    m = col2rgb(col)
+    rgb(red = m[1,], green = m[2,], blue = m[3,], maxColorValue = 255)
+}
+
+utils::globalVariables(c("kappa0", "kappa2", "x.txt", "y.txt", "label", "hjust", "vjust", ".k0", ".k2", ".labs"))

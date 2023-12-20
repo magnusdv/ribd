@@ -32,6 +32,7 @@ Imports:
     slam
 Suggests: 
     ggplot2,
+    ggrepel,
     plotly,
     spelling,
     testthat

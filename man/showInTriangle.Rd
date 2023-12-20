@@ -6,14 +6,17 @@
 \usage{
 showInTriangle(
   kappa,
+  plotType = c("base", "ggplot2", "plotly"),
   new = TRUE,
   col = 6,
   cex = 1,
   pch = 4,
   lwd = 2,
-  labels = FALSE,
+  jitter = NULL,
+  labels = NULL,
   colLab = col,
   cexLab = 0.8,
+  labSep = "-",
   pos = 1,
   adj = NULL,
   keep.par = TRUE,
@@ -32,17 +35,25 @@ is used.
 the elements row-wise.
 }}
 
+\item{plotType}{Either \code{base} (default), \code{ggplot2} or \code{plotly}. Abbreviations
+are allowed.}
+
 \item{new}{A logical indicating if a new triangle should be drawn.}
 
-\item{col, cex, pch, lwd}{Parameters passed onto \code{\link[=points]{points()}}.}
+\item{col, cex, pch, lwd}{Parameters controlling the appearance of points.}
+
+\item{jitter}{A logical. If NULL (default), jittering is disabled for
+\code{plotType}'s "base" or "ggplot2" and enabled for "plotly".}
 
 \item{labels}{A character of same length as the number of points, or a single
-logical \code{TRUE} or \code{FALSE}. If \code{TRUE}, an attempt is made to create labels
-by pasting columns \code{ID1} and \code{ID2} in \code{kappa}, if these exist. By default,
-no labels are plotted.}
+logical \code{TRUE} or \code{FALSE}. If \code{TRUE}, labels are created by pasting columns
+\code{id1} and \code{id2} in \code{kappa} (if these exist) separated by \code{labSep}. By
+default, labels are disabled when \code{plotType = "base"}, enabled if \code{plotType = "ggplot2"} and enabled (interactively) if \code{plotType = "plotly"}.}
 
-\item{colLab, cexLab, pos, adj}{Parameters passed onto \code{\link[=text]{text()}} (if \code{labels} is
-non-NULL).}
+\item{colLab, cexLab, pos, adj}{Parameters controlling the appearance of labels.
+Ignored when \code{plotType = "plotly"}.}
+
+\item{labSep}{A string, by default "-".}
 
 \item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
 after plotting, which may be useful for adding additional annotation.}
@@ -50,15 +61,27 @@ after plotting, which may be useful for adding additional annotation.}
 \item{\dots}{Plot arguments passed on to \code{ibdTriangle()}.}
 }
 \value{
-None
+If \code{plotType = 'base'}, NULL; otherwise the plot object.
 }
 \description{
-Utility function for plotting points in the IBD triangle.
+Utility function for plotting kappa coefficients in the IBD triangle. This
+was previously only implemented as a base R plot Astonishingly, this is now
+implemented both in base R, ggplot2 and plotly, controlled by the argument
+\code{plotType}. Labels are often easier to read in the two latter versions: The
+\code{ggplot2} version uses \code{ggrepel} to separate labels, while \code{plotly} enables
+interactive exploration of the plot.
 }
 \examples{
 showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 
-}
-\author{
-Magnus Dehli Vigeland
+x = doubleCousins(1, 0, half2 = TRUE)
+k = kappaIBD(x)
+showInTriangle(k, labels = TRUE, pos = 1:4)
+
+# Separate labels with ggplot2
+# showInTriangle(k, plot = "gg", col = 2:8)
+
+# Interactive plot with plotly
+showInTriangle(k, plot = "plotly", col = 2:8, pch = 0)
+
 }

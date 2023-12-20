@@ -17,10 +17,11 @@ ibdTriangle(
   axes = FALSE,
   xlab = expression(kappa[0]),
   ylab = expression(kappa[2]),
-  cexLab = cexText,
+  cexAxis = cexText,
   mar = c(3.1, 3.1, 1, 1),
   xpd = TRUE,
-  keep.par = TRUE
+  keep.par = TRUE,
+  cexLab = NULL
 )
 }
 \arguments{
@@ -48,10 +49,12 @@ should be restricted to the interior of the triangle.}
 
 \item{xlab, ylab}{Axis labels.}
 
-\item{cexLab}{A number controlling the font size for the axis labels.}
+\item{cexAxis}{A number controlling the font size for the axis labels.}
 
 \item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
 after plotting, which may be useful for adding additional annotation.}
+
+\item{cexLab}{Deprecated; use \code{cexAxis} instead.}
 }
 \value{
 None
@@ -94,7 +97,10 @@ argument:
 \item PO = parent/offspring
 \item MZ = monozygotic twins
 \item S = full siblings
-\item H,U,G = half sibling/avuncular (\strong{u}ncle)/grandparent
+\item H = half siblings
+\item A or U = avuncular (uncle/aunt)
+\item G = grandparent-grandchild
+\item H,U,G = half sibling/avuncular/grandparent
 \item FC = first cousins
 \item SC = second cousins
 \item DFC = double first cousins
@@ -118,7 +124,4 @@ of Human Genetics 39.
 \item E. A. Thompson (1976). \emph{A restriction on the space of genetic
 relationships.} Annals of Human Genetics 40.
 }
-}
-\author{
-Magnus Dehli Vigeland
 }
