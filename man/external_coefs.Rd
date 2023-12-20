@@ -19,8 +19,8 @@ kinship2_inbreeding(x, Xchrom = FALSE)
 X-chromosomal coefficients should be computed.}
 }
 \value{
-For \code{kinship2_inbreeding()}, a numerical vector with inbreeding
-coefficients, named with ID labels.
+For \code{kinship2_inbreeding()}, a numerical vector with inbreeding coefficients,
+named with ID labels.
 
 For \code{kinship2_kinship()}, either a single numeric (if \code{ids} is a pair of
 pedigree members) or the whole kinship matrix, with the ID labels as
@@ -34,8 +34,8 @@ Wrappers for functions in other packages or external programs.
 \code{\link[kinship2:kinship]{kinship2::kinship()}}.
 }
 \examples{
-# A random pedigree with 2 founders and 5 matings
-p = randomPed(n = 7, f = 2, seed = 123)
+# A random pedigree with 7 individuals
+p = randomPed(n = 7, seed = 123)
 
 ### Kinship matrix
 

@@ -12,19 +12,18 @@
 #'
 #' @return
 #'
-#' For `kinship2_inbreeding()`, a numerical vector with inbreeding
-#'   coefficients, named with ID labels.
+#' For `kinship2_inbreeding()`, a numerical vector with inbreeding coefficients,
+#' named with ID labels.
 #'
-#'   For `kinship2_kinship()`, either a single numeric (if `ids` is a pair of
-#'   pedigree members) or the whole kinship matrix, with the ID labels as
-#'   dimnames.
-#'
+#' For `kinship2_kinship()`, either a single numeric (if `ids` is a pair of
+#' pedigree members) or the whole kinship matrix, with the ID labels as
+#' dimnames.
 #'
 #' @seealso [kinship2::kinship()]
 #'
 #' @examples
-#' # A random pedigree with 2 founders and 5 matings
-#' p = randomPed(n = 7, f = 2, seed = 123)
+#' # A random pedigree with 7 individuals
+#' p = randomPed(n = 7, seed = 123)
 #'
 #' ### Kinship matrix
 #'
