@@ -186,6 +186,48 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
     ggplot2::theme_void() +
     ggplot2::theme(axis.title = ggplot2::element_text(size = 11 * cexLab))
 
+ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
+                         cexPoint = 1.2, cexText = cexPoint, cexAxis = cexText,
+                         shading = "lightgray", xlab = "k0", ylab = "k2", ...) {
+
+  if(!requireNamespace("plotly", quietly = TRUE))
+    stop2("Package `plotly` must be installed for this function to work")
+
+  # Fixed relationships coordinates
+  allrels = ribd::basicRelationships
+  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
+
+  # Adjust positions
+  plotlyPos = c(UN = "bottom right", PO = "bottom center", MZ = "middle right",
+                S = "middle right", H = "bottom center", A = "bottom center",
+                G = "bottom center", `H,U,G` = "bottom center", FC = "bottom center",
+                SC = "bottom center", DFC = "top right", Q = "middle right")
+
+  rels$pos = plotlyPos[rels$label]
+  rels$x = rels$kappa0 + ifelse(rels$pos == "middle right", 1/50, 0)
+  rels$y = rels$kappa2 - ifelse(startsWith(rels$pos, "bottom"), 1/50, 0)
+
+  # Illegal region
+  t = seq(0, 1, length = 101)
+  xIlleg = t^2
+  yIlleg = (1-t)^2
+
+  # Plot: static part
+  p = plotly::plot_ly() |>
+    plotly::layout(xaxis = list(range = c(-0.05, 1.05), visible = FALSE),
+           yaxis = list(range = c(-0.1, 1.05), visible = FALSE, scaleanchor = "x"),
+           showlegend = FALSE) |>
+    plotly::add_segments(x = c(0, 0, 0), y = c(0, 0, 1), xend = c(1, 0, 1),
+                         yend = c(0, 1, 0), hoverinfo = 'skip',
+                         line = list(color = "black", width = 1)) |>
+    plotly::add_polygons(x = xIlleg, y = yIlleg, fillcolor = 'whitesmoke',
+                         line = list(color = "black", width = 0.5, dash = "dash"),
+                         hoverinfo = 'skip') |>
+    plotly::add_markers(data = rels, x = ~kappa0, y = ~kappa2, size = I(20),
+                        color = I("black"), hoverinfo = 'skip') |>
+    plotly::add_text(data = rels, x = ~x, y = ~y, text = ~label, size = I(15),
+                     color = I("black"), textposition = ~pos,
+                     hoverinfo = 'skip')
   p
 }
 

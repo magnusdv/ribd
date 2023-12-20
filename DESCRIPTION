@@ -32,6 +32,7 @@ Imports:
     slam
 Suggests: 
     ggplot2,
+    plotly,
     spelling,
     testthat
 Encoding: UTF-8
