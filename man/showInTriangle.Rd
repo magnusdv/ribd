@@ -65,11 +65,11 @@ If \code{plotType = 'base'}, NULL; otherwise the plot object.
 }
 \description{
 Utility function for plotting kappa coefficients in the IBD triangle. This
-was previously only implemented as a base R plot Astonishingly, this is now
-implemented both in base R, ggplot2 and plotly, controlled by the argument
-\code{plotType}. Labels are often easier to read in the two latter versions: The
-\code{ggplot2} version uses \code{ggrepel} to separate labels, while \code{plotly} enables
-interactive exploration of the plot.
+was previously only implemented as a base R plot, but is now also available
+in \code{ggplot2} and \code{plotly} formats, controlled by the argument \code{plotType}.
+Labels are often easier to read in the two latter versions: The \code{ggplot2}
+version uses \code{ggrepel} to separate labels, while \code{plotly} enables interactive
+exploration of the plot.
 }
 \examples{
 showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)

@@ -245,11 +245,11 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #' Add points to the IBD triangle
 #'
 #' Utility function for plotting kappa coefficients in the IBD triangle. This
-#' was previously only implemented as a base R plot Astonishingly, this is now
-#' implemented both in base R, ggplot2 and plotly, controlled by the argument
-#' `plotType`. Labels are often easier to read in the two latter versions: The
-#' `ggplot2` version uses `ggrepel` to separate labels, while `plotly` enables
-#' interactive exploration of the plot.
+#' was previously only implemented as a base R plot, but is now also available
+#' in `ggplot2` and `plotly` formats, controlled by the argument `plotType`.
+#' Labels are often easier to read in the two latter versions: The `ggplot2`
+#' version uses `ggrepel` to separate labels, while `plotly` enables interactive
+#' exploration of the plot.
 #'
 #' @param kappa Coordinates of points to be plotted in the IBD triangle. Valid
 #'   input types are:
