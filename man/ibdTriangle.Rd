@@ -6,27 +6,33 @@
 \usage{
 ibdTriangle(
   relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
-  pch = 16,
+  plotType = c("base", "ggplot2", "plotly"),
+  pch = 19,
   cexPoint = 1.2,
   cexText = 1.2,
+  cexAxis = cexText,
   kinshipLines = numeric(),
   shortLines = FALSE,
-  shading = "lightgray",
+  shading = "gray90",
   xlim = c(0, 1),
   ylim = c(0, 1),
   axes = FALSE,
   xlab = expression(kappa[0]),
   ylab = expression(kappa[2]),
-  cexAxis = cexText,
-  mar = c(3.1, 3.1, 1, 1),
+  mar = c(2.1, 2.1, 1, 1),
   xpd = TRUE,
   keep.par = TRUE,
-  cexLab = NULL
+  cexLab = NULL,
+  ...
 )
 }
 \arguments{
-\item{relationships}{A character vector indicating relationships points to be
-included in the plot. See Details for a list of valid entries.}
+\item{relationships}{A character vector indicating the \emph{fixed} relationships
+points to be included in the plot. Valid entries are those in the \code{label}
+column of \link{basicRelationships}.}
+
+\item{plotType}{Either \code{base} (default), \code{ggplot2} or \code{plotly}. Abbreviations
+are allowed.}
 
 \item{pch}{Symbol used for the relationship points (see \code{\link[=par]{par()}}).}
 
@@ -36,6 +42,8 @@ points.}
 \item{cexText}{A number controlling the font size for the relationship
 labels.}
 
+\item{cexAxis}{A number controlling the font size for the axis labels.}
+
 \item{kinshipLines}{A numeric vector (see Details).}
 
 \item{shortLines}{A logical indicating if the kinship lines (if present)
@@ -43,27 +51,30 @@ should be restricted to the interior of the triangle.}
 
 \item{shading}{The shading colour for the unattainable region.}
 
-\item{xlim, ylim, mar, xpd}{Graphical parameters; see \code{\link[=par]{par()}}.}
+\item{xlim, ylim, mar, xpd}{Graphical parameters; see \code{\link[=par]{par()}}. (Base plot only.)}
 
 \item{axes}{A logical: Draw surrounding axis box? Default: \code{FALSE}.}
 
 \item{xlab, ylab}{Axis labels.}
 
-\item{cexAxis}{A number controlling the font size for the axis labels.}
-
 \item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
-after plotting, which may be useful for adding additional annotation.}
+after plotting, which may be useful for adding additional annotation. (Base
+plot only.)}
 
 \item{cexLab}{Deprecated; use \code{cexAxis} instead.}
+
+\item{\dots}{Further arguments; currently not used.}
 }
 \value{
-None
+\code{NULL} if \code{plotType = 'base'}; otherwise the plot object.
 }
 \description{
-The IBD triangle is typically used to visualize the pairwise relatedness of
-non-inbred individuals. Various annotations are available, including points
-marking the most common relationships, contour lines for the kinship
-coefficients, and shading of the unattainable region.
+A relationship triangle used to used to visualize the kappa coefficients of
+between non-inbred individuals. Various annotations are available, including
+points marking the most common relationships, contour lines for the kinship
+coefficients, and shading of the unattainable region. The companion function
+\code{\link[=showInTriangle]{showInTriangle()}} (which plots user-specified points onto the triangle) is
+probably the most useful for end users.
 }
 \details{
 For any pair of non-inbred individuals A and B, their genetic relationship
@@ -82,30 +93,13 @@ triangle).
 As shown by Thompson (1976), points in the subset of the triangle defined by
 \eqn{4\kappa_0\kappa_2 > \kappa_1^2}{4*\kappa0*\kappa2 > \kappa1^2} are
 unattainable for pairwise relationships. By default this region in shaded in
-a 'light grey' colour, but this can be modified with the \code{shading} argument.
+a light grey colour, but this can be modified with the \code{shading} argument.
 
 The IBD coefficients are linearly related to the kinship coefficient
-\eqn{\phi} by the formula \deqn{\phi = 0.25\kappa_1 + 0.5\kappa_2.}{\phi =
-0.25*\kappa1 + 0.5*\kappa2.} By indicating values for \eqn{\phi} in the
-\code{kinshipLines} argument, the corresponding contour lines are shown as dashed
-lines in the triangle plot.
-
-The following abbreviations are valid entries in the \code{relationships}
-argument:
-\itemize{
-\item UN = unrelated
-\item PO = parent/offspring
-\item MZ = monozygotic twins
-\item S = full siblings
-\item H = half siblings
-\item A or U = avuncular (uncle/aunt)
-\item G = grandparent-grandchild
-\item H,U,G = half sibling/avuncular/grandparent
-\item FC = first cousins
-\item SC = second cousins
-\item DFC = double first cousins
-\item Q = quadruple first half cousins
-}
+\eqn{\varphi} by the formula \eqn{\varphi = 0.25\kappa_1 + 0.5\kappa_2.}{\phi =
+0.25*\kappa1 + 0.5*\kappa2.} By indicating values for \eqn{\varphi} in the
+\code{kinshipLines} argument, the corresponding contour lines are shown in the
+triangle plot. (Currently only when \verb{plotType = "base'}.)
 }
 \examples{
 opar = par(no.readonly = TRUE) # store graphical parameters
@@ -124,4 +118,7 @@ of Human Genetics 39.
 \item E. A. Thompson (1976). \emph{A restriction on the space of genetic
 relationships.} Annals of Human Genetics 40.
 }
+}
+\seealso{
+\code{\link[=showInTriangle]{showInTriangle()}}, \code{\link[=kappaIBD]{kappaIBD()}}
 }

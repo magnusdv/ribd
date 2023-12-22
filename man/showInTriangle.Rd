@@ -27,8 +27,8 @@ showInTriangle(
 \item{kappa}{Coordinates of points to be plotted in the IBD triangle. Valid
 input types are:
 \itemize{
-\item A numerical vector of length 2 or 3. In the latter case \code{kappa[c(1, 3)]}
-is used.
+\item A numerical vector of length 2 (kappa0, kappa2) or 3 (kappa0, kappa1,
+kappa2). In the latter case kappa1 is ignored.
 \item A matrix of data frame, whose column names must include either \code{k0} and
 \code{k2}, \code{kappa0} and \code{kappa2}, or \code{ibd0} and \code{ibd2}.
 \item A list (and not a data frame), in which case an attempt is made to bind
@@ -55,13 +55,15 @@ Ignored when \code{plotType = "plotly"}.}
 
 \item{labSep}{A string, by default "-".}
 
-\item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
-after plotting, which may be useful for adding additional annotation.}
+\item{keep.par}{A logical. If TRUE (and \code{plotType = "base"}), the graphical
+parameters are not reset after plotting, which may be useful for adding
+additional annotation.}
 
 \item{\dots}{Plot arguments passed on to \code{ibdTriangle()}.}
 }
 \value{
-If \code{plotType = 'base'}, NULL; otherwise the plot object.
+If \code{plotType = 'base'}, the function returns NULL; otherwise the plot
+object.
 }
 \description{
 Utility function for plotting kappa coefficients in the IBD triangle. This
@@ -78,10 +80,13 @@ x = doubleCousins(1, 0, half2 = TRUE)
 k = kappaIBD(x)
 showInTriangle(k, labels = TRUE, pos = 1:4)
 
-# Separate labels with ggplot2
-# showInTriangle(k, plot = "gg", col = 2:8)
+# Separate labels (requires ggplot2 + ggrepel)
+# showInTriangle(k, plot = "ggplot2", col = 2:8)
 
-# Interactive plot with plotly
-showInTriangle(k, plot = "plotly", col = 2:8, pch = 0)
+# Interactive plot (requires plotly)
+# showInTriangle(k, plot = "plotly", col = 2:8, pch = 0)
 
+}
+\seealso{
+\code{\link[=ibdTriangle]{ibdTriangle()}}, \code{\link[=kappaIBD]{kappaIBD()}}
 }
