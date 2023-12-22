@@ -157,10 +157,15 @@ plot(y, margin = 4)
 k = kappaIBD(y)
 
 # IBD triangle
-showInTriangle(k, labels = T, cexLab = 1.3, pos = c(3,2,3,4,4,3))
+showInTriangle(k, labels = T, pos = c(3,2,3,4,4,3))
 ```
 
 <img src="man/figures/README-triangle-S-1.png" width="90%" style="display: block; margin: auto;" />
+
+(If you have `ggplot2` and `ggrepel` installed, try
+`showInTriangle(k, plotType = "gg")` for automatic separation of the
+labels. There is also an interactive version, available with
+`showInTriangle(k, plotType = "plotly")`.)
 
 As shown by [Thompson
 (1976)](https://doi.org/10.1111/j.1469-1809.1976.tb00181.x), all

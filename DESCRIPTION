@@ -12,19 +12,17 @@ Description: Recursive algorithms for computing various relatedness
     given kappa coefficients, as described in Vigeland (2020)
     <doi:10.1007/s00285-020-01505-x>. In addition to the standard
     coefficients, 'ribd' also computes a range of lesser-known
-    coefficients, including generalised kinship coefficients (Karigl
-    (1981) <doi:10.1111/j.1469-1809.1981.tb00341.x>; Weeks and Lange
-    (1988) <https://pubmed.ncbi.nlm.nih.gov/3422543/>),
-    two-locus coefficients (Thompson (1988) <doi:10.1093/imammb/5.4.261>)
-    and multi-person coefficients. Many features of 'ribd' are available
-    through the online app 'QuickPed' at
+    coefficients, including generalised kinship coefficients, multi-person
+    coefficients and two-locus coefficients (Vigeland, 2023,
+    <doi:10.1093/g3journal/jkac326>). Many features of 'ribd' are
+    available through the online app 'QuickPed' at
     <https://magnusdv.shinyapps.io/quickped>; see Vigeland (2022)
     <doi:10.1186/s12859-022-04759-y>.
 License: GPL-3
 URL: https://github.com/magnusdv/ribd,
     https://magnusdv.github.io/pedsuite/
 Depends: 
-    pedtools (>= 2.0.0),
+    pedtools (>= 2.2.0),
     R (>= 4.1.0)
 Imports: 
     glue,
