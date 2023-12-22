@@ -19,8 +19,8 @@ data = list(
 relsTibble = enframe(data) |>
   unnest_wider(value) |>
   unnest_wider(kappa, names_sep = "") |>
-  rename(relationship = name, kappa0 = kappa1, kappa1 = kappa2, kappa2 = kappa3) |>
-  mutate(phi = kappa2/2 + kappa1/4, .after = label) |>
+  select(label, relationship = name, kappa0 = kappa1, kappa1 = kappa2, kappa2 = kappa3, pos) |>
+  mutate(phi = kappa2/2 + kappa1/4, .after = relationship) |>
   print()
 
 basicRelationships = as.data.frame(relsTibble)

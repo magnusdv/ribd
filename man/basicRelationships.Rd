@@ -15,4 +15,21 @@ basicRelationships
 A data frame containing kinship and kappa coefficients for some commonly used
 relationships.
 }
+\details{
+\tabular{llrrrrr}{
+   label \tab relationship \tab phi \tab kappa0 \tab kappa1 \tab kappa2 \tab pos \cr
+   UN \tab unrelated \tab 0.000000 \tab 1.00000 \tab 0.0000 \tab 0.00000 \tab 1 \cr
+   PO \tab parent-offspring \tab 0.250000 \tab 0.00000 \tab 1.0000 \tab 0.00000 \tab 1 \cr
+   MZ \tab monozygotic twins \tab 0.500000 \tab 0.00000 \tab 0.0000 \tab 1.00000 \tab 4 \cr
+   S \tab full siblings \tab 0.250000 \tab 0.25000 \tab 0.5000 \tab 0.25000 \tab 4 \cr
+   H \tab half siblings \tab 0.125000 \tab 0.50000 \tab 0.5000 \tab 0.00000 \tab 1 \cr
+   A \tab avuncular \tab 0.125000 \tab 0.50000 \tab 0.5000 \tab 0.00000 \tab 1 \cr
+   G \tab grandparent-grandchild \tab 0.125000 \tab 0.50000 \tab 0.5000 \tab 0.00000 \tab 1 \cr
+   H,U,G \tab halfsib/uncle/grandp \tab 0.125000 \tab 0.50000 \tab 0.5000 \tab 0.00000 \tab 1 \cr
+   FC \tab first cousins \tab 0.062500 \tab 0.75000 \tab 0.2500 \tab 0.00000 \tab 1 \cr
+   SC \tab second cousins \tab 0.015625 \tab 0.93750 \tab 0.0625 \tab 0.00000 \tab 1 \cr
+   DFC \tab double first cousins \tab 0.125000 \tab 0.56250 \tab 0.3750 \tab 0.06250 \tab 3 \cr
+   Q \tab quad half first cousins \tab 0.125000 \tab 0.53125 \tab 0.4375 \tab 0.03125 \tab 4 \cr
+}
+}
 \keyword{datasets}

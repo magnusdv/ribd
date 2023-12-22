@@ -3,6 +3,10 @@
 #' A data frame containing kinship and kappa coefficients for some commonly used
 #' relationships.
 #'
+#' ```{r, echo = F, comment = ""}
+#' knitr::kable(basicRelationships)
+#' ```
+#'
 #' @format A data frame with 12 rows and 7 columns. The last column (`pos`) is
 #'   used internally for placing labels on triangle plots.
 #'
