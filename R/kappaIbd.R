@@ -7,32 +7,32 @@
 #' this up, and see Examples below.
 #'
 #' For non-inbred individuals a and b, their autosomal IBD coefficients
-#' \eqn{(\kappa0, \kappa1, \kappa2)} are defined as follows: \deqn{\kappa_i =
-#' P(a and b share exactly i alleles IBD at a random autosomal locus)}
+#' \eqn{(\kappa_0, \kappa_1, \kappa_2)} are defined as follows: \deqn{\kappa_i =
+#' P(\text{a and b share exactly i alleles IBD at a random autosomal locus})}
 #'
 #' The autosomal kappa coefficients are computed from the kinship coefficients.
 #' When a and b are both nonfounders, the following formulas hold:
 #'
-#' * \eqn{\kappa2 = \phi_MM * \phi_FF + \phi_MF * \phi_FM}
+#' * \eqn{\kappa_2 = \varphi_{MM} \cdot \varphi_{FF} + \varphi_{MF} \cdot\varphi_{FM}}
 #'
-#' * \eqn{\kappa1 = 4 * \phi_ab - 2 * \kappa2}
+#' * \eqn{\kappa_1 = 4 \varphi_{ab} - 2 \kappa_2}
 #'
-#' * \eqn{\kappa0 = 1 - \kappa1 - \kappa2}
+#' * \eqn{\kappa_0 = 1 - \kappa_1 - \kappa_2}
 #'
-#' Here \eqn{\phi_MM} denotes the kinship coefficient between the mothers of a
-#' and b, and so on. If either a or b is a founder, then \eqn{\kappa2 = 0},
-#' while the other two formulas remain as above.
+#' Here \eqn{\varphi_{MF}} denotes the kinship coefficient between the
+#' **m**other of a and the **f**ather of b, etc. If either a or b is a founder,
+#' then \eqn{\kappa_2 = 0}, while the other two formulas remain as before.
 #'
 #' The X-chromosomal IBD coefficients are defined similarly to the autosomal
-#' case. Here \eqn{\kappa2} is undefined when one or both individuals are male,
+#' case. Here \eqn{\kappa_2} is undefined when one or both individuals are male,
 #' which greatly simplifies the calculations when males are involved. The
-#' formulas are (with \eqn{\phi_ab} referring to the X-chromosomal kinship
-#' coefficient):
+#' formulas are (with \eqn{\varphi_{ab}} now referring to the X-chromosomal
+#' kinship coefficient):
 #'
-#' * Both male: \eqn{(\kappa0, \kappa1, \kappa2) = (1-\phi_ab, \phi_ab, NA)}
+#' * Both male: \eqn{(\kappa_0, \kappa_1, \kappa_2) = (1-\varphi_{ab}, \varphi_{ab}, \text{NA})}
 #'
-#' * One male, one female: \eqn{(\kappa0, \kappa1, \kappa2) = (1-2*\phi_ab,
-#' 2*\phi_ab, NA)}
+#' * One male, one female: \eqn{(\kappa_0, \kappa_1, \kappa_2) = (1-2 \varphi_{ab},
+#' 2 \varphi_{ab}, \text{NA})}
 #'
 #' * Two females: Similar formulas as in the autosomal case.
 #'
@@ -49,18 +49,20 @@
 #'   X-chromosomal kappa coefficients should be computed.
 #'
 #' @return If `ids` has length 2 and `simplify = TRUE`: A numeric vector of
-#'   length 3: \eqn{(\kappa0, \kappa1, \kappa2)}.
+#'   length 3: \eqn{(\kappa_0, \kappa_1, \kappa_2)}.
 #'
 #'   Otherwise: A data frame with one row for each pair of individuals, and 5
 #'   columns. The first two columns contain the ID labels, and columns 3-5
 #'   contain the IBD coefficients.
 #'
-#'   Unless `inbredAction = 2`, the coefficients of pairs involving inbred
-#'   individuals (X-inbred females if `Xchrom = T`) are reported as NA.
-#'   Furthermore, the X-chromosomal \eqn{\kappa2} is NA whenever at least one of
-#'   the two individuals is male.
+#'   Kappa coefficients of inbred individuals (meaning X-inbred females if
+#'   `Xchrom = T`) are reported as NA, unless `inbredAction = 2`.
 #'
-#' @seealso [kinship()], [identityCoefs()]
+#'   The X-chromosomal \eqn{\kappa_2} is NA whenever at least one of the two
+#'   individuals is male.
+#'
+#' @seealso [kinship()], [identityCoefs()] for coefficients allowing inbreeding,
+#'   [showInTriangle()] for plotting kapp coefficients in the IBD triangle.
 #'
 #' @examples
 #' ### Siblings
@@ -77,14 +79,10 @@
 #'
 #' ### Paternal half brothers with 100% inbred father
 #' # Genetically indistinguishable from an (outbred) father-son relationship
-#' x = halfSibPed()
-#' ids = 4:5
+#' x = halfSibPed() |> setFounderInbreeding(ids = 2, value = 1)
+#' plot(x, hatched = 4:5)
 #'
-#' # Set founder inbreeding
-#' fou = commonAncestors(x, ids) # robust to label change
-#' founderInbreeding(x, fou) = 1
-#'
-#' k = kappaIBD(x, ids)
+#' k = kappaIBD(x, 4:5)
 #' stopifnot(identical(k, c(0, 1, 0)))
 #'
 #' ### X-chromosomal kappa
