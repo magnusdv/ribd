@@ -35,7 +35,7 @@ kappa2). In the latter case kappa1 is ignored.
 the elements row-wise.
 }}
 
-\item{plotType}{Either \code{base} (default), \code{ggplot2} or \code{plotly}. Abbreviations
+\item{plotType}{Either "base" (default), "ggplot2" or "plotly". Abbreviations
 are allowed.}
 
 \item{new}{A logical indicating if a new triangle should be drawn.}

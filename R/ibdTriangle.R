@@ -34,7 +34,7 @@
 #' @param relationships A character vector indicating the *fixed* relationships
 #'   points to be included in the plot. Valid entries are those in the `label`
 #'   column of [basicRelationships].
-#' @param plotType Either `base` (default), `ggplot2` or `plotly`. Abbreviations
+#' @param plotType Either "base" (default), "ggplot2" or "plotly". Abbreviations
 #'   are allowed.
 #' @param kinshipLines A numeric vector (see Details).
 #' @param shortLines A logical indicating if the kinship lines (if present)
@@ -280,7 +280,7 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #'   * A list (and not a data frame), in which case an attempt is made to bind
 #'   the elements row-wise.
 #'
-#' @param plotType Either `base` (default), `ggplot2` or `plotly`. Abbreviations
+#' @param plotType Either "base" (default), "ggplot2" or "plotly". Abbreviations
 #'   are allowed.
 #' @param new A logical indicating if a new triangle should be drawn.
 #' @param col,cex,pch,lwd Parameters controlling the appearance of points.
@@ -376,8 +376,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
 
   # Create labels from ID columns
   if (isTRUE(labels)) {
-    for (idcols in list(c("id1", "id2"), c("ID1", "ID2"))) {
-      if (all(idcols %in% nms)) {
+    for (idcols in list(c("id1", "id2"), c("ID1", "ID2"), c(".k0", ".k2"))) {
+      if (all(idcols %in% names(df))) {
         df$.id1 = df[[idcols[1]]]
         df$.id2 = df[[idcols[2]]]
         labels = paste(df[[idcols[1]]], df[[idcols[2]]], sep = labSep)
@@ -423,7 +423,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
   if (plotType == "ggplot2") {
 
     # Triangle
-    p = p + ggplot2::geom_point(data = df, ggplot2::aes(.k0, .k2), color = df$col,
+    p = p +
+      ggplot2::geom_point(data = df, ggplot2::aes(.k0, .k2), color = df$col,
                           size = 2 * cex, shape = pch, stroke = sqrt(lwd))
 
     if(!isFALSE(labels)) {
@@ -454,7 +455,7 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
                       cbind(traceTriangle, .labs = "", col = ""))
 
       # To see the dummy repellent points:
-        p = p + ggplot2::geom_point(data = traceTriangle, ggplot2::aes(.k0, .k2), col = 3)
+      # p = p + ggplot2::geom_point(data = traceTriangle, ggplot2::aes(.k0, .k2), col = 3)
 
       p = p +
         ggrepel::geom_text_repel(ggplot2::aes(.k0, .k2, label = .labs), color = dfRepel$col,

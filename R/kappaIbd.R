@@ -62,7 +62,7 @@
 #'   individuals is male.
 #'
 #' @seealso [kinship()], [identityCoefs()] for coefficients allowing inbreeding,
-#'   [showInTriangle()] for plotting kapp coefficients in the IBD triangle.
+#'   [showInTriangle()] for plotting kappa coefficients in the IBD triangle.
 #'
 #' @examples
 #' ### Siblings

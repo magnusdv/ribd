@@ -31,7 +31,7 @@ ibdTriangle(
 points to be included in the plot. Valid entries are those in the \code{label}
 column of \link{basicRelationships}.}
 
-\item{plotType}{Either \code{base} (default), \code{ggplot2} or \code{plotly}. Abbreviations
+\item{plotType}{Either "base" (default), "ggplot2" or "plotly". Abbreviations
 are allowed.}
 
 \item{pch}{Symbol used for the relationship points (see \code{\link[=par]{par()}}).}

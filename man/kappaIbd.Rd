@@ -101,5 +101,5 @@ kappaIBD(y, Xchrom = TRUE)
 }
 \seealso{
 \code{\link[=kinship]{kinship()}}, \code{\link[=identityCoefs]{identityCoefs()}} for coefficients allowing inbreeding,
-\code{\link[=showInTriangle]{showInTriangle()}} for plotting kapp coefficients in the IBD triangle.
+\code{\link[=showInTriangle]{showInTriangle()}} for plotting kappa coefficients in the IBD triangle.
 }
