@@ -357,8 +357,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
   # Columns with coordinates --> copy to .k0, .k2
   for (kcols in list(c("k0", "k2"), c("kappa0", "kappa2"), c("ibd0", "ibd2"))) {
     if (all(kcols %in% nms)) {
-      df$.k0 = df[[kcols[1]]]
-      df$.k2 = df[[kcols[2]]]
+      df$.k0 = df$.k0ex = df[[kcols[1]]]
+      df$.k2 = df$.k2ex = df[[kcols[2]]]
       break
     }
   }
@@ -376,7 +376,7 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
 
   # Create labels from ID columns
   if (isTRUE(labels)) {
-    for (idcols in list(c("id1", "id2"), c("ID1", "ID2"), c(".k0", ".k2"))) {
+    for (idcols in list(c("id1", "id2"), c("ID1", "ID2"))) {
       if (all(idcols %in% names(df))) {
         df$.id1 = df[[idcols[1]]]
         df$.id2 = df[[idcols[2]]]
@@ -388,6 +388,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
 
   if(is.character(labels))
     df$.labs = labels
+  else
+    labels = FALSE
 
   # Only relevant for base plot, for
   if(!keep.par) {
@@ -468,17 +470,27 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
 
   # Plotly ------------------------------------------------------------------
 
-  if(plotType == "plotly") {
+  if(plotType == "plotly") {print(df)
 
     # Add row number
     df$idx = seq_len(nrow(df))
 
+    # Exact kappas (for labels)
+    k0 = round(df$.k0ex, 2)
+    k2 = round(df$.k2ex, 2)
+    k1 = 1 - k0 - k2
+    labs = paste0("k0 = ", k0, "<br>", "k1 = ", k1, "<br>", "k2 = ", k2)
+    if(!isFALSE(labels))
+      labs = paste0("ID1: ", df$.id1, "<br>", "ID2: ", df$.id2, "<br><br>", labs)
+
+    df$.labs = labs
+
     # Add interactive points
     p = p |>
       plotly::add_markers(data = df, x = ~.k0, y = ~.k2, customdata = ~idx,
-                          marker = list(symbol = ~pch, color = ~col, size = 10*cex,
-                                        line = list(color = ~col, width = sqrt(lwd))),
-                          text= ~paste0("ID1: ", .id1, "<br>", "ID2: ", .id2),
+                          marker = list(symbol = ~pch, color = ~col, size = ~10*cex,
+                                        line = list(color = ~col, width = ~sqrt(lwd))),
+                          text= ~ .labs,
                           hoverinfo = "text")
     p
   }
