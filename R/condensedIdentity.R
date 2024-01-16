@@ -134,7 +134,9 @@ condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE,
 }
 
 
-# Define double bracket extract/replace operators to accommodate the impossibility of zero-values (-1 used instead)
+# Double bracket extract/replace operators to work around zero-values (-1 used instead)
+
+#' @exportS3Method NULL
 `[[.simple_sparse_array` = function(x, ...) {
   val = x[...]$v
   if(length(val) == 0) return(NA)
@@ -142,6 +144,7 @@ condensedIdentity = function(x, ids, sparse = NA, simplify = TRUE, self = FALSE,
   val
 }
 
+#' @exportS3Method NULL
 `[[<-.simple_sparse_array` = function(x, ..., value) {
   if(value == 0) value = -1
   x[...] <- value
