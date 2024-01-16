@@ -58,6 +58,9 @@ kinship = function(x, ids = NULL, Xchrom = FALSE) {
     # Initialise big matrix
     ntot = sum(pedsize(x))
     labs = unlist(labels(x))
+    if(dup <- anyDuplicated.default(labs))
+      stop2("ID label is not unique: ", labs[dup])
+
     kinmat = matrix(0, nrow = ntot, ncol = ntot, dimnames = list(labs, labs))
 
     # Fill in component blocks
