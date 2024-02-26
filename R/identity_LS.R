@@ -172,7 +172,7 @@ recurse_LS = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
                    if(s > 0) (1 - A1) * recu(gipReplaceDet(gp, id = pivot, rep1 = famo)) else 0,
 
                  # Rule 1c
-                 res = recu(gipReplaceDet(gp, id = pivot, rep1 = famo))
+                 recu(gipReplaceDet(gp, id = pivot, rep1 = famo))
     )
   }
   else {  # t > 0
