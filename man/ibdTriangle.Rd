@@ -17,8 +17,10 @@ ibdTriangle(
   xlim = c(0, 1),
   ylim = c(0, 1),
   axes = FALSE,
+  las = 1,
   xlab = expression(kappa[0]),
   ylab = expression(kappa[2]),
+  title = NULL,
   mar = c(2.1, 2.1, 1, 1),
   xpd = TRUE,
   keep.par = TRUE,
@@ -51,11 +53,16 @@ should be restricted to the interior of the triangle.}
 
 \item{shading}{The shading colour for the unattainable region.}
 
-\item{xlim, ylim, mar, xpd}{Graphical parameters; see \code{\link[=par]{par()}}. (Base plot only.)}
+\item{xlim, ylim, xpd, las}{Graphical parameters; see \code{\link[=par]{par()}}. (Base plot only.)}
 
 \item{axes}{A logical: Draw surrounding axis box? Default: \code{FALSE}.}
 
 \item{xlab, ylab}{Axis labels.}
+
+\item{title}{Main title (absent by default).}
+
+\item{mar}{Graphical parameter; see \code{\link[=par]{par()}}. For ggplot2, this is ignored
+unless it is a ggplot2::margin() object.}
 
 \item{keep.par}{A logical. If TRUE, the graphical parameters are not reset
 after plotting, which may be useful for adding additional annotation. (Base
@@ -99,7 +106,7 @@ The IBD coefficients are linearly related to the kinship coefficient
 \eqn{\varphi} by the formula \eqn{\varphi = 0.25\kappa_1 + 0.5\kappa_2.}{\phi =
 0.25*\kappa1 + 0.5*\kappa2.} By indicating values for \eqn{\varphi} in the
 \code{kinshipLines} argument, the corresponding contour lines are shown in the
-triangle plot. (Currently only when \verb{plotType = "base'}.)
+triangle plot. (Currently only when \code{plotType = "base"}.)
 }
 \examples{
 opar = par(no.readonly = TRUE) # store graphical parameters
@@ -107,6 +114,8 @@ opar = par(no.readonly = TRUE) # store graphical parameters
 ibdTriangle()
 ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.7)
 ibdTriangle(kinshipLines = c(0.25, 0.125), shortLines = TRUE, pch = 15)
+ibdTriangle(relationships = c("UN", "PO", "MZ", "S"),
+            xlab = "k0", ylab = "k2", las = 0, axes = TRUE, cexAxis =1.6)
 
 par(opar) # reset graphical parameters
 

@@ -29,7 +29,7 @@
 #' \eqn{\varphi} by the formula \eqn{\varphi = 0.25\kappa_1 + 0.5\kappa_2.}{\phi =
 #' 0.25*\kappa1 + 0.5*\kappa2.} By indicating values for \eqn{\varphi} in the
 #' `kinshipLines` argument, the corresponding contour lines are shown in the
-#' triangle plot. (Currently only when `plotType = "base'`.)
+#' triangle plot. (Currently only when `plotType = "base"`.)
 #'
 #' @param relationships A character vector indicating the *fixed* relationships
 #'   points to be included in the plot. Valid entries are those in the `label`
@@ -47,9 +47,12 @@
 #'   labels.
 #' @param axes A logical: Draw surrounding axis box? Default: `FALSE`.
 #' @param xlab,ylab Axis labels.
+#' @param title Main title (absent by default).
 #' @param cexAxis A number controlling the font size for the axis labels.
 #' @param cexLab Deprecated; use `cexAxis` instead.
-#' @param xlim,ylim,mar,xpd Graphical parameters; see [par()]. (Base plot only.)
+#' @param xlim,ylim,xpd,las Graphical parameters; see [par()]. (Base plot only.)
+#' @param mar Graphical parameter; see [par()]. For ggplot2, this is ignored
+#'   unless it is a ggplot2::margin() object.
 #' @param keep.par A logical. If TRUE, the graphical parameters are not reset
 #'   after plotting, which may be useful for adding additional annotation. (Base
 #'   plot only.)
@@ -73,6 +76,8 @@
 #' ibdTriangle()
 #' ibdTriangle(kinshipLines = c(0.25, 0.125), shading = NULL, cexText = 0.7)
 #' ibdTriangle(kinshipLines = c(0.25, 0.125), shortLines = TRUE, pch = 15)
+#' ibdTriangle(relationships = c("UN", "PO", "MZ", "S"),
+#'             xlab = "k0", ylab = "k2", las = 0, axes = TRUE, cexAxis =1.6)
 #'
 #' par(opar) # reset graphical parameters
 #'
@@ -84,9 +89,9 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                        plotType = c("base", "ggplot2", "plotly"), pch = 19,
                        cexPoint = 1.2, cexText = 1.2, cexAxis = cexText,
                        kinshipLines = numeric(), shortLines = FALSE, shading = "gray90",
-                       xlim = c(0, 1), ylim = c(0, 1), axes = FALSE,
+                       xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, las = 1,
                        xlab = expression(kappa[0]), ylab = expression(kappa[2]),
-                       mar = c(2.1, 2.1, 1, 1), xpd = TRUE, keep.par = TRUE,
+                       title = NULL, mar = c(2.1, 2.1, 1, 1), xpd = TRUE, keep.par = TRUE,
                        cexLab = NULL, ...) {
 
   if(!is.null(cexLab)) {
@@ -99,7 +104,8 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
     return(ibdTriangleGG(relationships = relationships, pch = pch,
                          cexPoint = cexPoint, cexText = cexText,
                          cexAxis = cexAxis, shading = shading,
-                         xlab = xlab, ylab = ylab, ...))
+                         xlim = xlim, ylim = ylim, las = las,
+                         xlab = xlab, ylab = ylab, title = title, mar = mar, ...))
   }
   if(plotType == "plotly") {
     return(ibdTrianglePlotly(relationships = relationships, cexPoint = cexPoint,
@@ -112,12 +118,12 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
 
   opar = par(xpd = xpd, mar = mar, pty = "s")
   if (!keep.par)
-    on.exit(par(opar))
+    on.exit(par(opar), add = TRUE)
 
   plot(NULL, xlim = xlim, ylim = ylim, axes = axes, ann = FALSE)
 
   # Axis labels
-  mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = 1, cex = cexAxis)
+  mtext(text = c(xlab, ylab), side = 1:2, line = c(1, 0.5), las = las, cex = cexAxis)
 
   # Impossible region shading with dotted border
   t = seq(0, 1, length = 201)
@@ -169,8 +175,9 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
 ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                          pch = 19, cexPoint = 1.2, cexText = cexPoint,
                          cexAxis = cexText, shading = "gray90",
+                         xlim = c(0,1), ylim = c(0,1), las = 1, mar = NULL,
                          xlab = expression(kappa[0]), ylab = expression(kappa[2]),
-                         ...) {
+                         title = NULL, ...) {
 
   if(!requireNamespace("ggplot2", quietly = TRUE))
     stop2("Package `ggplot2` must be installed for this to work")
@@ -199,10 +206,13 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
     ggplot2::geom_point(size = 2.5 * cexPoint, shape = pch) +
     ggplot2::geom_text(ggplot2::aes(x = `x.txt`, y = `y.txt`, label = label, hjust = hjust,
                                     vjust = vjust), size = 3.88 * cexText) +
-    ggplot2::coord_fixed(ratio = 1, clip = "off") +
-    ggplot2::labs(x = xlab, y = ylab) +
+    ggplot2::coord_fixed(ratio = 1, clip = "off", xlim = xlim, ylim = ylim) +
+    ggplot2::labs(title = title, x = xlab, y = ylab) +
     ggplot2::theme_void() +
-    ggplot2::theme(axis.title = ggplot2::element_text(size = 11 * cexAxis))
+    ggplot2::theme(axis.title   = ggplot2::element_text(size = 11 * cexAxis),
+                   axis.title.y = ggplot2::element_text(angle = if(las == 0) 90 else 0),
+                   plot.margin = if(inherits(mar, "margin")) mar else NULL,
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 14 * cexAxis))
 
   p
 }
@@ -240,9 +250,16 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
                      c("zoomIn2d", "zoomOut2d", "pan2d", "lasso2d", "autoScale2d",
                        "hoverClosestCartesian", "hoverCompareCartesian",
                        "select2d", "resetScale2d")) |>
-    plotly::layout(xaxis = list(range = c(-0.05, 1.05), visible = FALSE),
-           yaxis = list(range = c(-0.1, 1.05), visible = FALSE, scaleanchor = "x"),
-           showlegend = FALSE) |>
+    plotly::layout(
+      margin = list(l = 20, r = 20, b = 20, t = 20),
+      xaxis = list(range = c(-0.05, 1.1), visible = TRUE, showticklabels = FALSE,
+                   zeroline = FALSE, showgrid = FALSE, showline = FALSE,
+                   title = list(text = xlab, standoff = 0)),
+      yaxis = list(range = c(-0.1, 1.05), visible = TRUE, showticklabels = FALSE,
+                   zeroline = FALSE, showgrid = FALSE, showline = FALSE,
+                   scaleanchor = "x", scaleratio = 1,
+                   title = list(text = ylab, standoff = 0)),
+      showlegend = FALSE) |>
     plotly::add_segments(x = c(0, 0, 0), y = c(0, 0, 1), xend = c(1, 0, 1),
                          yend = c(0, 1, 0), hoverinfo = 'skip',
                          line = list(color = "black", width = 1)) |>
@@ -283,6 +300,11 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #' @param plotType Either "base" (default), "ggplot2" or "plotly". Abbreviations
 #'   are allowed.
 #' @param new A logical indicating if a new triangle should be drawn.
+#' @param ped A pedigree to be drawn in the upper right corner of the plot.
+#'   Default: NULL. This only works when `plotType` is `base` or `ggplot2`.
+#' @param pedBL A vector of length two, with entries in `[0,1]`, indicating the
+#'   coordinates of the bottom left corner. Default: `c(0.5, 0.5)`.
+#' @param pedArgs Plotting arguments for the inset pedigree. Default: NULL.
 #' @param col,cex,pch,lwd Parameters controlling the appearance of points.
 #' @param jitter A logical. If NULL (default), jittering is disabled for
 #'   `plotType`'s "base" or "ggplot2" and enabled for "plotly".
@@ -321,12 +343,60 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #' @importFrom stats runif
 #' @export
 showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
-                          new = TRUE, col = 6, cex = 1, pch = 4, lwd = 2,
-                          jitter = NULL, labels = NULL, colLab = col,
+                          new = TRUE, ped = NULL, pedBL = c(.5,.5), pedArgs = NULL,
+                          col = 6, cex = 1, pch = 4,
+                          lwd = 2, jitter = NULL, labels = NULL, colLab = col,
                           cexLab = 0.8, labSep = "-",
                           pos = 1, adj = NULL, keep.par = TRUE, ...) {
 
   plotType = match.arg(plotType)
+
+  # Pedigree inset ----------------------------------------------------------
+
+  if(!is.null(ped)) {
+    if(plotType == "plotly")
+      stop2("Inset pedigrees (with the `ped` argument) does not work with plotly")
+
+    op = par(fig = c(pedBL[1], .99, pedBL[2], .99), new = FALSE, pty = "m")
+    on.exit(par(op), add = TRUE)
+    tryCatch(do.call(plot, args = c(list(x = ped), pedArgs)),
+             error = function(e) message(paste("No pedigree drawn.\nError message:",
+                                               conditionMessage(e))))
+
+    par(fig = c(0,1,0,1), new = TRUE, pty = "s")
+
+    p = showInTriangle(kappa, plotType, ped = NULL, new = TRUE, col = col, cex = cex,
+                     pch = pch, lwd = lwd, jitter = jitter, labels = labels,
+                     colLab = colLab, cexLab = cexLab, labSep = labSep,
+                     pos = pos, adj = adj, keep.par = keep.par, ...)
+
+    if(plotType == "ggplot2")
+      print(p, newpage = FALSE)
+    return(invisible())
+
+  }
+
+
+  # Main triangle -----------------------------------------------------------
+
+  # Only relevant for base plot
+  if(!keep.par) {
+    opar = par(no.readonly = TRUE) # store graphical parameters
+    on.exit(par(opar), add = TRUE)
+  }
+
+  # Draw triangle triangle
+  if(new)
+    p = ibdTriangle(plotType = plotType, ...)
+  else if(plotType != "base")
+    stop2("Argument `new = FALSE` is only meaningful when `plotType = 'base'")
+
+
+  # Prepare plot data -------------------------------------------------------
+
+  if(is.null(kappa) || (!is.null(nrow(kappa)) && nrow(kappa) == 0))
+    return(switch(plotType, base = invisible(), p))
+
   if(is.null(labels))
     labels = switch(plotType, base = FALSE, ggplot2 = TRUE, plotly = TRUE)
 
@@ -390,18 +460,6 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
     df$.labs = labels
   else
     labels = FALSE
-
-  # Only relevant for base plot, for
-  if(!keep.par) {
-    opar = par(no.readonly = TRUE) # store graphical parameters
-    on.exit(par(opar), add = TRUE)
-  }
-
-  # Draw triangle triangle
-  if(new)
-    p = ibdTriangle(plotType = plotType, ...)
-  else if(plotType != "base")
-    stop2("Argument `new = FALSE` is only meaningful when `plotType = 'base'")
 
 
   # Base plot----------------------------------------------------------------
@@ -470,7 +528,7 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
 
   # Plotly ------------------------------------------------------------------
 
-  if(plotType == "plotly") {print(df)
+  if(plotType == "plotly") {
 
     # Add row number
     df$idx = seq_len(nrow(df))
@@ -503,3 +561,4 @@ col2hex = function(col) {
 }
 
 utils::globalVariables(c("kappa0", "kappa2", "x.txt", "y.txt", "label", "hjust", "vjust", ".k0", ".k2", ".labs"))
+

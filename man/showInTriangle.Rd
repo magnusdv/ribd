@@ -8,6 +8,9 @@ showInTriangle(
   kappa,
   plotType = c("base", "ggplot2", "plotly"),
   new = TRUE,
+  ped = NULL,
+  pedBL = c(0.5, 0.5),
+  pedArgs = NULL,
   col = 6,
   cex = 1,
   pch = 4,
@@ -39,6 +42,14 @@ the elements row-wise.
 are allowed.}
 
 \item{new}{A logical indicating if a new triangle should be drawn.}
+
+\item{ped}{A pedigree to be drawn in the upper right corner of the plot.
+Default: NULL. This only works when \code{plotType} is \code{base} or \code{ggplot2}.}
+
+\item{pedBL}{A vector of length two, with entries in \verb{[0,1]}, indicating the
+coordinates of the bottom left corner. Default: \code{c(0.5, 0.5)}.}
+
+\item{pedArgs}{Plotting arguments for the inset pedigree. Default: NULL.}
 
 \item{col, cex, pch, lwd}{Parameters controlling the appearance of points.}
 
