@@ -55,7 +55,7 @@ constructPedigree = function(kappa, describe = TRUE, verbose = FALSE) {
   if(k1 == 0 && k2 == 0) {
     if(describe)
       cat(glue::glue("Result:\n  Unrelated\n"))
-    x = list(singleton(1), singleton(2))
+    x = singletons(1:2)
     return(x)
   }
 

@@ -93,7 +93,7 @@
 kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE) {
 
   if(is.pedList(x)) {
-    ids = unlist(ids)
+    ids = unlist(ids) # TODO: remove
     compNr = getComponent(x, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
     compNr = unique.default(compNr)
 
@@ -102,7 +102,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchro
 
     x = x[compNr]
     nPed = length(x)
-    idsComp = lapply(labels(x), intersect, ids)
+    idsComp = lapply(x, function(comp) intersect(comp$ID, ids))
 
     # Within-component coefficients
     kapComp = lapply(which(lengths(idsComp) > 1), function(i)
