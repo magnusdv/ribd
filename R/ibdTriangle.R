@@ -534,20 +534,14 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
     df$idx = seq_len(nrow(df))
 
     # Exact kappas (for labels)
-    k0 = round(df$.k0ex, 2)
-    k2 = round(df$.k2ex, 2)
-    k1 = 1 - k0 - k2
-    labs = paste0("k0 = ", k0, "<br>", "k1 = ", k1, "<br>", "k2 = ", k2)
     if(!isFALSE(labels))
-      labs = paste0("ID1: ", df$.id1, "<br>", "ID2: ", df$.id2, "<br><br>", labs)
-
-    df$.labs = labs
+      df$.labs = paste0("ID1: ", df$.id1, "<br>", "ID2: ", df$.id2)
 
     # Add interactive points
     p = p |>
       plotly::add_markers(data = df, x = ~.k0, y = ~.k2, customdata = ~idx,
                           marker = list(symbol = ~pch, color = ~col, size = ~10*cex,
-                                        line = list(color = ~col, width = ~sqrt(lwd))),
+                                        line = list(color = 1, width = 1)),
                           text= ~ .labs,
                           hoverinfo = "text")
     p
