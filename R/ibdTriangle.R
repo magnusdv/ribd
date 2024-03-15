@@ -110,7 +110,7 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   if(plotType == "plotly") {
     return(ibdTrianglePlotly(relationships = relationships, cexPoint = cexPoint,
                          cexText = cexText, cexAxis = cexAxis, shading = col2hex(shading),
-                         xlab = deparse(xlab), ylab = deparse(ylab), ...))
+                         xlab = xlab, ylab = ylab, ...))
   }
 
 
@@ -244,6 +244,10 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
   xIlleg = t^2
   yIlleg = (1-t)^2
 
+  # Axis labels
+  xlab = .fixPlotlyText(xlab)
+  ylab = .fixPlotlyText(ylab)
+
   # Plot: static part
   p = plotly::plot_ly() |>
     plotly::config(displaylogo = FALSE, modeBarButtonsToRemove =
@@ -258,22 +262,36 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
       yaxis = list(range = c(-0.1, 1.05), visible = TRUE, showticklabels = FALSE,
                    zeroline = FALSE, showgrid = FALSE, showline = FALSE,
                    scaleanchor = "x", scaleratio = 1,
-                   title = list(text = ylab, standoff = 0)),
-      showlegend = FALSE) |>
+                   title = list(text = ylab, standoff = 0))) |>
     plotly::add_segments(x = c(0, 0, 0), y = c(0, 0, 1), xend = c(1, 0, 1),
                          yend = c(0, 1, 0), hoverinfo = 'skip',
-                         line = list(color = "black", width = 1)) |>
+                         line = list(color = "black", width = 1),
+                         showlegend = FALSE) |>
     plotly::add_polygons(x = xIlleg, y = yIlleg, fillcolor = col2hex(shading),
                          line = list(color = "black", width = 0.5, dash = "dot"),
-                         hoverinfo = 'skip') |>
+                         hoverinfo = 'skip', showlegend = FALSE) |>
     plotly::add_markers(data = rels, x = ~kappa0, y = ~kappa2, hoverinfo = 'skip',
-                        marker = list(color = "black", size = 7*cexPoint)) |>
+                        marker = list(color = "black", size = 7*cexPoint),
+                        showlegend = FALSE) |>
     plotly::add_text(data = rels, x = ~x, y = ~y, text = ~label, size = I(15*cexText),
-                     color = I("black"), textposition = ~pos, hoverinfo = 'skip')
+                     color = I("black"), textposition = ~pos, hoverinfo = 'skip',
+                     showlegend = FALSE)
+
+  if(inherits(xlab, "TeX") || inherits(ylab, "TeX"))
+    p = p |> plotly::config(mathjax = 'cdn')
+
   p
 }
 
-
+.fixPlotlyText = function(s) {
+  if(is.expression(s))
+    s = deparse(s[[1]])
+  if(s == "kappa[0]")
+    s = plotly::TeX("\\kappa_0")
+  if(s == "kappa[2]")
+    s = plotly::TeX("\\kappa_2")
+  s
+}
 
 
 #' Add points to the IBD triangle
@@ -543,7 +561,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
                           marker = list(symbol = ~pch, color = ~col, size = ~10*cex,
                                         line = list(color = 1, width = 1)),
                           text= ~ .labs,
-                          hoverinfo = "text")
+                          hoverinfo = "text",
+                          showlegend = FALSE)
     p
   }
 
