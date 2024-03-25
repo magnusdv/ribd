@@ -87,7 +87,7 @@ inbreeding = function(x, ids = NULL, Xchrom = FALSE) {
   }
 
   # Use diagonal of kinship matrix
-  kin = kinship(x, ids = ids, Xchrom = Xchrom)
+  kin = kinship(x, ids = ids, simplify = FALSE, Xchrom = Xchrom)
   inb = 2 * diag(kin) - 1
 
   # X: males are always 1
