@@ -97,29 +97,3 @@ inbreeding = function(x, ids = NULL, Xchrom = FALSE) {
   inb
 }
 
-
-#' @rdname inbreeding
-#' @export
-inbreedingX = function(x, ids = NULL) {
-  message("This function is deprecated. Use `inbreeding(..., Xchrom = TRUE)` instead.")
-
-  if(length(ids) == 1) {
-
-    # Quick return if founder
-    pars = parents(x, ids)
-    if(!length(pars))
-      return(founderInbreeding(x, ids = ids, named = FALSE, chromType = "X"))
-
-    # Otherwise: kinship coefficient of parents
-    return(kinshipX(x, ids = pars))
-  }
-
-  # Use diagonal of kinship matrix
-  kin = kinshipX(x)
-  inb = 2 * diag(kin) - 1
-
-  if(!is.null(ids))
-    inb = inb[as.character(ids)]
-
-  inb
-}

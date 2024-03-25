@@ -2,12 +2,9 @@
 % Please edit documentation in R/inbreeding.R
 \name{inbreeding}
 \alias{inbreeding}
-\alias{inbreedingX}
 \title{Inbreeding coefficients}
 \usage{
 inbreeding(x, ids = NULL, Xchrom = FALSE)
-
-inbreedingX(x, ids = NULL)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{ped} object, or a list of such.}

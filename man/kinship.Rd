@@ -2,12 +2,9 @@
 % Please edit documentation in R/kinship.R
 \name{kinship}
 \alias{kinship}
-\alias{kinshipX}
 \title{Kinship coefficients}
 \usage{
 kinship(x, ids = NULL, simplify = TRUE, Xchrom = FALSE)
-
-kinshipX(x, ids = NULL)
 }
 \arguments{
 \item{x}{A \code{ped} object or a list of such.}
