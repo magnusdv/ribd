@@ -5,34 +5,36 @@
 \alias{kinshipX}
 \title{Kinship coefficients}
 \usage{
-kinship(x, ids = NULL, Xchrom = FALSE)
+kinship(x, ids = NULL, simplify = TRUE, Xchrom = FALSE)
 
 kinshipX(x, ids = NULL)
 }
 \arguments{
 \item{x}{A \code{ped} object or a list of such.}
 
-\item{ids}{Either NULL (default), or a vector of length 2, containing the IDs
-of two (possibly equal) members of \code{x}.}
+\item{ids}{Either NULL (default), or a vector of ID labels in \code{x}.}
+
+\item{simplify}{A logical. by default TRUE. See Value.}
 
 \item{Xchrom}{A logical, indicating if the autosomal (default) or
 X-chromosomal kinship coefficients should be computed.}
 }
 \value{
-If \code{ids = NULL}, a symmetric matrix containing all pairwise kinship
-coefficients in \code{x}. If \code{ids} has length 2, the function returns a single
-number.
+A symmetric N * N matrix, where N is the number of pedigree members,
+or \code{length(ids)} if this is given, containing the pairwise kinship
+coefficients. If \code{ids} has length 2, and \code{simplify = TRUE}, the function
+returns a single number.
 }
 \description{
-Compute the matrix of kinship coefficients of all members of a pedigree. Both
+Compute the matrix of pairwise kinship coefficients in a pedigree. Both
 autosomal and X-chromosomal versions are supported. The pedigree founders are
 allowed to be inbred; see \code{\link[pedtools:founderInbreeding]{pedtools::founderInbreeding()}} for how to set this
 up, and see Examples below.
 }
 \details{
-For two (possibly equal) members A, B of a pedigree, their
-autosomal (resp. X-chromosomal) \emph{kinship coefficient} is defined as the probability that
-a random allele from A and a random allele from B, sampled at the same
+For two (possibly equal) members A, B of a pedigree, their autosomal (resp.
+X-chromosomal) \emph{kinship coefficient} is defined as the probability that a
+random allele from A and a random allele from B, sampled at the same
 autosomal (resp. X-chromosomal) locus, are identical by descent relative to
 the pedigree.
 }

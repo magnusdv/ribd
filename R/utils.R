@@ -43,7 +43,7 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 # Fast setdiff
 .mysetdiff = function(x, y) unique.default(x[match(x, y, 0L) == 0L])
 
-# Fast intersection. NB: assumes no duplicates!
+# Fast intersection. NB: assumes no duplicates in x!
 .myintersect = function(x, y) y[match(x, y, 0L)]
 
 # Fast sorting of short vectors

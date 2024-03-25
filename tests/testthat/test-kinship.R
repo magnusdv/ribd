@@ -89,19 +89,63 @@ test_that("X-chrom inbreeding is computed correctly", {
 
 
 test_that("kinship() works in pedlist", {
-  x1 = nuclearPed()
+  x1 = nuclearPed() |> setFounderInbreeding(1, value = 1) |> reorderPed(3:1)
   x2 = singleton(4)
-  x = list(x1, x2)
+  x3 = singleton("NN") |> setFounderInbreeding(value = 0.5)
+  x = list(x1, x2, x3)
 
-  kin = kinship(x)
+  expect_equal(kinship(x)[1:3, 1:3], kinship(x1))
+  expect_equal(kinship(x, x1$ID), kinship(x1))
+  expect_equal(kinship(x, 1:3), kinship(x1, ids = 1:3))
+  expect_equal(kinship(x, 4), kinship(x2))
+  expect_equal(kinship(x)[4, 4, drop = F], kinship(x2))
 
-  expect_equal(kin[1:3, 1:3], kinship(x1))
-  expect_equal(kin[4, 4, drop = F], kinship(x2))
+  ids = c("NN",3,2)
+  expect_equal(kinship(x, ids), kinship(x)[ids, ids])
+
+  ids = c("NN",4)
+  expect_equal(kinship(x, ids, simplify = F), kinship(x)[ids, ids])
 
   expect_equal(kinship(x, 2:3), 0.25)
   expect_equal(kinship(x, 3:4), 0)
 
-  expect_error(kinship(x, 3:5), "When `ids` is not NULL, it must be a vector of length 2")
   expect_error(kinship(x, 4:5), "Unknown ID label: 5")
+})
 
+
+test_that("kinship(Xchrom = T) works in pedlist", {
+  x1 = nuclearPed() |> setFounderInbreeding(1, value = 1) |> reorderPed(3:1)
+  x2 = singleton(4)
+  x3 = singleton("NN") |> setFounderInbreeding(value = 0.5)
+  x = list(x1, x2, x3)
+
+  kinX = function(...) kinship(..., Xchrom = T)
+
+  expect_equal(kinX(x)[1:3, 1:3], kinX(x1))
+  expect_equal(kinX(x, x1$ID), kinX(x1))
+  expect_equal(kinX(x, 1:3), kinX(x1, ids = 1:3))
+  expect_equal(kinX(x, 4), kinX(x2))
+  expect_equal(kinX(x)[4, 4, drop = F], kinX(x2))
+
+  ids = c("NN",3,2)
+  expect_equal(kinX(x, ids), kinX(x)[ids, ids])
+
+  ids = c("NN",4)
+  expect_equal(kinX(x, ids, simplify = F), kinX(x)[ids, ids])
+
+  expect_equal(kinX(x, 2:3), 0.5)
+  expect_equal(kinX(x, 3:4), 0)
+
+  expect_error(kinX(x, 4:5), "Unknown ID label: 5")
+})
+
+test_that("kinship() works in pedlist with duplicated IDs", {
+  x1 = nuclearPed(children = 3:4)
+  x2 = nuclearPed(children = 6:5)
+  x = list(x1, x2)
+
+  expect_equal(kinship(x, 3:4), 0.25)
+  expect_equal(kinship(x, 4:5), 0)
+  expect_equal(kinship(x, x1$ID, simplify = F), kinship(x1))
+  expect_error(kinship(x), "ID label is not unique: 1")
 })
