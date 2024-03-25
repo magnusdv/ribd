@@ -250,10 +250,7 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 
   # Plot: static part
   p = plotly::plot_ly() |>
-    plotly::config(displaylogo = FALSE, modeBarButtonsToRemove =
-                     c("zoomIn2d", "zoomOut2d", "pan2d", "lasso2d", "autoScale2d",
-                       "hoverClosestCartesian", "hoverCompareCartesian",
-                       "select2d", "resetScale2d")) |>
+    plotly::config(displaylogo = FALSE, displayModeBar = FALSE) |>
     plotly::layout(
       margin = list(l = 20, r = 20, b = 20, t = 20),
       xaxis = list(range = c(-0.05, 1.1), visible = TRUE, showticklabels = FALSE,
