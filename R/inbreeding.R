@@ -87,15 +87,12 @@ inbreeding = function(x, ids = NULL, Xchrom = FALSE) {
   }
 
   # Use diagonal of kinship matrix
-  kin = kinship(x, Xchrom = Xchrom)
+  kin = kinship(x, ids = ids, Xchrom = Xchrom)
   inb = 2 * diag(kin) - 1
 
   # X: males are always 1
   if(Xchrom)
-    inb[getSex(x) == 1L] = 1
-
-  if(!is.null(ids))
-    inb = inb[as.character(ids)]
+    inb[getSex(x, names(inb)) == 1L] = 1
 
   inb
 }
