@@ -344,12 +344,20 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 #' @examples
 #' showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1)
 #'
+#' # With inset pedigree
 #' x = doubleCousins(1, 0, half2 = TRUE)
+#' showInTriangle(c(3/8, 1/8), label = "3/4 siblings", pos = 1,
+#'                ped = x, pedArgs = list(hatched = 6:7))
+#'
+#' # All pairs
 #' k = kappaIBD(x)
-#' showInTriangle(k, labels = TRUE, pos = 1:4)
+#' showInTriangle(k, labels = TRUE, pos = 1:4, ped = x)
+#'
+#' # With jitter and variable colors
+#' showInTriangle(k, labels = TRUE, pos = 1:4, jitter = TRUE, col = 1:7, ped = x)
 #'
 #' # Separate labels (requires ggplot2 + ggrepel)
-#' # showInTriangle(k, plot = "ggplot2", col = 2:8)
+#' # showInTriangle(k, plot = "ggplot2", col = 2:8, ped = x)
 #'
 #' # Interactive plot (requires plotly)
 #' # showInTriangle(k, plot = "plotly", col = 2:8, pch = 0)
@@ -390,7 +398,6 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
     return(invisible())
 
   }
-
 
   # Main triangle -----------------------------------------------------------
 
@@ -456,8 +463,8 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
     df$.k2 = df$.k2 + runif(nrow(df), -0.015, 0.015)
   }
 
-  df$col = col2hex(col)
-  df$pch = pch
+  df$col = rep_len(col2hex(col), nrow(df))
+  df$pch = rep_len(pch, nrow(df))
 
   # Create labels from ID columns
   if (isTRUE(labels)) {
