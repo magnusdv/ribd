@@ -1,3 +1,27 @@
+# ribd 1.7.0
+
+Th main focus of this version is an overhaul of the IBD triangle plots, and implementing such plots also in `ggplot2` and `plotly`.
+
+## New features
+
+* `ibdTriangle()` and `showInTriangle()` gain an argument `plotType`, with permitted values "base" (default), "ggplot2" and "plotly".
+
+* `ibdTriangle()` now supports graphic parameters `las`, `mar` and `title`. (These work for base plots and also `ggplot2`.)
+
+* `showInTriangle()` has a new argument `ped`, for adding an inset pedigree in the top right corner. 
+
+* Improved handling of labels in `showInTriangle()`.
+
+* New dataset `basicRelationships`, which is called by `ibdTriangle()`.
+
+* In `kinship(x, ids)`, `ids` is no longer restricted to length 2. 
+
+* Improve documentation of `kappaIBD()`.
+
+## Bug fixes
+* `kinship(x)` now catches duplicated ID labels across components when `x` is a pedlist.
+
+
 # ribd 1.6.1
 
 ## New features
