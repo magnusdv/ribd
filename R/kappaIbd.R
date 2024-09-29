@@ -45,6 +45,8 @@
 #'   cases the coefficients are reported as `NA`.
 #' @param simplify Simplify the output (to a numeric of length 3) if `ids` has
 #'   length 2. Default: TRUE.
+#' @param acrossComps A logical indicating if pairs of individuals in different
+#'   components should be included. Default: TRUE.
 #' @param Xchrom A logical, indicating if the autosomal (default) or
 #'   X-chromosomal kappa coefficients should be computed.
 #'
@@ -90,7 +92,8 @@
 #' kappaIBD(y, Xchrom = TRUE)
 #'
 #' @export
-kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE) {
+kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
+                    acrossComps = TRUE, Xchrom = FALSE) {
 
   if(is.pedList(x)) {
     ids = unlist(ids) # TODO: remove
@@ -110,8 +113,10 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchro
     res = do.call(rbind, kapComp)
 
     # Between-components
-    for(i in seq_len(nPed - 1)) for(j in seq(i+1, nPed)) for(a in idsComp[[i]])
-      res = rbind(res, data.frame(id1 = a, id2 = idsComp[[j]], kappa0 = 1, kappa1 = 0, kappa2 = 0, stringsAsFactors = FALSE))
+    if(acrossComps) {
+      for(i in seq_len(nPed - 1)) for(j in seq(i+1, nPed)) for(a in idsComp[[i]])
+        res = rbind(res, data.frame(id1 = a, id2 = idsComp[[j]], kappa0 = 1, kappa1 = 0, kappa2 = 0, stringsAsFactors = FALSE))
+    }
 
     # Simplify output for a single pair
     if(simplify && length(ids) == 2)

@@ -4,7 +4,14 @@
 \alias{kappaIBD}
 \title{IBD (kappa) coefficients}
 \usage{
-kappaIBD(x, ids = labels(x), inbredAction = 1, simplify = TRUE, Xchrom = FALSE)
+kappaIBD(
+  x,
+  ids = labels(x),
+  inbredAction = 1,
+  simplify = TRUE,
+  acrossComps = TRUE,
+  Xchrom = FALSE
+)
 }
 \arguments{
 \item{x}{A pedigree in the form of a \code{ped} object (or a list of such).}
@@ -19,6 +26,9 @@ cases the coefficients are reported as \code{NA}.}
 
 \item{simplify}{Simplify the output (to a numeric of length 3) if \code{ids} has
 length 2. Default: TRUE.}
+
+\item{acrossComps}{A logical indicating if pairs of individuals in different
+components should be included. Default: TRUE.}
 
 \item{Xchrom}{A logical, indicating if the autosomal (default) or
 X-chromosomal kappa coefficients should be computed.}
