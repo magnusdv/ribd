@@ -220,7 +220,7 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
 
 ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                          cexPoint = 1.2, cexText = cexPoint, cexAxis = cexText,
-                         shading = "gray90", xlab = "k0", ylab = "k2", ...) {
+                         shading = "gray96", xlab = "k0", ylab = "k2", marginPlotly = NULL, ...) {
 
   if(!requireNamespace("plotly", quietly = TRUE))
     stop2("Package `plotly` must be installed for this to work")
@@ -230,7 +230,7 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
   rels = allrels[allrels$label %in% relationships, , drop = FALSE]
 
   # Adjust label positions
-  plotlyPos = c(UN = "bottom right", PO = "bottom center", MZ = "middle right",
+  plotlyPos = c(UN = "bottom center", PO = "bottom center", MZ = "middle right",
                 S = "middle right", H = "bottom center", A = "bottom center",
                 G = "bottom center", `H,U,G` = "bottom center", FC = "bottom center",
                 SC = "bottom center", DFC = "top right", Q = "middle right")
@@ -248,17 +248,24 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
   xlab = .fixPlotlyText(xlab)
   ylab = .fixPlotlyText(ylab)
 
+  # Margins
+  mar = as.list(marginPlotly %||% rep(20, 4)) |> `names<-`(c("b", "l", "t", "r"))
+  xrange = range(c(-0.01, 1.01, rels$x))
+  yrange = range(c(-0.01, 1.01, if(xlab != "") -0.1, rels$y))
+
   # Plot: static part
   p = plotly::plot_ly() |>
-    plotly::config(displaylogo = FALSE, displayModeBar = FALSE) |>
+    plotly::config(displaylogo = FALSE, displayModeBar = FALSE, showAxisDragHandles = FALSE) |>
     plotly::layout(
-      margin = list(l = 20, r = 20, b = 20, t = 20),
-      xaxis = list(range = c(-0.05, 1.1), visible = TRUE, showticklabels = FALSE,
+      autosize = TRUE,
+      margin = mar,
+      xaxis = list(range = xrange, visible = TRUE, showticklabels = FALSE,
                    zeroline = FALSE, showgrid = FALSE, showline = FALSE,
-                   title = list(text = xlab, standoff = 0)),
-      yaxis = list(range = c(-0.1, 1.05), visible = TRUE, showticklabels = FALSE,
+                   title = list(text = xlab, standoff = 0),
+                   scaleanchor = "y", scaleratio = 1),
+      yaxis = list(range = yrange, visible = TRUE, showticklabels = FALSE,
                    zeroline = FALSE, showgrid = FALSE, showline = FALSE,
-                   scaleanchor = "x", scaleratio = 1,
+                   constrain = "domain",
                    title = list(text = ylab, standoff = 0))) |>
     plotly::add_segments(x = c(0, 0, 0), y = c(0, 0, 1), xend = c(1, 0, 1),
                          yend = c(0, 1, 0), hoverinfo = 'skip',
@@ -269,10 +276,10 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
                          hoverinfo = 'skip', showlegend = FALSE) |>
     plotly::add_markers(data = rels, x = ~kappa0, y = ~kappa2, hoverinfo = 'skip',
                         marker = list(color = "black", size = 7*cexPoint),
-                        showlegend = FALSE) |>
+                        showlegend = FALSE, cliponaxis = FALSE) |>
     plotly::add_text(data = rels, x = ~x, y = ~y, text = ~label, size = I(15*cexText),
                      color = I("black"), textposition = ~pos, hoverinfo = 'skip',
-                     showlegend = FALSE)
+                     showlegend = FALSE, cliponaxis = FALSE)
 
   if(inherits(xlab, "TeX") || inherits(ylab, "TeX"))
     p = p |> plotly::config(mathjax = 'cdn')
@@ -281,6 +288,8 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 }
 
 .fixPlotlyText = function(s) {
+  if(is.null(s))
+    return("")
   if(is.expression(s))
     s = deparse(s[[1]])
   if(s == "kappa[0]")
