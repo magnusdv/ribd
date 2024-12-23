@@ -255,7 +255,10 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
 
   # Plot: static part
   p = plotly::plot_ly() |>
-    plotly::config(displaylogo = FALSE, displayModeBar = FALSE, showAxisDragHandles = FALSE) |>
+    plotly::config(displaylogo = FALSE,
+                   showAxisDragHandles = FALSE,
+                   modeBarButtons = list(list("toImage")),
+                   toImageButtonOptions = list(scale = 3, filename = "ibd_triangle")) |>
     plotly::layout(
       autosize = TRUE,
       margin = mar,
