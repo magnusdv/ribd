@@ -575,6 +575,7 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
                                         line = list(color = 1, width = 1)),
                           text= ~ .labs,
                           hoverinfo = "text",
+                          cliponaxis = FALSE,
                           showlegend = FALSE)
     p
   }
