@@ -24,13 +24,11 @@ the minimal element of the equivalence class. (See Details.) If \code{complete =
 }
 \description{
 Computes the probabilities (coefficients) of all possible patterns of
-identity by descent (IBD) sharing at a single locus, among N>1 non-inbred
-members of a pedigree. The reported coefficients are "condensed" in the sense
-that allele ordering within each individual is ignored. For N = 2, the result
+identity-by-descent (IBD) sharing among N non-inbred individuals, at a single
+autosomal locus. The reported coefficients are "condensed" in the sense that
+allele ordering within each individual is ignored. For N = 2, the result
 should agree with the traditional "kappa" coefficients, as computed by
-\code{\link[=kappaIBD]{kappaIBD()}}. This function is under development, and should be regarded as
-experimental. For now, the only cases handled are those with: N = 2 or 3,
-autosomal locus.
+\code{\link[=kappaIBD]{kappaIBD()}}. The current implementation handles up to N = 6 individuals.
 }
 \details{
 Consider N members of a pedigree, i1, i2, ... iN.  A pattern of IBD sharing
