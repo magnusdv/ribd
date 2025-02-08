@@ -1,3 +1,17 @@
+# ribd 1.7.1
+
+## New features
+* `kappaIBD()` gains a logical argument `acrossComps`. Switching this off will compute the IBD coefficients only between individuals in the same connected component, which is often better for large pedigrees.
+
+* Update and improve documentation of `multiPersonIBD()`.
+
+* Several tweaks of the `plotly` version of IBD triangles.
+
+## Other
+* Now using Rhub v2 for testing.
+* Increased pedtools dependency to 2.6.0, for `labels(..., unlist = TRUE)`.
+
+
 # ribd 1.7.0
 
 Th main focus of this version is an overhaul of the IBD triangle plots, and implementing such plots also in `ggplot2` and `plotly`.
