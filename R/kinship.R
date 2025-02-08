@@ -56,7 +56,7 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
     }
 
     if(!hasIds)
-      ids = unlist(labels(x)) # todo: remove unlist
+      ids = labels(x, unlist = TRUE)
 
     if(dup <- anyDuplicated.default(ids))
       stop2("ID label is not unique: ", ids[dup])

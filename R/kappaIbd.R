@@ -96,7 +96,6 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
                     acrossComps = TRUE, Xchrom = FALSE) {
 
   if(is.pedList(x)) {
-    ids = unlist(ids) # TODO: remove
     compNr = getComponent(x, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
     compNr = unique.default(compNr)
 
