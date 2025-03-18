@@ -150,7 +150,7 @@ psi1G = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   }
 
   # Any pair unrelated -> 0
-  prs = comb2(ids, vec = TRUE)
+  prs = .comb2(ids, vec = TRUE)
   if(any(!mem$REL[prs]))
     return(debugReturn(0, debug = debug, indent = indent, comment = " (B3)"))
 

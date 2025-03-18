@@ -50,7 +50,6 @@
 #'
 #' points(rho, WC, col = 2)
 #'
-#' @importFrom utils combn
 #' @export
 twoLocusInbreeding = function(x, id, rho, verbose = FALSE, debug = FALSE) {
   if(!is.ped(x)) stop2("Input is not a `ped` object")

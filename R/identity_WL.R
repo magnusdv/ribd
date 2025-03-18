@@ -180,7 +180,7 @@ boundaryB2 = function(gp, REL, uniqList = lapply(gp, unique.default)) {
     if(length(s) < 2)
       next
 
-    pairMat = comb2(s, vec = TRUE)
+    pairMat = .comb2(s, vec = TRUE)
     if(any(!REL[pairMat]))
       return(TRUE)
   }

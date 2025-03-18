@@ -79,7 +79,7 @@ recurse_LS = function(gp, X = FALSE, mem = NULL, debug = FALSE, indent = 0) {
   for(s in uniqList) {
     if(length(s) < 2)
       next
-    intrapairs = comb2(s, vec = TRUE)
+    intrapairs = .comb2(s, vec = TRUE)
     if(any(!mem$REL[intrapairs])) { # any pair not related?
       mem$B2 = mem$B2 + 1
       return(debugReturn(0, debug = debug, indent = indent, comment = " (B2)"))

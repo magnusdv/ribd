@@ -151,7 +151,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
   }
 
   # Build result data frame
-  pairs = t.default(combn(ids, 2))
+  pairs = .comb2(ids, vec = TRUE)
   res = data.frame(id1 = pairs[, 1], id2 = pairs[, 2],
                    kappa0 = NA_real_, kappa1 = NA_real_, kappa2 = NA_real_,
                    stringsAsFactors = FALSE)
@@ -218,7 +218,7 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
   }
 
   # Build result data frame
-  pairs = t.default(combn(ids, 2))
+  pairs = .comb2(ids, vec = TRUE)
   res = data.frame(id1 = pairs[, 1], id2 = pairs[, 2],
                    kappa0 = NA_real_, kappa1 = NA_real_, kappa2 = NA_real_,
                    stringsAsFactors = FALSE)

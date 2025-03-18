@@ -14,7 +14,7 @@ kinImpossible = function(kin, mem) {
     # Boundary condition: Any group with 2 unrelated indivs?
     k1 = mem$k1
     for(s in uniq_sources[lengths(uniq_sources) > 1]) {
-      pairs_mat = comb2(s, vec = TRUE)
+      pairs_mat = .comb2(s, vec = TRUE)
       if(any(k1[pairs_mat] == 0)) {
         mem$iimp = mem$iimp + 1
         return(TRUE)

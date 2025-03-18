@@ -9,13 +9,16 @@ stop2 = function(...) {
 }
 
 # Quick version of combn(., 2) for matrix output
-comb2 = function(n, vec = length(n) > 1){
+.comb2 = function(n, vec = length(n) > 1){
   if(vec) {
     v = n
     n = length(v)
   }
-  if (n < 2)
-    return(matrix(nrow = 0L, ncol = 2L))
+  if (n < 2) {
+    x = integer(0)
+    if(vec) x = v[x]
+    return(matrix(x, nrow = 0L, ncol = 2L))
+  }
   if (n == 2) {
     if(!vec) v = c(1L, 2L)
     return(`dim<-`(v, c(1L, 2L)))
@@ -27,8 +30,7 @@ comb2 = function(n, vec = length(n) > 1){
   }
 
   x = rep.int(seq_len(n - 1), (n - 1):1)
-  o = c(0, cumsum((n-2):1))
-  y = seq_along(x) + 1 - o[x]
+  y = sequence.default((n - 1):1, 2:n)
 
   if(vec)
     cbind(v[x], v[y], deparse.level = 0)
@@ -102,7 +104,7 @@ safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
                 v[unlist(lapply(sq, function(i) i:n))])
   }
   else {
-    mat = comb2(v, vec = TRUE)
+    mat = .comb2(v, vec = TRUE)
   }
 
   if(returnList)
