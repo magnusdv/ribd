@@ -4,6 +4,9 @@ gip = function(x, pattern, distinct = TRUE) {
   if(!is.ped(x))
     stop2("First argument must be a `ped` object")
 
+  if(isGip(pattern))
+    pattern = gip2list(pattern)
+
   if(!is.list(pattern))
     stop2("`pattern` must be a list")
 
@@ -112,7 +115,12 @@ isDistinct = function(gp) {
   !is.null(dist) && dist
 }
 
-gipReduce = function(gp, deterministic = isDeterministic(gp)) { # Remove empty groups
+isGip = function(x) {
+  inherits(x, "gip")
+}
+
+# Remove empty groups
+gipReduce = function(gp, deterministic = isDeterministic(gp)) {
 
   # Remove empty blocks
   empty = lengths(gp) == 0

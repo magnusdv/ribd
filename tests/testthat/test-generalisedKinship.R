@@ -1,6 +1,6 @@
 wl = function(x, ...) gKinship(x, list(...), method = "WL")
 ls = function(x, ...) gKinship(x, list(...), method = "LS")
-gc = function(x, ...) gKinship(x, list(...), method = "GC")
+gc = function(x, ...) gKinship(x, list(...), distinct = F, method = "GC")
 
 test_that("Random distinct generalised kinships (WL) in singleton", {
   s = singleton(1)
@@ -34,8 +34,6 @@ test_that("Deterministic nondistinct generalised kinships (GC) in singleton", {
   expect_equal(gc(s, c(p=1,p=1)), 1)
   expect_equal(gc(s, c(p=1,m=1)), 0)
   expect_equal(gc(s, c(p=1,p=1), c(m=1,m=1)), 1)
-  #expect_equal(gc(s, c(p=1),c(p=1)), 1)
-  #expect_equal(gc(s, c(p=1),c(m=1)), 1)
 })
 
 test_that("Random distinct generalised kinships (WL) in selfingPed", {

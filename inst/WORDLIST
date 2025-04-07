@@ -32,6 +32,7 @@ ORCID
 pedsuite
 QuickPed
 Res
+Rhub
 Sel
 Sinsheimer
 Sinsheimer's
@@ -49,12 +50,15 @@ d'Amerique
 doi
 dotsc
 etc
+ggplot
+halfsib
 hemizygous
 iN
 idcoefs
 imammb
 inb
 isolat
+jkac
 kappaIBD
 les
 multiperson
@@ -64,7 +68,10 @@ noninbred
 nonstandard
 nonzero
 ped
+pedlist
 pedtools
+plotly
+pos
 rd
 resp
 sibs

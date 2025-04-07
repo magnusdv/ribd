@@ -22,9 +22,8 @@ gip(x, pattern, distinct = TRUE)
 \arguments{
 \item{x}{A \code{ped} object.}
 
-\item{pattern}{A \code{gip} object, or a list of vectors to be passed onto
-\code{\link[=gip]{gip()}}. Each vector should contain members of \code{x} constituting an IBD
-block. (See Details and Examples.)}
+\item{pattern}{A \code{gip} object, or a list of vectors constituting the blocks
+of the GIP. (See Details and Examples.)}
 
 \item{distinct}{A logical indicating if different blocks are required to be
 non-IBD. Default: TRUE. (Irrelevant for single-block patterns.)}
@@ -45,8 +44,8 @@ non-IBD. Default: TRUE. (Irrelevant for single-block patterns.)}
 \code{gKinship()} returns a single number, the probability of the given
 IBD pattern.
 
-\code{gip()} returns an object of class \code{gip}. This is internally a list
-of integer vectors, with attributes \code{labs}, \code{deterministic} and \code{distinct}.
+\code{gip()} returns an object of class \code{gip}. This is internally a list of
+integer vectors, with attributes \code{labs}, \code{deterministic} and \code{distinct}.
 (See also Details.)
 }
 \description{
@@ -154,9 +153,9 @@ Weeks & Lange (1988), building on Karigl's work, defined random, distinct
 patterns in full generality and gave an algorithm for computing the
 corresponding coefficients.
 
-In a follow-up paper, Lange & Sinsheimer (1992) introduced partially
-deterministic (distinct) patterns, and used these to compute detailed
-identity coefficients.
+In a follow-up paper, Lange & Sinsheimer (1992) introduced deterministic (and
+partially deterministic), distinct patterns, and used these to compute
+detailed identity coefficients.
 
 In another follow-up, Weeks et al. (1995) extended the work on random,
 distinct patterns by Weeks & Lange (1988) to X-chromosomal loci.
@@ -207,8 +206,8 @@ patt2
 patt3 = gip(x, list(c(p="A", p="C"), c(m="C")))
 patt3
 
-# Partially deterministic, non-distinct`
-patt4 = gip(x, list(c("A", p="C"), c("B", m="C")), distinct = FALSE)
+# Partially deterministic, distinct
+patt4 = gip(x, list(c("A", p="C"), c("B", m="C")))
 patt4
 
 # Partially deterministic, single block
@@ -219,8 +218,8 @@ stopifnot(
   gKinship(x, patt1) == 0,      # (since A and B are unrelated)
   gKinship(x, patt2) == 0,      # (same as previous)
   gKinship(x, patt3) == 0.5,    # (only uncertainty is which allele A gave to C)
-  gKinship(x, patt4) == 0.25,   # (distinct irrelevant)
-  gKinship(x, patt5) == 0.25   # (both random must hit the paternal)
+  gKinship(x, patt4) == 0.25,   # (pick the transmitted allele in A and B)
+  gKinship(x, patt5) == 0.25    # (both random must be the paternal)
 )
 
 

@@ -98,6 +98,9 @@ gKinship_GC = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
   if(!isDeterministic(gp))
     stop2("Method 'GC' supports deterministic kinship patterns only")
 
+  if(length(gp) > 1 && isDistinct(gp))
+    stop2("The `GC` method requires distinct blocks. Received: ", gip2string(gp))
+
   recurse_GC(gp, X = Xchrom, mem = mem, debug = debug)
 }
 

@@ -53,6 +53,9 @@ identity_LS = function(x, ids, Xchrom = FALSE, detailed = FALSE, self = FALSE, m
 }
 
 gKinship_LS = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
+  if(isGip(gp) && length(gp) > 1 && !isDistinct(gp))
+    stop2("The `LS` method requires distinct blocks. Received: ", gip2string(gp))
+
   recurse_LS(gp, X = Xchrom, mem = mem, debug = debug)
 }
 

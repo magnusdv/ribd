@@ -109,9 +109,9 @@
 #' patterns in full generality and gave an algorithm for computing the
 #' corresponding coefficients.
 #'
-#' In a follow-up paper, Lange & Sinsheimer (1992) introduced partially
-#' deterministic (distinct) patterns, and used these to compute detailed
-#' identity coefficients.
+#' In a follow-up paper, Lange & Sinsheimer (1992) introduced deterministic (and
+#' partially deterministic), distinct patterns, and used these to compute
+#' detailed identity coefficients.
 #'
 #' In another follow-up, Weeks et al. (1995) extended the work on random,
 #' distinct patterns by Weeks & Lange (1988) to X-chromosomal loci.
@@ -147,9 +147,8 @@
 #' and to pedigrees with inbred founders.
 #'
 #' @param x A `ped` object.
-#' @param pattern A `gip` object, or a list of vectors to be passed onto
-#'   [gip()]. Each vector should contain members of `x` constituting an IBD
-#'   block. (See Details and Examples.)
+#' @param pattern A `gip` object, or a list of vectors constituting the blocks
+#'   of the GIP. (See Details and Examples.)
 #' @param distinct A logical indicating if different blocks are required to be
 #'   non-IBD. Default: TRUE. (Irrelevant for single-block patterns.)
 #' @param Xchrom A logical, by default FALSE.
@@ -162,8 +161,8 @@
 #' @return `gKinship()` returns a single number, the probability of the given
 #'   IBD pattern.
 #'
-#'   `gip()` returns an object of class `gip`. This is internally a list
-#'   of integer vectors, with attributes `labs`, `deterministic` and `distinct`.
+#'   `gip()` returns an object of class `gip`. This is internally a list of
+#'   integer vectors, with attributes `labs`, `deterministic` and `distinct`.
 #'   (See also Details.)
 #'
 #' @seealso [kinship()], [identityCoefs()]
@@ -204,8 +203,8 @@
 #' patt3 = gip(x, list(c(p="A", p="C"), c(m="C")))
 #' patt3
 #'
-#' # Partially deterministic, non-distinct`
-#' patt4 = gip(x, list(c("A", p="C"), c("B", m="C")), distinct = FALSE)
+#' # Partially deterministic, distinct
+#' patt4 = gip(x, list(c("A", p="C"), c("B", m="C")))
 #' patt4
 #'
 #' # Partially deterministic, single block
@@ -216,8 +215,8 @@
 #'   gKinship(x, patt1) == 0,      # (since A and B are unrelated)
 #'   gKinship(x, patt2) == 0,      # (same as previous)
 #'   gKinship(x, patt3) == 0.5,    # (only uncertainty is which allele A gave to C)
-#'   gKinship(x, patt4) == 0.25,   # (distinct irrelevant)
-#'   gKinship(x, patt5) == 0.25   # (both random must hit the paternal)
+#'   gKinship(x, patt4) == 0.25,   # (pick the transmitted allele in A and B)
+#'   gKinship(x, patt5) == 0.25    # (both random must be the paternal)
 #' )
 #'
 #'
@@ -275,26 +274,37 @@ gKinship = function(x, pattern, distinct = TRUE, Xchrom = FALSE,
                     method = c("auto", "K", "WL", "LS", "GC"),
                     verbose = FALSE, debug = FALSE, mem = NULL, ...) {
 
+  if(!isGip(pattern))
+    pattern = gip(x, pattern, distinct = distinct)
+  else
+    distinct = attr(pattern, "distinct")
+
   method = match.arg(method)
   if(method == "auto")
-    method = chooseIdentityMethod(x, pattern = pattern, Xchrom = Xchrom,
-                                  detailed = isDeterministic(pattern))
+    method = chooseGenKinMethod(x, gip = pattern, Xchrom = Xchrom)
 
-  if(inherits(pattern, "gip"))
-    pattern = gip2list(pattern)
+  if(verbose) {
+    message("Pattern: ", gip2string(pattern))
+    message("Method: ", switch(method, K = "Karigl", WL = "Weeks & Lange",
+                               LS = "Lange & Sinsheimer", GC = "Garcia-Cortes"))
+  }
+
+  # Convert to list
+  patternList = gip2list(pattern)
 
   # Possibly add founder parents if method is LS
   addpar = NULL
   if(method == "LS") {
-    ids = unlist(pattern)
+    ids = unlist(patternList)
     if(!is.null(names(ids)))
       addpar = ids[names(ids) != ""]
   }
 
+  # Prepare pedigree: Parents before children etc
   x = prepPed(x, addpar = addpar, Xchrom = Xchrom)
 
-  # Now (re)make pattern object (point being: x might have changed)
-  p = gip(x, pattern, distinct = distinct)
+  # Now remake pattern (since x might have changed)
+  p = gip(x, patternList, distinct = distinct)
 
   if(is.null(mem))
     mem = memoIdentity(x, Xchrom = Xchrom, method = method, verbose = verbose, ...)
@@ -312,3 +322,52 @@ gKinship = function(x, pattern, distinct = TRUE, Xchrom = FALSE,
   res
 }
 
+
+# Similar to chooseIdentityMethod, but for gKinship
+chooseGenKinMethod = function(x, gip = NULL, Xchrom = FALSE) {
+
+  trulyDistinct = length(gip) > 1 && isDistinct(gip)
+  trulyNondistinct = length(gip) > 1 && !isDistinct(gip)
+
+  type = paste(lengths(gip), collapse ="-")
+  determ = isDeterministic(gip)
+
+
+  ### Non-deterministic patterns
+
+  if(!determ) {
+    if(trulyDistinct)
+      return("WL")
+
+    if(type %in% c("1", "2", "3", "4", "2-2"))
+      return("K")
+    else if(trulyNondistinct)
+      stop2("Random, nondistinct patterns are not generally supported; only the Karigl types")
+    else
+      return("WL")
+  }
+
+  ### Deterministic patterns: LS fastest, but don't work in some cases
+
+  # X-chromosomal: GC is the only option
+  if(Xchrom) {
+    if(trulyDistinct)
+      stop2("Distinct patterns on X are not supported: ", gip)
+    return("GC")
+  }
+
+  # Non-distinct: GC only option
+  if(trulyNondistinct)
+    return("GC")
+
+  # If inbred founders are involved, GC  is the only option
+  fouIds = .myintersect(founders(x), unlist(gip))
+  if(any(founderInbreeding(x, fouIds) > 0)) {
+    if(trulyDistinct)
+      stop2("Distinct patterns with founder inbreeding are not supported: ", gip)
+    return("GC")
+  }
+
+  # Otherwise: LS fastest
+  return("LS")
+}

@@ -62,6 +62,8 @@ identity_WL = function(x, ids, Xchrom = FALSE, self = FALSE, mem = NULL, verbose
 gKinship_WL = function(x, gp, Xchrom = FALSE, mem, debug = FALSE) {
   if(Xchrom)
     stop2("X is not implemented in method 'WL' yet")
+  if(isGip(gp) && length(gp) > 1 && !isDistinct(gp))
+    stop2("The `WL` method requires distinct blocks. Received: ", gip2string(gp))
 
   recurse_WL(gp, X = Xchrom, mem = mem, debug = debug)
 }

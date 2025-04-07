@@ -320,34 +320,22 @@ memoIdentity = function(x, Xchrom = FALSE, method = NULL, counters = NULL,
   mem
 }
 
-chooseIdentityMethod = function(x, ids = NULL, pattern = NULL, detailed = NULL, Xchrom = FALSE) {
+chooseIdentityMethod = function(x, ids = NULL, detailed = NULL, Xchrom = FALSE) {
 
-  if(!is.null(pattern)) {
-    detailed = isDeterministic(pattern)
-    type = paste(lengths(pattern), collapse ="-")
-  }
-
-  if(!detailed) {
-    if(is.null(pattern))
-      return("K")
-    else {
-      if(type %in% c("1", "2", "3", "4", "2-2"))
-        return("K")
-      else
-        return("WL")
-    }
-  }
+  # Condensed: Karigl fastest
+  if(!detailed)
+    return("K")
 
   # Detailed on X: only GC
   if(Xchrom)
     return("GC")
 
-  # Detailed autosomal: LS is fastest, but requires adding parents to founders.
-  # If inbred founders involved: GC
-  hasIF = hasInbredFounders(x) && any(inbreeding(x)[intersect(ids, founders(x))] > 0)
-  if(hasIF)
+  # Detailed autosomal, with inbred founders: only GC
+  fouIds = .myintersect(founders(x), ids)
+  if(any(founderInbreeding(x, fouIds) > 0))
     return("GC")
 
+  # Detailed autosomal, all other cases: LS fastest
   return("LS")
 }
 

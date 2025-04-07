@@ -71,6 +71,9 @@ gKinship_Karigl = function(x, pattern, mem, Xchrom = FALSE, debug = FALSE) {
   if(is.na(type))
     stop2("Method 'K' does not support this pattern")
 
+  if(type == 5 && isDistinct(pattern))
+    stop2("The `K` method requires non-distinct blocks. Received: ", gip2string(pattern))
+
   als = unlist(pattern, use.names = FALSE)
 
   switch(type,
