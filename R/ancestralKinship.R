@@ -85,3 +85,24 @@ ancestralKinship = function(x, ids = NULL, ancs, simplify = TRUE) {
   g2
 }
 
+# Relative ancestral contributions to the inbreeding in a specific person
+inbreedingContributions = function(x, id, relative = TRUE) {
+  inb = inbreeding(x, id)
+  if(inb == 0) return(0)
+  pars = parents(x, id)
+  fou = commonAncestors(x, pars) |> .myintersect(founders(x))
+  contribs = sapply(fou, function(a) ancestralKinship(x, pars, ancs = a))
+  contribs = 2 * contribs # account for two alleles in founder
+  if(relative)
+    contribs = contribs / sum(contribs)
+  contribs
+}
+
+# # Check with ibdsim
+# simcheck = function(x, id, N = 1e4) {
+#   s = ibdsim(x, N = N, ids = id, map = uniformMap(cM = 0, chrom = 1), verb = F)
+#   a = vapply(s, function(a) a[1, 7:8], FUN.VALUE = numeric(2))
+#   aut = ifelse(a[2,] == 1, a[1,], NA)
+#   orig = (aut - 1) %/% 2 + 1
+#   c(table(orig, useNA = "no"))/N
+# }
