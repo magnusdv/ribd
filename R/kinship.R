@@ -77,12 +77,12 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
 
   ### Connected pedigree
 
+  if(!is.ped(x))
+    stop2("First argument must be a `ped` object or a list of such")
+
   # If X, delegate to X version
   if(Xchrom)
     return(.kinshipX(x, ids = ids, simplify = simplify))
-
-  if(!is.ped(x))
-    stop2("First argument must be a `ped` object or a list of such")
 
   # Ensure standard order of pedigree members
   standardOrder = hasParentsBeforeChildren(x)
@@ -98,7 +98,8 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
   MIDX = x$MIDX
   FOU = which(FIDX == 0)
   NONFOU = which(FIDX > 0)
-  FOU_INB = x$FOUNDER_INBREEDING[["autosomal"]] %||% rep_len(0, length(FOU)) # vector with all founders, including 0's
+  FOU_INB = x$FOUNDER_INBREEDING[["autosomal"]] %||% rep_len(0, length(FOU)) # all founders, including 0's
+  N = length(FIDX) # pedsize
 
   # If `ids` given, restrict vectors
   if(hasIds) {
@@ -107,14 +108,6 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
     NONFOU = NONFOU[NONFOU <= N]
     length(FOU_INB) = length(FOU)
   }
-  else
-    N = length(FIDX) # pedsize
-
-  # Initializing the kinship matrix.
-  # Diagonal entries of founders are 0.5*(1+f)
-  self_kinships = rep(0, N)
-  self_kinships[FOU] = 0.5 * (1 + FOU_INB)
-  kins = diag(self_kinships, nrow = N, ncol = N)
 
   # Vector of (maximal) generation number of each ID: dp[i] = 1 + max(dp[parents])
   # Simpler & faster than kindepth(). Requires "parentsBeforeChildren".
@@ -123,6 +116,11 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
     dp[i] = 1 + max(dp[c(FIDX[i], MIDX[i])])
 
   max_dp = if(hasIds) max(dp[IDS]) else max(dp)
+
+  # Initialise the kinship matrix
+  self_kinships = rep(0, N)
+  self_kinships[FOU] = 0.5 * (1 + FOU_INB)
+  kins = diag(self_kinships, nrow = N, ncol = N)
 
   # Iteratively fill the kinship matrix, one generation at a time
   for (gen in seq_len(max_dp)) {
@@ -155,9 +153,6 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
 
 .kinshipX = function(x, ids = NULL, simplify = TRUE) {
 
-  if(!is.ped(x))
-    stop2("Input is not a `ped` object")
-
   if(any(x$SEX == 0))
     stop2("Cannot compute X-kinship in pedigrees with members of unknown sex: ",
           labels(x)[x$SEX == 0])
@@ -169,7 +164,7 @@ kinship = function(x, ids = NULL, simplify = TRUE, Xchrom = FALSE) {
     x = parentsBeforeChildren(x)
   }
 
-  hasIds <- !is.null(ids)
+  hasIds = !is.null(ids)
   singlepair = length(ids) == 2
   if(hasIds)
     IDS = internalID(x, ids) # internal index after parentsBeforeCh!
