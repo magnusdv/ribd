@@ -77,8 +77,8 @@ kinship2_kinship = function(x, ids = NULL, Xchrom = FALSE) {
 
   if(length(ids) != 2)
     stop2("`ids` must be a vector of length 2")
-  if(!all(ids %in% labs))
-    stop2("Unknown ID label: ", setdiff(ids, labs))
+  if(anyNA(match(ids, labs)))
+    stop2("Unknown ID label: ", .mysetdiff(ids, labs))
 
   kin.matrix[ids[1], ids[2]]
 }

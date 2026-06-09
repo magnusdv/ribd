@@ -243,8 +243,8 @@ twoLocusIBD = function(x, ids, rho, coefs = NULL, detailed = FALSE, uniMethod = 
 
   # Coefficient selection
   allcoefs = c("k00", "k01", "k02", "k10", "k11", "k12", "k20", "k21", "k22")
-  if(any(!coefs %in% allcoefs))
-    stop2("Invalid coefficient specified: ", setdiff(coefs, allcoefs), "\nSee ?twoLocusIBD for valid choices.")
+  if(anyNA(match(coefs, allcoefs)))
+    stop2("Invalid coefficient specified: ", .mysetdiff(coefs, allcoefs), "\nSee ?twoLocusIBD for valid choices.")
   if(is.null(coefs))
     coefs = allcoefs
 

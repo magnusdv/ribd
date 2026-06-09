@@ -133,8 +133,8 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
 
   labs = labels(x)
   ids = as.character(ids)
-  if(!all(ids %in% labs))
-    stop2("Unknown ID label: ", setdiff(ids, labs))
+  if(anyNA(match(ids, labs)))
+    stop2("Unknown ID label: ", .mysetdiff(ids, labs))
   if(length(ids) < 2)
     stop2("At least two ID labels must be indicated")
   if(dup <- anyDuplicated.default(ids))
@@ -199,8 +199,8 @@ kappaIBD = function(x, ids = labels(x), inbredAction = 1, simplify = TRUE,
 
   labs = labels(x)
   ids = as.character(ids)
-  if(!all(ids %in% labs))
-    stop2("Unknown ID label: ", setdiff(ids, labs))
+  if(anyNA(match(ids, labs)))
+    stop2("Unknown ID label: ", .mysetdiff(ids, labs))
   if(length(ids) < 2)
     stop2("At least two ID labels must be indicated")
   if(dup <- anyDuplicated.default(ids))

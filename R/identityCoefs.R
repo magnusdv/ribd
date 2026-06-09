@@ -431,7 +431,7 @@ detailed2condensed = function(d) {
 
 # For X-chromosomal coefficients, put NAs in ill-defined entries
 Xmask = function(x, df) {
-  if(!is.data.frame(df) || !ncol(df) %in% c(11,17))
+  if(!is.data.frame(df) || ncol(df) %notin% c(11,17))
     stop2("The `df` argument must be a data frame with either 11 or 17 columns")
   detailed = ncol(df) == 17
 

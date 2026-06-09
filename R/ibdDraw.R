@@ -146,8 +146,8 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
     stop2("Too few colours")
 
   # Position
-  if(!all(pos %in% 0:4))
-    stop2("Illegal `pos` value: ", setdiff(pos, 0:4))
+  if(anyNA(match(pos, 0:4)))
+    stop2("Illegal `pos` value: ", .mysetdiff(pos, 0:4))
   pos = rep(pos, length.out = nInd)
 
   # ID labels?
@@ -215,7 +215,7 @@ ibdDraw = function(x, alleles, symbol = c("point", "text"), pos = 1, cols = NULL
     if(checkParents && !i %in% fou) {
       fa = alleles[[father(x, i, internal = TRUE)]]
       mo = alleles[[mother(x, i, internal = TRUE)]]
-      if(!is.null(fa) && !is.null(mo) && !all(als %in% c(0, fa, mo)))
+      if(!is.null(fa) && !is.null(mo) && anyNA(match(als, c(0, fa, mo))))
         warning("Allele of individual ", labels(x)[i], " unseen in parents: ",
                 setdiff(als, c(0, fa, mo)), call. = FALSE)
     }

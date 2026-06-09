@@ -81,8 +81,7 @@
 #'
 #' par(opar) # reset graphical parameters
 #'
-#' @importFrom graphics abline grconvertX grconvertY layout legend mtext par
-#'   plot points polygon rect segments text
+#' @importFrom graphics abline grconvertX grconvertY layout legend mtext par plot points polygon rect segments text
 #'
 #' @export
 ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
@@ -440,7 +439,7 @@ showInTriangle = function(kappa, plotType = c("base", "ggplot2", "plotly"),
   if(is.vector(kappa) && !is.list(kappa)) {
     if(!is.numeric(kappa))
       stop2("Vector `kappa` is not numeric: ", kappa)
-    if(!length(kappa) %in% 2:3)
+    if(length(kappa) %notin% 2:3)
       stop2("Vector `kappa` must have length 2 or 3. Received length: ", length(kappa))
     if(is.null(names(kappa)))
       names(kappa) = if(length(kappa) == 2) paste0("kappa", c(0, 2)) else paste0("kappa", 0:2)

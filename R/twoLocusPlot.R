@@ -112,7 +112,7 @@ twoLocusPlot = function(peds, coeff = "k11", rseq = seq(0, 0.5, length = 11),
   for(p in peds) {
     if(!is.list(p) || !setequal(names(p), c("ped", "ids")))
       stop2("Each entry of `peds` must be a list with names 'ped' and 'ids'")
-    if(!is.ped(p$ped) || !all(p$ids %in% labels(p$ped)))
+    if(!is.ped(p$ped) || anyNA(match(p$ids, labels(p$ped))))
       stop2("Something is wrong with the input")
   }
 
