@@ -33,7 +33,8 @@
 #'
 #' @param relationships A character vector indicating the *fixed* relationships
 #'   points to be included in the plot. Valid entries are those in the `label`
-#'   column of [basicRelationships].
+#'   column of [basicRelationships]. Alternatively, a custom data frame similar
+#'   to the built-in `basicRelationships`.
 #' @param plotType Either "base" (default), "ggplot2" or "plotly". Abbreviations
 #'   are allowed.
 #' @param kinshipLines A numeric vector (see Details).
@@ -159,8 +160,7 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   }
 
   # Fixed relationships
-  allrels = ribd::basicRelationships
-  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
+  rels = parseRels(relationships)
   if(nrow(rels)) {
     points(rels$kappa0, rels$kappa2, pch = pch, cex = cexPoint)
     text(rels$kappa0, rels$kappa2, labels = rels$label, pos = rels$pos,
@@ -170,6 +170,18 @@ ibdTriangle = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
   invisible()
 }
 
+# Helper to parse relationships argument
+parseRels = function(relationships) {
+  if(is.data.frame(relationships)) {
+    if(anyNA(match(c("label", "kappa0", "kappa2", "pos"), names(relationships))))
+      stop2("Data frame `relationships` must contain columns 'label', 'kappa0', 'kappa2', and 'pos'")
+  }
+  else {
+    allrels = ribd::basicRelationships
+    relationships = allrels[allrels$label %in% relationships, , drop = FALSE]
+  }
+  relationships
+}
 
 ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC"),
                          pch = 19, cexPoint = 1.2, cexText = cexPoint,
@@ -182,8 +194,7 @@ ibdTriangleGG = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "FC")
     stop2("Package `ggplot2` must be installed for this to work")
 
   # Fixed
-  allrels = ribd::basicRelationships
-  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
+  rels = parseRels(relationships)
 
   # Tweak label pos
   adj = 0.02
@@ -225,8 +236,7 @@ ibdTrianglePlotly = function(relationships = c("UN", "PO", "MZ", "S", "H,U,G", "
     stop2("Package `plotly` must be installed for this to work")
 
   # Fixed relationships coordinates
-  allrels = ribd::basicRelationships
-  rels = allrels[allrels$label %in% relationships, , drop = FALSE]
+  rels = parseRels(relationships)
 
   # Adjust label positions
   plotlyPos = c(UN = "bottom center", PO = "bottom center", MZ = "middle right",
