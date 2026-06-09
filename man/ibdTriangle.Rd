@@ -31,7 +31,8 @@ ibdTriangle(
 \arguments{
 \item{relationships}{A character vector indicating the \emph{fixed} relationships
 points to be included in the plot. Valid entries are those in the \code{label}
-column of \link{basicRelationships}.}
+column of \link{basicRelationships}. Alternatively, a custom data frame similar
+to the built-in \code{basicRelationships}.}
 
 \item{plotType}{Either "base" (default), "ggplot2" or "plotly". Abbreviations
 are allowed.}
