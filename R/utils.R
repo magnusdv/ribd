@@ -8,6 +8,9 @@ stop2 = function(...) {
   if(is.null(x)) y else x
 }
 
+`%notin%` = function(x, table)
+  match(x, table, nomatch = 0L) == 0L
+
 # Quick version of combn(., 2) for matrix output
 .comb2 = function(n, vec = length(n) > 1){
   if(vec) {
